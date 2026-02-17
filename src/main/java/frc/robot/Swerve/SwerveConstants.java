@@ -11,6 +11,13 @@ import edu.wpi.first.math.util.Units;
 
 /** Add your docs here. */
 public class SwerveConstants {
+
+    public static class OperatorConstants {
+        public static final int kDriverControllerPort = 0;
+        public static final int kOperatorControllerPort = 1;
+        public static final double kDeadband = 0.15;
+  }
+  
     public static final class ModuleConstants {
         public static final double kWheelDiameterMeters = Units.inchesToMeters(4);
         public static final double kDriveMotorGearRatio = 1 / 6.75;
@@ -65,10 +72,10 @@ public class SwerveConstants {
         public static final boolean kBackRightDriveAbsoluteEncoderReversed = false;
 
 
-        public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = 51.76764  * Math.PI / 180.0;
-        public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = (234.9324 - 32.11272) * Math.PI / 180.0;
-        public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = (71.367120 - 16.787) * Math.PI / 180.0;
-        public static final double kBackRightDriveAbsoluteEncoderOffsetRad = (23.3536+12.24) * Math.PI / 180.0;
+        public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = (167.695-90) * Math.PI/180.0;
+        public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = (45.0-90) * Math.PI/180.0;
+        public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = (284.15-90) * Math.PI/180.0;
+        public static final double kBackRightDriveAbsoluteEncoderOffsetRad = (245.25-90) * Math.PI/180.0;
 
         public static final double kPhysicalMaxSpeedMetersPerSecond = 5;
         public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * 2 * Math.PI;
