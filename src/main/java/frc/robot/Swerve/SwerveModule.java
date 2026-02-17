@@ -54,11 +54,13 @@ public class SwerveModule {
         turningMotor = new SparkMax(turningMotorId, MotorType.kBrushless);
         turningMotorConfig = new SparkMaxConfig();
 
-        driveMotorConfig.inverted(driveMotorReversed);
-        driveMotorConfig.idleMode(IdleMode.kBrake);
+        driveMotorConfig.inverted(driveMotorReversed)
+                        .idleMode(IdleMode.kBrake);
 
-        turningMotorConfig.inverted(turningMotorReversed);
-        turningMotorConfig.idleMode(IdleMode.kBrake);
+        turningMotorConfig.inverted(turningMotorReversed)
+                          .idleMode(IdleMode.kBrake)
+                          .encoder.positionConversionFactor(ModuleConstants.kTurningEncoderRot2Rad)
+                          .velocityConversionFactor(ModuleConstants.kTurningEncoderRPM2RadPerSec);
         // turningMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
         // turningMotorConfig.Feedback.FeedbackRemoteSensorID = absoluteEncoderId;
         // turningMotorConfig.Feedback.RotorToSensorRatio = ModuleConstants.kTurningMotorGearRatio;
