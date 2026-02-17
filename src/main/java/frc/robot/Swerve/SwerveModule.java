@@ -9,6 +9,13 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import com.revrobotics.PersistMode;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.ResetMode;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -19,11 +26,13 @@ import frc.robot.Swerve.SwerveConstants.ModuleConstants;
 
 public class SwerveModule {
 
-    private final TalonFX driveMotor;
-    private final TalonFX turningMotor;
+    private final SparkMax driveMotor;
+    private final SparkMax turningMotor;
 
-    private final TalonFXConfiguration driveMotorConfig;
-    private final TalonFXConfiguration turningMotorConfig;
+    private final RelativeEncoder driveEncoder;
+
+    private final SparkMaxConfig driveMotorConfig;
+    private final SparkMaxConfig turningMotorConfig;
 
     private final PIDController turningPidController;
 
@@ -33,7 +42,7 @@ public class SwerveModule {
     private final boolean absoluteEncoderReversed;
     private final double absoluteEncoderOffsetRad;
 
-    public SwerveModule(int driveMotorId, int turningMotorId, InvertedValue driveMotorReversed, InvertedValue turningMotorReversed,
+    public SwerveModule(int driveMotorId, int turningMotorId, Boolean driveMotorReversed, Boolean turningMotorReversed,
             int absoluteEncoderId, double absoluteEncoderOffset, boolean absoluteEncoderReversed) {
 
         this.absoluteEncoderOffsetRad = absoluteEncoderOffset;
@@ -42,23 +51,22 @@ public class SwerveModule {
         config = new CANcoderConfiguration();
 
 
-        driveMotor = new TalonFX(driveMotorId);
-        driveMotorConfig = new TalonFXConfiguration();
+        driveMotor = new SparkMax(driveMotorId, MotorType.kBrushless);
+        driveMotorConfig = new SparkMaxConfig();
+        driveEncoder = driveMotor.getEncoder();
 
 
-        turningMotor = new TalonFX(turningMotorId);
-        turningMotorConfig = new TalonFXConfiguration();
+        turningMotor = new SparkMax(turningMotorId, MotorType.kBrushless);
+        turningMotorConfig = new SparkMaxConfig();
 
-        driveMotorConfig.MotorOutput.withInverted(driveMotorReversed);
-        driveMotorConfig.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
-        driveMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+        driveMotorConfig.inverted(driveMotorReversed);
+        driveMotorConfig.idleMode(IdleMode.kBrake);
 
-
-        turningMotorConfig.MotorOutput.withInverted(turningMotorReversed);
-        turningMotorConfig.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
-        turningMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
-        turningMotorConfig.Feedback.FeedbackRemoteSensorID = absoluteEncoderId;
-        turningMotorConfig.Feedback.RotorToSensorRatio = ModuleConstants.kTurningMotorGearRatio;
+        turningMotorConfig.inverted(turningMotorReversed);
+        turningMotorConfig.idleMode(IdleMode.kBrake);
+        // turningMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+        // turningMotorConfig.Feedback.FeedbackRemoteSensorID = absoluteEncoderId;
+        // turningMotorConfig.Feedback.RotorToSensorRatio = ModuleConstants.kTurningMotorGearRatio;
 
 
         config.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
@@ -68,27 +76,27 @@ public class SwerveModule {
         turningPidController = new PIDController(ModuleConstants.kPTurning, 0, 0);
         turningPidController.enableContinuousInput(-Math.PI, Math.PI);
 
-        turningMotor.getConfigurator().apply(turningMotorConfig);
-        driveMotor.getConfigurator().apply(driveMotorConfig);
+        turningMotor.configure(turningMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        driveMotor.configure(driveMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
 
         resetEncoders();
     }
 
     public double getDrivePosition() {
-        return driveMotor.getPosition().getValueAsDouble() * ModuleConstants.kDriveEncoderRot2Meter;
+        return driveEncoder.getPosition() * ModuleConstants.kDriveEncoderRot2Meter;
     }
 
     public double getTurningPosition() {
-        return turningMotor.getPosition().getValueAsDouble() * 2 * Math.PI - absoluteEncoderOffsetRad;
+        return absoluteEncoder.getPosition().getValueAsDouble() * 2 * Math.PI - absoluteEncoderOffsetRad;
     }
 
     public double getDriveVelocity() {
-        return driveMotor.getVelocity().getValueAsDouble() * ModuleConstants.kDriveEncoderRPM2MeterPerSec;
+        return driveEncoder.getVelocity() * ModuleConstants.kDriveEncoderRPM2MeterPerSec;
     }
 
     public double getTurningVelocity() {
-        return turningMotor.getVelocity().getValueAsDouble() * 2 * Math.PI;
+        return absoluteEncoder.getVelocity().getValueAsDouble() * 2 * Math.PI;
     }
 
     /*
