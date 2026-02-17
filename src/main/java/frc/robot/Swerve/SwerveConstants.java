@@ -4,8 +4,6 @@
 
 package frc.robot.Swerve;
 
-import com.ctre.phoenix6.signals.InvertedValue;
-
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -46,15 +44,15 @@ public class SwerveConstants {
         public static final int kFrontRightTurningMotorPort = 21;
         public static final int kBackRightTurningMotorPort = 31;
 
-        public static final InvertedValue kFrontLeftTurningEncoderReversed = InvertedValue.Clockwise_Positive;
-        public static final InvertedValue kBackLeftTurningEncoderReversed = InvertedValue.Clockwise_Positive;
-        public static final InvertedValue kFrontRightTurningEncoderReversed = InvertedValue.Clockwise_Positive;
-        public static final InvertedValue kBackRightTurningEncoderReversed = InvertedValue.Clockwise_Positive;
+        public static final Boolean kFrontLeftTurningEncoderReversed = Boolean.TRUE;
+        public static final Boolean kBackLeftTurningEncoderReversed = Boolean.TRUE;
+        public static final Boolean kFrontRightTurningEncoderReversed = Boolean.TRUE;
+        public static final Boolean kBackRightTurningEncoderReversed = Boolean.TRUE;
 
-        public static final InvertedValue kFrontLeftDriveEncoderReversed = InvertedValue.Clockwise_Positive;
-        public static final InvertedValue kBackLeftDriveEncoderReversed = InvertedValue.Clockwise_Positive;
-        public static final InvertedValue kFrontRightDriveEncoderReversed = InvertedValue.CounterClockwise_Positive;
-        public static final InvertedValue kBackRightDriveEncoderReversed = InvertedValue.CounterClockwise_Positive;
+        public static final Boolean kFrontLeftDriveEncoderReversed = Boolean.TRUE;
+        public static final Boolean kBackLeftDriveEncoderReversed = Boolean.TRUE;
+        public static final Boolean kFrontRightDriveEncoderReversed = Boolean.FALSE;
+        public static final Boolean kBackRightDriveEncoderReversed = Boolean.FALSE;
 
         public static final int kFrontLeftDriveAbsoluteEncoderPort = 12;
         public static final int kBackLeftDriveAbsoluteEncoderPort = 42;

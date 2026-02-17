@@ -86,17 +86,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
     //Limelight Definitions
     private final NetworkTable aprilTagTable = NetworkTableInstance.getDefault().getTable(LimeLightConstants.kLLTags);
-    private double tv, ta, tl;
+    private double tl;
     private boolean isUpdating = false;
-    // private boolean gate = true;
-    // private boolean updatingSet = false;
-
-    // private boolean isUpdatingSet = false;
-    // private boolean canSeeTagsSet = true;
-    // private boolean elseSet = false;
-
-    //private LimelightHelpers.LimelightResults results;
-    // private LimelightHelpers.PoseEstimate limelightMeasurement;
 
     Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
 
@@ -160,8 +151,6 @@ public class SwerveSubsystem extends SubsystemBase {
         if (alliance.get() == DriverStation.Alliance.Red){
         setCurrentGyroHeading(180);
         }
-        // // This maybe cuased a breakpoint
-        // on gewt it did not as it turns out
     }
 
 
@@ -229,9 +218,6 @@ public class SwerveSubsystem extends SubsystemBase {
             return;
         }
         
-        // distance from current pose to vision estimated pose
-        //double poseDifference = m_poseEstimator.getEstimatedPosition().getTranslation()
-        //    .getDistance(visionBotPose.pose2d.getTranslation());
 
         double poseDifference = m_poseEstimator.getEstimatedPosition().getTranslation()
             .getDistance(visionPose.getTranslation());
@@ -243,45 +229,6 @@ public class SwerveSubsystem extends SubsystemBase {
             m_poseEstimator.addVisionMeasurement(visionPose,
                 poseEstimate.timestampSeconds);
         }
-        // if (poseEstimate.tagCount > 0) {
-        //     double xyStds;
-        //     double degStds;
-        //     SmartDashboard.putNumber("poseDifference", poseDifference);
-        //     // multiple targets detected
-        //     if (poseEstimate.tagCount >= 2 && poseEstimate.avgTagArea > 0.5) {
-        //         // xyStds = 0.5;
-        //         // degStds = 6;
-        //         xyStds = 100;
-        //         degStds = 100;
-        //     }
-        //     // 1 target with large area and close to estimated pose
-        //     // else if (poseEstimate.avgTagArea > 0.66 && poseDifference < 1.5) { //areea 0.8, diff 0.5
-        //     //     xyStds = 1.0;
-        //     //     degStds = 12;
-        //     // }
-        //     // // 1 target farther away and estimated pose is close
-        //     // else if (poseEstimate.avgTagArea > 0.15 && poseDifference < 0.3) { // area 0.1, diff 0.3
-        //     //     xyStds = 2.0;
-        //     //     degStds = 30;
-        //     // }
-        //     else if (gate) {
-        //         xyStds = 100;
-        //         degStds = 100;
-        //         gate = false;
-        //     }
-        //     // conditions don't match to add a vision measurement
-        //     else {
-        //         isUpdating = false;
-        //         return;
-        //     }
-
-        //     isUpdating = true;
-
-        //     m_poseEstimator.setVisionMeasurementStdDevs(
-        //         VecBuilder.fill(xyStds, xyStds, Units.degreesToRadians(degStds)));
-        //     m_poseEstimator.addVisionMeasurement(visionPose,
-        //         poseEstimate.timestampSeconds);
-        // }
     }
 
 
