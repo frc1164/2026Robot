@@ -82,12 +82,12 @@ public class SwerveSubsystem extends SubsystemBase {
             new Rotation2d(0), Position, poseThis);
 
     // Create a new Field2d object for plotting pose and initialize LimeLight Network table instances
-    //private final Field2d m_field = new Field2d();
+    private final Field2d m_field = new Field2d();
 
     //Limelight Definitions
-    // private final NetworkTable aprilTagTable = NetworkTableInstance.getDefault().getTable(LimeLightConstants.kLLTags);
-    // private double tl;
-    // private boolean isUpdating = false;
+    private final NetworkTable aprilTagTable = NetworkTableInstance.getDefault().getTable(LimeLightConstants.kLLTags);
+    private double tl;
+    private boolean isUpdating = false;
 
     Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
 
@@ -99,8 +99,8 @@ public class SwerveSubsystem extends SubsystemBase {
             DriveConstants.kVLeft, DriveConstants.kALeft);
 
 
-    // private double tag;
-    // private int tagRead;
+    private double tag;
+    private int tagRead;
 
 
     public SwerveSubsystem() {
@@ -201,50 +201,50 @@ public class SwerveSubsystem extends SubsystemBase {
         return states;
     }
 
-    // public LimelightHelpers.PoseEstimate getVisionEstimatedPose() {
+    public LimelightHelpers.PoseEstimate getVisionEstimatedPose() {
 
-    //     LimelightHelpers.SetRobotOrientation("limelight-tags", getHeading(), getYawRate(),0,0,0,0);
-    //     LimelightHelpers.PoseEstimate botPose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-tags");
+        LimelightHelpers.SetRobotOrientation("limelight-tags", getHeading(), getYawRate(),0,0,0,0);
+        LimelightHelpers.PoseEstimate botPose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-tags");
 
 
-    //     return botPose;
-    // }
+        return botPose;
+    }
 
-    // public void updatePoseEstimatorWithVisionBotPose(LimelightHelpers.PoseEstimate poseEstimate) {
-    //     Pose2d visionPose = poseEstimate.pose;
+    public void updatePoseEstimatorWithVisionBotPose(LimelightHelpers.PoseEstimate poseEstimate) {
+        Pose2d visionPose = poseEstimate.pose;
         
-    //     if (visionPose.getX() == 0.0) {
-    //         isUpdating = false;
-    //         return;
-    //     }
+        if (visionPose.getX() == 0.0) {
+            isUpdating = false;
+            return;
+        }
         
 
-    //     double poseDifference = m_poseEstimator.getEstimatedPosition().getTranslation()
-    //         .getDistance(visionPose.getTranslation());
+        double poseDifference = m_poseEstimator.getEstimatedPosition().getTranslation()
+            .getDistance(visionPose.getTranslation());
 
 
-    //     if (poseEstimate.tagCount > 0){
-    //         SmartDashboard.putNumber("PoseDifference", poseDifference);
-    //         isUpdating = true;
-    //         m_poseEstimator.addVisionMeasurement(visionPose,
-    //             poseEstimate.timestampSeconds);
-    //     }
-    // }
+        if (poseEstimate.tagCount > 0){
+            SmartDashboard.putNumber("PoseDifference", poseDifference);
+            isUpdating = true;
+            m_poseEstimator.addVisionMeasurement(visionPose,
+                poseEstimate.timestampSeconds);
+        }
+    }
 
 
 
-    // public double getLatency() {
-    //     return Timer.getFPGATimestamp() - Units.millisecondsToSeconds(tl);
-    // }
+    public double getLatency() {
+        return Timer.getFPGATimestamp() - Units.millisecondsToSeconds(tl);
+    }
 
 
-    // public int getPrincipalTag(){
-    //     tag = aprilTagTable.getValue("tid").getDouble();
-    //     if(tag == 0){}
-    //     else{tagRead = (int)tag;}
+    public int getPrincipalTag(){
+        tag = aprilTagTable.getValue("tid").getDouble();
+        if(tag == 0){}
+        else{tagRead = (int)tag;}
         
-    //     return tagRead;
-    // }
+        return tagRead;
+    }
 
     public double getYawRate(){
         return gyro.getRate();
@@ -260,8 +260,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
         // Set the robot pose on the Field2D object
 
-        // m_field.setRobotPose(this.getPose());
-        // SmartDashboard.putData(m_field);
+        m_field.setRobotPose(this.getPose());
+        SmartDashboard.putData(m_field);
 
         SmartDashboard.putNumber("Robot Heading", getHeading());
 
@@ -275,14 +275,14 @@ public class SwerveSubsystem extends SubsystemBase {
         boolean signalIsUpdating = false;
         
 
-        //SmartDashboard.putNumber("ta", aprilTagTable.getValue("ta").getDouble());
+        SmartDashboard.putNumber("ta", aprilTagTable.getValue("ta").getDouble());
                         
-        // updatePoseEstimatorWithVisionBotPose(getVisionEstimatedPose());
-        // if(isUpdating == true) {
-        //     signalIsUpdating = true;
-        // }
-        //     SmartDashboard.putBoolean("signalIsUpdating", signalIsUpdating);
-        //     SmartDashboard.putBoolean("seesTags", getVisionEstimatedPose().tagCount > 0);
+        updatePoseEstimatorWithVisionBotPose(getVisionEstimatedPose());
+        if(isUpdating == true) {
+            signalIsUpdating = true;
+        }
+            SmartDashboard.putBoolean("signalIsUpdating", signalIsUpdating);
+            SmartDashboard.putBoolean("seesTags", getVisionEstimatedPose().tagCount > 0);
 
     }
 
