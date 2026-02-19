@@ -63,17 +63,26 @@ public class Shooter extends SubsystemBase {
   }
 
   public double getTurningPosition() {
-    return turn.getPosition().getValueAsDouble() * 2 * Math.PI - offset;
+    return turn.getPosition().getValueAsDouble() * Math.PI / 180 - offset;
   }
 
   public double getDriveVelocity() {
     return drive.getVelocity().getValueAsDouble() * ModuleConstants.kDriveEncoderRPM2MeterPerSec;
   }
 
+  public void setDriveVelocity(double speed) {
+    drive.set(speed);
+  }
+
   public double getAbsoluteEncoderRad() {
     double angle = canCoder.getAbsolutePosition().getValueAsDouble() * 2 * Math.PI;
     angle -= offset;
     return angle * -1.0;
+  }
+
+  public void runPID(double angle){
+    turn.set(pid.calculate(getTurningPosition(), angle * Math.PI / 180));
+
   }
 
   @Override
