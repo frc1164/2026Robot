@@ -4,6 +4,8 @@
 
 package frc.robot.Shooter;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -11,11 +13,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class ShootCommand extends Command {
   private final Shooter ShooterSubsystem;
 
-  private final double m_shootSpeed;
-  private final double m_turnAngle;
+  private final Supplier<Double> m_shootSpeed;
+  private final Supplier<Double>  m_turnAngle;
 
   /** Creates a new ShootCommand. */
-  public ShootCommand(double shootSpeed, double turnAngle, Shooter shooter) {
+  public ShootCommand(Supplier<Double> shootSpeed, Supplier<Double> turnAngle, Shooter shooter) {
     ShooterSubsystem = shooter;
 
     m_shootSpeed = shootSpeed;
@@ -33,8 +35,9 @@ public class ShootCommand extends Command {
   @Override
   public void execute() {
     //subsystem.setPID(turnAngle*90)
-    //ShooterSubsystem.setDriveVelocity(m_shootSpeed);
-    ShooterSubsystem.runPID(m_turnAngle * 180);
+    ShooterSubsystem.setDriveVelocity(m_shootSpeed.get());
+    SmartDashboard.putNumber("turnAngle", m_turnAngle.get());
+    ShooterSubsystem.runPID(m_turnAngle.get() * 90);
   }
 
   // Called once the command ends or is interrupted.
@@ -44,7 +47,6 @@ public class ShootCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    SmartDashboard.putNumber("turnAngle", m_shootSpeed);
     return false;
   }
 }

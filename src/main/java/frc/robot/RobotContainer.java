@@ -19,14 +19,12 @@ public class RobotContainer {
   private final Shooter shooter;
 
   private final CommandXboxController driveController;
-  private final CommandXboxController shooterController;
 
   public RobotContainer() {
     swerve = new SwerveSubsystem();
     shooter = new Shooter();
 
     driveController = new CommandXboxController(0);
-    shooterController = new CommandXboxController(1);
 
     swerve.setDefaultCommand(new SwerveJoystickCmd(
       swerve,
@@ -35,7 +33,10 @@ public class RobotContainer {
       () -> -driveController.getRightX(),
       () -> !driveController.povUp().getAsBoolean()));
 
-    shooter.setDefaultCommand(new ShootCommand(shooterController.getLeftY(), shooterController.getRightY(), shooter));
+    shooter.setDefaultCommand(new ShootCommand(
+      () -> driveController.getLeftTriggerAxis(),
+      () -> driveController.getRightTriggerAxis(),
+       shooter));
     configureBindings();
   }
 

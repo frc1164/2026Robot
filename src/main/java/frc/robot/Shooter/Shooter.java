@@ -14,6 +14,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Swerve.SwerveConstants.ModuleConstants;
 
@@ -59,11 +60,11 @@ public class Shooter extends SubsystemBase {
     turn.getConfigurator().apply(turnConfig);
     drive.getConfigurator().apply(driveConfig);
 
-    offset = 0.0;
+    offset = .156 * 2 * Math.PI;
   }
 
   public double getTurningPosition() {
-    return turn.getPosition().getValueAsDouble() * Math.PI / 180 - offset;
+    return canCoder.getPosition().getValueAsDouble() * Math.PI / 180 - offset;
   }
 
   public double getDriveVelocity() {
@@ -81,12 +82,13 @@ public class Shooter extends SubsystemBase {
   }
 
   public void runPID(double angle){
-    turn.set(pid.calculate(getTurningPosition(), angle * Math.PI / 180));
+    turn.set(pid.calculate(getAbsoluteEncoderRad(), angle * Math.PI / 180));
 
   }
 
   @Override
   public void periodic() {
+    SmartDashboard.putNumber("Angle", getTurningPosition());
     // This method will be called once per scheduler run
   }
 }
