@@ -251,7 +251,6 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
 
-
     @Override
     public void periodic() {
         SwerveModulePosition[] positions = { frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(),
