@@ -273,10 +273,7 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Roll", gyro.getRoll());
                 
         boolean signalIsUpdating = false;
-        
-
-        SmartDashboard.putNumber("ta", aprilTagTable.getValue("ta").getDouble());
-                        
+                                
         updatePoseEstimatorWithVisionBotPose(getVisionEstimatedPose());
         if(isUpdating == true) {
             signalIsUpdating = true;
