@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import Climber.Climb;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -13,6 +14,7 @@ import frc.robot.Swerve.SwerveSubsystem;
 
 
 public class RobotContainer {
+  private Climb m_climb = new Climb();
   private final SwerveSubsystem swerve;
   private final CommandXboxController driveController;
 
@@ -32,9 +34,10 @@ public class RobotContainer {
 
   private void configureBindings() {
     driveController.povDown().onTrue(new InstantCommand(() -> swerve.zeroHeading()));
-
+    driveController.x().onTrue(new InstantCommand(()-> m_climb.extend()));
+    driveController.b().onTrue(new InstantCommand(()-> m_climb.retract()));
   }
-
+ 
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");
   }
