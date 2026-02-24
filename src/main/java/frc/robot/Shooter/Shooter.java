@@ -25,11 +25,21 @@ public class Shooter extends SubsystemBase {
   private final TalonFXConfiguration driveConfig;
   private final TalonFXConfiguration turnConfig;
   
-  private final CANcoder canCoder;
-  private final CANcoderConfiguration canCoderConfiguration;
+  private final CANcoder canCoder1;
+  private final CANcoderConfiguration canCoderConfiguration1;
+  
+  private final CANcoder canCoder2;
+  private final CANcoderConfiguration canCoderConfiguration2;
+
   private final PIDController pid;
 
-  private final double offset;
+  private final double offset1;
+  private final double offset2;
+
+  private final double gear0TeethCount = 70;
+  private final double gear1TeethCount = 42;
+  private final double gear2TeethCount = 72;
+  
 
   /** Creates a new Shooter. */
   public Shooter() {
@@ -39,8 +49,12 @@ public class Shooter extends SubsystemBase {
     driveConfig = new TalonFXConfiguration();
     turnConfig = new TalonFXConfiguration();
 
-    canCoder = new CANcoder(52);
-    canCoderConfiguration = new CANcoderConfiguration();
+    // Add Encoder Ids later
+    canCoder1 = new CANcoder(0);
+    canCoderConfiguration1 = new CANcoderConfiguration();
+
+    canCoder2 = new CANcoder(0);
+    canCoderConfiguration2 = new CANcoderConfiguration();
 
     pid = new PIDController(0.35, 0, 0);
     pid.enableContinuousInput(-Math.PI, Math.PI);
@@ -53,18 +67,42 @@ public class Shooter extends SubsystemBase {
     turnConfig.Feedback.FeedbackRemoteSensorID = 52;
     turnConfig.Feedback.RotorToSensorRatio = 18.75;
 
-    canCoderConfiguration.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
-    canCoderConfiguration.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
-    canCoder.getConfigurator().apply(canCoderConfiguration);
+    canCoderConfiguration1.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
+    canCoderConfiguration1.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
+    canCoder1.getConfigurator().apply(canCoderConfiguration1);
+
+    canCoderConfiguration2.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
+    canCoderConfiguration2.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
+    canCoder2.getConfigurator().apply(canCoderConfiguration2);
 
     turn.getConfigurator().apply(turnConfig);
     drive.getConfigurator().apply(driveConfig);
 
-    offset = .156 * 2 * Math.PI;
+    offset1 = .156 * 2 * Math.PI;
+    offset2 = .156 * 2 * Math.PI;
+  }
+
+  private double getGear3Rotation(double r1, double r2) {
+    final double d1 = r1 * 360;
+    final double d2 = r2 * 360;
+
+    final double t1 = d1 * gear1TeethCount / 360;
+    final double t2 = d2 * gear2TeethCount / 360;
+
+    final double bezout = (t1 * 12 * 3 + t2 * 7 * -5) % 504;
+
+    final double totalRot1 = Math.floor(bezout / gear1TeethCount);
+
+    final double rot0 = (totalRot1 + d1 / 360) * gear1TeethCount / gear0TeethCount * 360;
+
+    return rot0 % 360;
   }
 
   public double getTurningPosition() {
-    return canCoder.getPosition().getValueAsDouble() * Math.PI / 180 - offset;
+    double gear1Rotation = canCoder1.getPosition().getValueAsDouble() * 360 - offset1;
+    double gear2Rotation = canCoder2.getPosition().getValueAsDouble() * 360 - offset2;
+
+    return getGear3Rotation(gear1Rotation, gear2Rotation) * Math.PI / 180;
   }
 
   public double getDriveVelocity() {
@@ -75,15 +113,10 @@ public class Shooter extends SubsystemBase {
     drive.set(speed);
   }
 
-  public double getAbsoluteEncoderRad() {
-    double angle = canCoder.getAbsolutePosition().getValueAsDouble() * 2 * Math.PI;
-    angle -= offset;
-    return angle * -1.0;
-  }
-
   public void runPID(double angle){
-    turn.set(pid.calculate(getAbsoluteEncoderRad(), angle * Math.PI / 180));
-
+    double pidGear0Speed = pid.calculate(getTurningPosition(), angle * Math.PI / 180);
+    double pidMotorSpeed = pidGear0Speed * gear0TeethCount / gear1TeethCount;
+    turn.set(pidMotorSpeed);
   }
 
   @Override
