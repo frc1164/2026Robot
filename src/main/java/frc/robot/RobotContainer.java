@@ -37,6 +37,7 @@ public class RobotContainer {
       () -> driveController.getLeftTriggerAxis(),
       () -> driveController.getRightTriggerAxis(),
        shooter));
+       
     configureBindings();
   }
 

@@ -4,52 +4,86 @@
 
 package frc.robot.Shooter;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Swerve.SwerveSubsystem;
 
 public class ShooterCalculator extends SubsystemBase {
   /** Creates a new ShooterCalculator. */
-  Pose2d pose;
-  Pose3d target;
   SwerveSubsystem swerve;
   double offsetMagnitude = 0; //ShooterConstants
   double offsetVert = 0;
   double offsetAngleRad = 0; //ShooterConstants
   double shooterSpeed = 0; //also ShooterConstants
+  double targetH = 0; //also ShooterConstants
   double G = 9.81; //also ShooterConstants but might need to be negative not sure yet
 
 
-  public ShooterCalculator(SwerveSubsystem chassis) {
-    swerve = chassis;
-    pose = swerve.getPose();
-    target = new Pose3d(); //Find coords for target and get the 'optimal' height also create a ShooterConstants for all these
+  public ShooterCalculator() {}
+
+  private Translation2d distVector(Pose2d target, Pose2d current){//target pose in constants
+    double xDist, yDist;
+
+    xDist = target.getX() + offsetMagnitude * (Math.cos(offsetAngleRad + current.getRotation().getRadians()));
+    yDist = target.getY() + offsetMagnitude * (Math.sin(offsetAngleRad + current.getRotation().getRadians()));
+    return new Translation2d(xDist, yDist);
   }
 
-  private double getDist(){
-    double xDist, yDist, totalDist;
-
-    xDist = target.getX() + offsetMagnitude * (Math.cos(offsetAngleRad + pose.getRotation().getRadians()));
-    yDist = target.getY() + offsetMagnitude * (Math.sin(offsetAngleRad + pose.getRotation().getRadians()));
-    totalDist = Math.sqrt(Math.pow(xDist, 2) + Math.pow(yDist, 2));
-    return totalDist;
+  private double getDist(Translation2d distVector){
+    return Math.sqrt(Math.pow(distVector.getX(), 2) + Math.pow(distVector.getY(), 2));
   }
 
-  public double phiAnglefromVelo(){
+  public double phiAnglefromVelo(Pose2d target, Pose2d shooterLocation){//target pose in constants
     double angle;
-    double h = (target.getZ() - offsetVert);
-    angle = Math.atan((shooterSpeed + Math.sqrt(Math.pow(shooterSpeed,4)- (G) * (G * (getDist() * getDist()) + 2 * (shooterSpeed * shooterSpeed) * h)))
-                        / (G * getDist()));
-    return 0;
+    double h = (targetH - offsetVert);
+    angle = Math.atan((shooterSpeed + Math.sqrt(Math.pow(shooterSpeed,4)- (G) * (G * (getDist(distVector(target, shooterLocation)) * getDist(distVector(target, shooterLocation)) + 2 * (shooterSpeed * shooterSpeed) * h)))
+                        / (G * getDist(distVector(target, shooterLocation)))));
+    return angle;
   }
 
-  public double tFromPhi(){
-    return 0;
+  public double calcT(double vertAngle, double dist){
+    return dist/(shooterSpeed * Math.cos(vertAngle));
   }
 
-  public double thetaAngle(){
-    return 0;
+  public double botRelativeThetaNoVelRad(Translation2d distanceVector){
+    return distanceVector.getAngle().getRadians(); 
+  }
+
+
+  public double botThetaWithVelRad(double time, Translation2d botVelo, Translation2d distance){
+    return Math.atan2(distance.getY() + (botVelo.getY() * time), distance.getX() + (botVelo.getX() * time));
+  }
+
+  public record ShotInfo(double exitVel, double vertAngle, Translation3d target){
+    public double getZComponent(){
+      return exitVel * Math.sin(vertAngle);
+    }
+
+    public double getXYComponent(){
+      return exitVel * Math.cos(vertAngle);
+    }
+
+    public double getMag(){
+      return exitVel;
+    }
+
+    public double getVertAngle(){
+      return vertAngle();
+    }
+
+    public Translation3d getTarget(){
+      return target();
+    }
+
+    public static ShotInfo interpolate(ShotInfo estimate, ShotInfo result, double t){
+      return new ShotInfo(estimate.getMag(),
+                  MathUtil.interpolate(estimate.getVertAngle(), result.getVertAngle(), t),
+                  result.getTarget());
+    }
+    
   }
 
 
