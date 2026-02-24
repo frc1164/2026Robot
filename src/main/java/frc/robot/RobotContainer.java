@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Newton;
+
 import Climber.Climb;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -11,12 +13,16 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Swerve.SwerveJoystickCmd;
 import frc.robot.Swerve.SwerveSubsystem;
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 
 public class RobotContainer {
   private Climb m_climb = new Climb();
   private final SwerveSubsystem swerve;
   private final CommandXboxController driveController;
+  private final Compressor m_compressor = new Compressor(PneumaticsModuleType.REVPH);
+
 
   public RobotContainer() {
     swerve = new SwerveSubsystem();
@@ -30,6 +36,7 @@ public class RobotContainer {
       () -> !driveController.povUp().getAsBoolean()));
 
     configureBindings();
+    m_compressor.enableDigital();
   }
 
   private void configureBindings() {
@@ -38,6 +45,8 @@ public class RobotContainer {
     driveController.b().onTrue(new InstantCommand(()-> m_climb.retract()));
   }
  
+  
+
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");
   }
