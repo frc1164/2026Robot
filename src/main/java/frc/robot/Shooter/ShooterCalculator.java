@@ -9,26 +9,16 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Swerve.SwerveSubsystem;
 
 public class ShooterCalculator extends SubsystemBase {
-  /** Creates a new ShooterCalculator. */
-  SwerveSubsystem swerve;
-  double offsetMagnitude = 0; //ShooterConstants
-  double offsetVert = 0;
-  double offsetAngleRad = 0; //ShooterConstants
-  double shooterSpeed = 0; //also ShooterConstants
-  double targetH = 0; //also ShooterConstants
-  double G = 9.81; //also ShooterConstants but might need to be negative not sure yet
-
 
   public ShooterCalculator() {}
 
   private Translation2d distVector(Pose2d target, Pose2d current){//target pose in constants
     double xDist, yDist;
 
-    xDist = target.getX() + offsetMagnitude * (Math.cos(offsetAngleRad + current.getRotation().getRadians()));
-    yDist = target.getY() + offsetMagnitude * (Math.sin(offsetAngleRad + current.getRotation().getRadians()));
+    xDist = target.getX() + ShooterConstants.SHOOTEROFFSETS.translation * (Math.cos(ShooterConstants.SHOOTEROFFSETS.theta + current.getRotation().getRadians()));
+    yDist = target.getY() + ShooterConstants.SHOOTEROFFSETS.translation * (Math.sin(ShooterConstants.SHOOTEROFFSETS.theta + current.getRotation().getRadians()));
     return new Translation2d(xDist, yDist);
   }
 
@@ -38,14 +28,14 @@ public class ShooterCalculator extends SubsystemBase {
 
   public double phiAnglefromVelo(Pose2d target, Pose2d shooterLocation){//target pose in constants
     double angle;
-    double h = (targetH - offsetVert);
-    angle = Math.atan((shooterSpeed + Math.sqrt(Math.pow(shooterSpeed,4)- (G) * (G * (getDist(distVector(target, shooterLocation)) * getDist(distVector(target, shooterLocation)) + 2 * (shooterSpeed * shooterSpeed) * h)))
-                        / (G * getDist(distVector(target, shooterLocation)))));
+    double h = (ShooterConstants.hubPose.getZ() - ShooterConstants.SHOOTEROFFSETS.vertical);
+    angle = Math.atan((ShooterConstants.exitVelocity + Math.sqrt(Math.pow(ShooterConstants.exitVelocity,4)- (ShooterConstants.gravity) * (ShooterConstants.gravity * (getDist(distVector(target, shooterLocation)) * getDist(distVector(target, shooterLocation)) + 2 * (ShooterConstants.exitVelocity * ShooterConstants.exitVelocity) * h)))
+                        / (ShooterConstants.gravity * getDist(distVector(target, shooterLocation)))));
     return angle;
   }
 
   public double calcT(double vertAngle, double dist){
-    return dist/(shooterSpeed * Math.cos(vertAngle));
+    return dist/(ShooterConstants.exitVelocity * Math.cos(vertAngle));
   }
 
   public double botRelativeThetaNoVelRad(Translation2d distanceVector){
@@ -56,6 +46,16 @@ public class ShooterCalculator extends SubsystemBase {
   public double botThetaWithVelRad(double time, Translation2d botVelo, Translation2d distance){
     return Math.atan2(distance.getY() + (botVelo.getY() * time), distance.getX() + (botVelo.getX() * time));
   }
+
+
+  public void predictTargetpose(){
+
+  }
+
+  public void iterateEstimatedShotInfo(){
+
+  }
+
 
   public record ShotInfo(double exitVel, double vertAngle, Translation3d target){
     public double getZComponent(){
