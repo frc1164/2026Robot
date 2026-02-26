@@ -12,7 +12,6 @@ import com.pathplanner.lib.config.RobotConfig;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -185,9 +184,8 @@ public class SwerveSubsystem extends SubsystemBase {
         return DriveConstants.kDriveKinematics.toChassisSpeeds(getModuleStates());
     }
 
-    public Translation2d fieldRelativeVelocity(){
-        return new Translation2d(getRobotRelativeSpeeds().vxMetersPerSecond * Math.cos(getPose().getRotation().getRadians()),
-                    getRobotRelativeSpeeds().vyMetersPerSecond * Math.cos(getPose().getRotation().getRadians()));
+    public ChassisSpeeds fieldRelativeVelocity(){
+        return ChassisSpeeds.fromRobotRelativeSpeeds(getRobotRelativeSpeeds(), getRotation2d());
     }
 
     public void driveRobotRelative(ChassisSpeeds robotRelativeSpeeds) {

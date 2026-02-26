@@ -8,6 +8,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ShooterCalculator extends SubsystemBase {
@@ -48,16 +49,34 @@ public class ShooterCalculator extends SubsystemBase {
   }
 
 
-  public void predictTargetpose(){
-
+  public Translation3d predictTargetpose(Translation3d target, double time, ChassisSpeeds velocity){
+    double xEstimate = target.getX() - velocity.vxMetersPerSecond * time;
+    double yEstimate = target.getY() - velocity.vyMetersPerSecond * time;
+    return new Translation3d(xEstimate, yEstimate, target.getZ());
   }
 
-  public void iterateEstimatedShotInfo(){
+  public ShotInfo iterateEstimatedShotInfo(ChassisSpeeds velocity, Translation3d target, Pose2d botPose, int iterations){
+    double dist = botPose.getTranslation().getDistance(target.toTranslation2d());
+    ShotInfo SHOT = ShooterConstants.shotMap.get(dist);
+    SHOT = new ShotInfo(SHOT.exitVel(), SHOT.getVertAngle(), target);
+    double time = ShooterConstants.timeMap.get(dist);
+    Translation3d predictedTarget = target;
 
+    for (int i = 0; i < iterations; i++){
+      predictedTarget = predictTargetpose(target, time, velocity);
+      dist = botPose.getTranslation().getDistance(predictedTarget.toTranslation2d());
+      SHOT = ShooterConstants.shotMap.get(dist);
+      SHOT = new ShotInfo(SHOT.exitVel(), SHOT.getVertAngle(), predictedTarget);
+      time = ShooterConstants.timeMap.get(dist);
+    }
+    return SHOT;
   }
 
 
   public record ShotInfo(double exitVel, double vertAngle, Translation3d target){
+    public ShotInfo(double exitVel, double vertAngle){
+      this(exitVel, vertAngle, ShooterConstants.hubPose);
+    }
     public double getZComponent(){
       return exitVel * Math.sin(vertAngle);
     }

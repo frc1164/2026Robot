@@ -6,6 +6,9 @@ package frc.robot.Shooter;
 
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
+import edu.wpi.first.math.interpolation.InverseInterpolator;
+import frc.robot.Shooter.ShooterCalculator.ShotInfo;
 
 
 //ALL DISTANCE MEASUREMENTS IN METERS
@@ -22,10 +25,12 @@ public class ShooterConstants{
   public static final double targetHeightFromShooter = hubPose.getZ() - SHOOTEROFFSETS.vertical;
   public static final double gravity = 9.81; //We do NOT need any more accurate than this
 
-  public static final InterpolatingDoubleTreeMap shotMap = new InterpolatingDoubleTreeMap();
+  public static final InterpolatingDoubleTreeMap timeMap = new InterpolatingDoubleTreeMap();
+  public static final InterpolatingTreeMap<Double, ShotInfo> shotMap = new InterpolatingTreeMap<>(InverseInterpolator.forDouble(), ShotInfo::interpolate);
   static{
     //example data point
-    shotMap.put(0.0, Math.PI/2);
+    shotMap.put(0.0, new ShotInfo(exitVelocity, Math.PI/2));
+    timeMap.put(0.0, Math.PI/2);
     //first is dist, second is radians
   }
 }
