@@ -34,7 +34,7 @@ public class ShootCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    ShooterSubsystem.setDriveVelocity(m_shootSpeed.get());
+    //ShooterSubsystem.setDriveVelocity(m_shootSpeed.get());
     SmartDashboard.putNumber("turnAngle", m_turnAngle.get());
     ShooterSubsystem.runPID(m_turnAngle.get() * 90);
   }
