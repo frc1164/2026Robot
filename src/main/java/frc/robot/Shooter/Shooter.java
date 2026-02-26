@@ -12,6 +12,8 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -19,11 +21,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Swerve.SwerveConstants.ModuleConstants;
 
 public class Shooter extends SubsystemBase {
-  private final TalonFX drive;
-  private final TalonFX turn;
+  private final SparkMax turnMotor;
+  // private final TalonFX drive;
+  // private final TalonFX turn;
 
-  private final TalonFXConfiguration driveConfig;
-  private final TalonFXConfiguration turnConfig;
+  // private final TalonFXConfiguration driveConfig;
+  // private final TalonFXConfiguration turnConfig;
   
   private final CANcoder canCoder1;
   private final CANcoderConfiguration canCoderConfiguration1;
@@ -36,18 +39,24 @@ public class Shooter extends SubsystemBase {
   private final double offset1;
   private final double offset2;
 
-  private final double gear0TeethCount = 70;
-  private final double gear1TeethCount = 42;
-  private final double gear2TeethCount = 72;
+  private final double gear0TeethCount = 132;
+  private final double gear1TeethCount = 17;
+  private final double gear2TeethCount = 36;
+
+  private final double n1 = 17; // g1 * n1 (mod g2) = 1
+  private final double n2 = 9; // g2 * n2 (mod g1) = 1
+  private final double lcm = 612; // lcm(g1, g2)
   
 
   /** Creates a new Shooter. */
   public Shooter() {
-    drive = new TalonFX(50);
-    turn = new TalonFX(51);
+    turnMotor = new SparkMax(50, MotorType.kBrushless);
 
-    driveConfig = new TalonFXConfiguration();
-    turnConfig = new TalonFXConfiguration();
+    // drive = new TalonFX(50);
+    // turn = new TalonFX(51);
+
+    // driveConfig = new TalonFXConfiguration();
+    // turnConfig = new TalonFXConfiguration();
 
     // Add Encoder Ids later
     canCoder1 = new CANcoder(0);
@@ -59,13 +68,13 @@ public class Shooter extends SubsystemBase {
     pid = new PIDController(0.35, 0, 0);
     pid.enableContinuousInput(-Math.PI, Math.PI);
 
-    driveConfig.MotorOutput.withNeutralMode(NeutralModeValue.Coast);
-    turnConfig.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
+    // driveConfig.MotorOutput.withNeutralMode(NeutralModeValue.Coast);
+    // turnConfig.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
 
-    driveConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-    turnConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
-    turnConfig.Feedback.FeedbackRemoteSensorID = 52;
-    turnConfig.Feedback.RotorToSensorRatio = 18.75;
+    // driveConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+    // turnConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+    // turnConfig.Feedback.FeedbackRemoteSensorID = 52;
+    // turnConfig.Feedback.RotorToSensorRatio = 18.75;
 
     canCoderConfiguration1.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
     canCoderConfiguration1.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
@@ -75,8 +84,8 @@ public class Shooter extends SubsystemBase {
     canCoderConfiguration2.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
     canCoder2.getConfigurator().apply(canCoderConfiguration2);
 
-    turn.getConfigurator().apply(turnConfig);
-    drive.getConfigurator().apply(driveConfig);
+    // turn.getConfigurator().apply(turnConfig);
+    // drive.getConfigurator().apply(driveConfig);
 
     offset1 = .156 * 2 * Math.PI;
     offset2 = .156 * 2 * Math.PI;
@@ -89,34 +98,42 @@ public class Shooter extends SubsystemBase {
     final double t1 = d1 * gear1TeethCount / 360;
     final double t2 = d2 * gear2TeethCount / 360;
 
-    final double bezout = (t1 * 12 * 3 + t2 * 7 * -5) % 504;
+    final double bezout = (t1 * gear2TeethCount * n2 + t2 * gear1TeethCount * n1) % lcm;
 
     final double totalRot1 = Math.floor(bezout / gear1TeethCount);
 
     final double rot0 = (totalRot1 + d1 / 360) * gear1TeethCount / gear0TeethCount * 360;
 
-    return rot0 % 360;
+    return rot0;
   }
 
   public double getTurningPosition() {
     double gear1Rotation = canCoder1.getPosition().getValueAsDouble() * 360 - offset1;
     double gear2Rotation = canCoder2.getPosition().getValueAsDouble() * 360 - offset2;
 
-    return getGear3Rotation(gear1Rotation, gear2Rotation) * Math.PI / 180;
+    return (getGear3Rotation(gear1Rotation, gear2Rotation) % 360) * Math.PI / 180;
   }
 
-  public double getDriveVelocity() {
-    return drive.getVelocity().getValueAsDouble() * ModuleConstants.kDriveEncoderRPM2MeterPerSec;
-  }
+  // public double getDriveVelocity() {
+  //   return drive.getVelocity().getValueAsDouble() * ModuleConstants.kDriveEncoderRPM2MeterPerSec;
+  // }
 
-  public void setDriveVelocity(double speed) {
-    drive.set(speed);
-  }
+  // public void setDriveVelocity(double speed) {
+  //   drive.set(speed);
+  // }
 
   public void runPID(double angle){
+    double gear1Rotation = canCoder1.getPosition().getValueAsDouble() * 360 - offset1;
+    double gear2Rotation = canCoder2.getPosition().getValueAsDouble() * 360 - offset2;
+
+    if (Math.abs(getGear3Rotation(gear1Rotation, gear2Rotation)) > 4 * 360) {
+      // Stop when near discontinuity point
+      return;
+    }
+
     double pidGear0Speed = pid.calculate(getTurningPosition(), angle * Math.PI / 180);
     double pidMotorSpeed = pidGear0Speed * gear0TeethCount / gear1TeethCount;
-    turn.set(pidMotorSpeed);
+    turnMotor.set(pidMotorSpeed);
   }
 
   @Override
