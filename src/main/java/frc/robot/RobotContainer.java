@@ -14,35 +14,37 @@ import frc.robot.Climber.Climb;
 import frc.robot.Swerve.SwerveJoystickCmd;
 import frc.robot.Swerve.SwerveSubsystem;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 
 public class RobotContainer {
   private Climb m_climb = new Climb();
-  private final SwerveSubsystem swerve;
+ // private final SwerveSubsystem swerve;
   private final CommandXboxController driveController;
-  private final Compressor m_compressor = new Compressor(PneumaticsModuleType.REVPH);
+  private static final Compressor m_compressor = new Compressor(5, PneumaticsModuleType.CTREPCM);
 
 
   public RobotContainer() {
-    swerve = new SwerveSubsystem();
+   // swerve = new SwerveSubsystem();
     driveController = new CommandXboxController(0);
 
-    swerve.setDefaultCommand(new SwerveJoystickCmd(
-      swerve,
-      () -> driveController.getLeftY(),
-      () -> driveController.getLeftX(),
-      () -> -driveController.getRightX(),
-      () -> !driveController.povUp().getAsBoolean()));
+    // swerve.setDefaultCommand(new SwerveJoystickCmd(
+    //   swerve,
+    //   () -> driveController.getLeftY(),
+    //   () -> driveController.getLeftX(),
+    //   () -> -driveController.getRightX(),
+    //   () -> !driveController.povUp().getAsBoolean()));
 
     configureBindings();
     m_compressor.enableDigital();
   }
 
   private void configureBindings() {
-    driveController.povDown().onTrue(new InstantCommand(() -> swerve.zeroHeading()));
+    //driveController.povDown().onTrue(new InstantCommand(() -> swerve.zeroHeading()));
     driveController.x().onTrue(new InstantCommand(()-> m_climb.extend()));
     driveController.b().onTrue(new InstantCommand(()-> m_climb.retract()));
+    driveController.y().onTrue(new InstantCommand(()-> m_climb.disable()));
   }
  
   
@@ -50,4 +52,12 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");
   }
+
+
+  public static double getPressure(){
+    return m_compressor.getPressure();
+
+
+  }
+
 }
