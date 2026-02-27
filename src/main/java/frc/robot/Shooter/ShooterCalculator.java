@@ -9,25 +9,30 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ShooterCalculator extends SubsystemBase {
 
   public ShooterCalculator() {}
 
-  private Translation2d distVector(Pose2d target, Pose2d current){//target pose in constants
+  public static Translation2d distVector(Pose2d target, Pose2d current){//target pose in constants
     double xDist, yDist;
-
-    xDist = target.getX() + ShooterConstants.SHOOTEROFFSETS.translation * (Math.cos(ShooterConstants.SHOOTEROFFSETS.theta + current.getRotation().getRadians()));
-    yDist = target.getY() + ShooterConstants.SHOOTEROFFSETS.translation * (Math.sin(ShooterConstants.SHOOTEROFFSETS.theta + current.getRotation().getRadians()));
+    double botDiffX = target.getX() - current.getX();
+    double botDiffY = target.getY() - current.getY();
+    SmartDashboard.putNumber("currentX", current.getX());
+    xDist = botDiffX + ShooterConstants.SHOOTEROFFSETS.translation * (Math.cos(ShooterConstants.SHOOTEROFFSETS.theta + current.getRotation().getRadians()));
+    SmartDashboard.putNumber("xDist", xDist);
+    yDist = botDiffY + ShooterConstants.SHOOTEROFFSETS.translation * (Math.sin(ShooterConstants.SHOOTEROFFSETS.theta + current.getRotation().getRadians()));
+    SmartDashboard.putNumber("yDist", yDist);
     return new Translation2d(xDist, yDist);
   }
 
-  private double getDist(Translation2d distVector){
+  private static double getDist(Translation2d distVector){
     return Math.sqrt(Math.pow(distVector.getX(), 2) + Math.pow(distVector.getY(), 2));
   }
 
-  public double phiAnglefromVelo(Pose2d target, Pose2d shooterLocation){//target pose in constants
+  public static double phiAnglefromVelo(Pose2d target, Pose2d shooterLocation){//target pose in constants
     double angle;
     double h = (ShooterConstants.hubPose.getZ() - ShooterConstants.SHOOTEROFFSETS.vertical);
     angle = Math.atan((ShooterConstants.exitVelocity + Math.sqrt(Math.pow(ShooterConstants.exitVelocity,4)- (ShooterConstants.gravity) * (ShooterConstants.gravity * (getDist(distVector(target, shooterLocation)) * getDist(distVector(target, shooterLocation)) + 2 * (ShooterConstants.exitVelocity * ShooterConstants.exitVelocity) * h)))
@@ -35,16 +40,16 @@ public class ShooterCalculator extends SubsystemBase {
     return angle;
   }
 
-  public double calcT(double vertAngle, double dist){
+  public static double calcT(double vertAngle, double dist){
     return dist/(ShooterConstants.exitVelocity * Math.cos(vertAngle));
   }
 
-  public double botRelativeThetaNoVelRad(Translation2d distanceVector){
+  public static double botRelativeThetaNoVelRad(Translation2d distanceVector){
     return distanceVector.getAngle().getRadians(); 
   }
 
 
-  public double botThetaWithVelRad(double time, Translation2d botVelo, Translation2d distance){
+  public static double botThetaWithVelRad(double time, Translation2d botVelo, Translation2d distance){
     return Math.atan2(distance.getY() + (botVelo.getY() * time), distance.getX() + (botVelo.getX() * time));
   }
 

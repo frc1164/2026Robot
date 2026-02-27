@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Shooter.ShootCommand;
 import frc.robot.Shooter.Shooter;
+import frc.robot.Shooter.ShooterCalculator;
+import frc.robot.Shooter.ShooterConstants;
 import frc.robot.Swerve.SwerveJoystickCmd;
 import frc.robot.Swerve.SwerveSubsystem;
 
@@ -35,8 +37,9 @@ public class RobotContainer {
 
     shooter.setDefaultCommand(new ShootCommand(
       () -> driveController.getLeftTriggerAxis(),
-      () -> driveController.getRightTriggerAxis(),
-       shooter));
+      () -> driveController.getLeftTriggerAxis(),
+      shooter, 
+      swerve));
        
     configureBindings();
   }
