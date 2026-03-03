@@ -15,17 +15,11 @@ import frc.robot.Swerve.SwerveSubsystem;
 public class ShootCommand extends Command {
   private final Shooter ShooterSubsystem;
 
-  // private final Supplier<Double> m_shootSpeed;
-  private final Supplier<Double>  m_turnAngle;
 
   private final SwerveSubsystem Swerve;
   /** Creates a new ShootCommand. */
-  public ShootCommand(Supplier<Double> shootSpeed, Supplier<Double> turnAngle, Shooter shooter, SwerveSubsystem swerve) {
+  public ShootCommand(Pose2d target, Shooter shooter, SwerveSubsystem swerve) {
     ShooterSubsystem = shooter;
-
-    // m_shootSpeed = shootSpeed;
-    m_turnAngle = turnAngle;
-
     Swerve = swerve;
 
     addRequirements(ShooterSubsystem);

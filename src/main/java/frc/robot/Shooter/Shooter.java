@@ -34,10 +34,14 @@ public class Shooter extends SubsystemBase {
   // private final CANcoder canCoder2;
   // private final CANcoderConfiguration canCoderConfiguration2;
 
+  private final CANcoder verticalEncoder;
+  private final CANcoderConfiguration verticalEncoderConfig;
+
   private final PIDController pid;
 
-  private final double offset1;
+  // private final double offset1;
   // private final double offset2;
+
 
   private final double gear0TeethCount = 132;
   private final double gear1TeethCount = 17;
@@ -65,6 +69,9 @@ public class Shooter extends SubsystemBase {
     // canCoder2 = new CANcoder(0);
     // canCoderConfiguration2 = new CANcoderConfiguration();
 
+    verticalEncoder = new CANcoder(55);
+    verticalEncoderConfig = new CANcoderConfiguration();
+
     pid = new PIDController(0.35 * 2 , 0, 0.001);
 
     // driveConfig.MotorOutput.withNeutralMode(NeutralModeValue.Coast);
@@ -80,6 +87,8 @@ public class Shooter extends SubsystemBase {
     canCoderConfiguration1.MagnetSensor.MagnetOffset = -0.153320+0.05542;
     canCoder1.getConfigurator().apply(canCoderConfiguration1);
 
+    
+
     // canCoderConfiguration2.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
     // canCoderConfiguration2.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
     // canCoder2.getConfigurator().apply(canCoderConfiguration2);
@@ -87,7 +96,7 @@ public class Shooter extends SubsystemBase {
     // turn.getConfigurator().apply(turnConfig);
     // drive.getConfigurator().apply(driveConfig);
 
-    offset1 = .156 * 2 * Math.PI;
+    // offset1 = .156 * 2 * Math.PI;
     // offset2 = .156 * 2 * Math.PI;
   }
 
@@ -108,29 +117,21 @@ public class Shooter extends SubsystemBase {
   }
 
   public double getTurningPosition() {
-    double gear1Rotation = canCoder1.getPosition().getValueAsDouble() * 360 - offset1;
-    // double gear2Rotation = canCoder2.getPosition().getValueAsDouble() * 360 - offset2;
+    // double gear1Rotation = canCoder1.getPosition().getValueAsDouble() * 360;
+    // double gear2Rotation = canCoder2.getPosition().getValueAsDouble() * 360;
 
     // return (getGear3Rotation(gear1Rotation, gear2Rotation) % 360) * Math.PI / 180;
     return canCoder1.getPosition().getValueAsDouble() * 2 * Math.PI;
   }
 
-  // public double getDriveVelocity() {
-  //   return drive.getVelocity().getValueAsDouble() * ModuleConstants.kDriveEncoderRPM2MeterPerSec;
-  // }
-
-  // public void setDriveVelocity(double speed) {
-  //   drive.set(speed);
-  // }
-
   public void runPID(double angle){//feed this radians
-    double gear1Rotation = canCoder1.getPosition().getValueAsDouble() * 360 - offset1;
-    // double gear2Rotation = canCoder2.getPosition().getValueAsDouble() * 360 - offset2;
+    // double gear1Rotation = canCoder1.getPosition().getValueAsDouble() * 360;
+    // double gear2Rotation = canCoder2.getPosition().getValueAsDouble() * 360;
 
     //PID will not stop running, only recieves updated angles
     
 
-    double pidGear0Speed = pid.calculate(getTurningPosition(), angle * Math.PI / 180);
+    // double pidGear0Speed = pid.calculate(getTurningPosition(), angle * Math.PI / 180);
     // double pidMotorSpeed = pidGear0Speed * gear0TeethCount / gear1TeethCount;
     double pidMotorSpeed = pid.calculate(getTurningPosition(), angle);
     turn.set(pidMotorSpeed);
