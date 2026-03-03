@@ -65,8 +65,7 @@ public class Shooter extends SubsystemBase {
     // canCoder2 = new CANcoder(0);
     // canCoderConfiguration2 = new CANcoderConfiguration();
 
-    pid = new PIDController(0.35 * 2, 0, 0);
-    pid.enableContinuousInput(-Math.PI, Math.PI);
+    pid = new PIDController(0.35 * 2 , 0, 0.001);
 
     // driveConfig.MotorOutput.withNeutralMode(NeutralModeValue.Coast);
     // turnConfig.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
@@ -76,9 +75,9 @@ public class Shooter extends SubsystemBase {
     // turnConfig.Feedback.FeedbackRemoteSensorID = 52;
     // turnConfig.Feedback.RotorToSensorRatio = 18.75;
 
-    canCoderConfiguration1.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
+    // canCoderConfiguration1.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
     canCoderConfiguration1.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
-    canCoderConfiguration1.MagnetSensor.MagnetOffset = -.1555 * 2 * Math.PI;
+    canCoderConfiguration1.MagnetSensor.MagnetOffset = -0.153320+0.05542;
     canCoder1.getConfigurator().apply(canCoderConfiguration1);
 
     // canCoderConfiguration2.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;

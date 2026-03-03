@@ -21,9 +21,9 @@ public class ShooterCalculator extends SubsystemBase {
     double botDiffX = target.getX() - current.getX();
     double botDiffY = target.getY() - current.getY();
     SmartDashboard.putNumber("currentX", current.getX());
-    xDist = botDiffX + ShooterConstants.SHOOTEROFFSETS.translation * (Math.cos(ShooterConstants.SHOOTEROFFSETS.theta + current.getRotation().getRadians()));
+    xDist = botDiffX - ShooterConstants.SHOOTEROFFSETS.translation * (Math.cos(ShooterConstants.SHOOTEROFFSETS.theta + current.getRotation().getRadians()));
     SmartDashboard.putNumber("xDist", xDist);
-    yDist = botDiffY + ShooterConstants.SHOOTEROFFSETS.translation * (Math.sin(ShooterConstants.SHOOTEROFFSETS.theta + current.getRotation().getRadians()));
+    yDist = botDiffY - ShooterConstants.SHOOTEROFFSETS.translation * (Math.sin(ShooterConstants.SHOOTEROFFSETS.theta + current.getRotation().getRadians()));
     SmartDashboard.putNumber("yDist", yDist);
     return new Translation2d(xDist, yDist);
   }
@@ -44,8 +44,8 @@ public class ShooterCalculator extends SubsystemBase {
     return dist/(ShooterConstants.exitVelocity * Math.cos(vertAngle));
   }
 
-  public static double botRelativeThetaNoVelRad(Translation2d distanceVector){
-    return distanceVector.getAngle().getRadians(); 
+  public static double botRelativeThetaNoVelRad(Translation2d distanceVector, Pose2d current){
+    return Math.atan2(distanceVector.getY(), distanceVector.getX()) - current.getRotation().getRadians() + Math.PI/2;
   }
 
 

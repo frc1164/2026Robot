@@ -17,7 +17,7 @@ import frc.robot.Shooter.ShooterCalculator.ShotInfo;
 public class ShooterConstants{
   public static final class SHOOTEROFFSETS{
     public static final double vertical = .5;
-    public static final double translation = 1;
+    public static final double translation = 0;
     public static final double theta = 0;
   }
 
