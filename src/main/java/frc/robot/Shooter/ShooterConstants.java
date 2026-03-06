@@ -21,6 +21,23 @@ public class ShooterConstants{
     public static final double theta = 0;
   }
 
+  public static final class XVALS{
+    public static final int BATRENCH = 4000;
+    public static final int BMTRENCH = 5400;
+    public static final int RMTRENCH = 11300;
+    public static final int RATRENCH = 12500;
+    public static final int REDWALL = 16500;
+  }
+
+  public static final class TAGRETS{
+    public static final Translation3d BLUEHUB = new Translation3d(4.63,4.0,1.68);
+    public static final Translation3d BLUEPASSUP = new Translation3d(2.5, 6, 0);
+    public static final Translation3d BLUEPASSDOWN = new Translation3d(2.5, 2, 0);
+    public static final Translation3d REDHUB = new Translation3d(11.919, 4.0, 1.68);
+    public static final Translation3d REDPASSUP = new Translation3d(14.5, 6, 0);
+    public static final Translation3d REDPASSDOWN = new Translation3d(14.5, 2, 0);
+  }
+
   public static final double exitVelocity = 0; 
   public static final Translation3d hubPose = new Translation3d(4.63,4.0,1.68); 
   public static final Pose2d blueHub2d = new Pose2d(4.63, 4.0, null);

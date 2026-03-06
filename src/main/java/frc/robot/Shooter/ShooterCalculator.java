@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -59,6 +60,55 @@ public class ShooterCalculator extends SubsystemBase {
     double yEstimate = target.getY() - velocity.vyMetersPerSecond * time;
     return new Translation3d(xEstimate, yEstimate, target.getZ());
   }
+
+
+  //Auromatically sets the shooter's base target. Need to add a constraint system for if alliance.get no worky.
+  public Translation3d target(Pose2d botPose){
+    Translation3d TARGET = new Translation3d();
+    double x = botPose.getX();
+    if (DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue)){
+      if (x >= 0 && x < ShooterConstants.XVALS.BATRENCH){
+        TARGET = ShooterConstants.TAGRETS.BLUEHUB;
+      }
+      else if (x >= ShooterConstants.XVALS.BATRENCH && x <= ShooterConstants.XVALS.BMTRENCH || x >= ShooterConstants.XVALS.RMTRENCH && x <= ShooterConstants.XVALS.RATRENCH){
+        TARGET = new Translation3d(botPose.getX(), botPose.getY(), 10);
+      }
+      else if (x > ShooterConstants.XVALS.BMTRENCH && x < ShooterConstants.XVALS.RMTRENCH){
+        if (botPose.getY() >= 4.0){
+          TARGET = ShooterConstants.TAGRETS.BLUEPASSUP;
+        }
+        else if (botPose.getY() < 4.0){
+          TARGET = ShooterConstants.TAGRETS.BLUEPASSDOWN;
+        }
+      }
+      else {
+        TARGET = new Translation3d(botPose.getX(), botPose.getY(), 10);
+      }
+    } else if (DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue)){
+       if (x > ShooterConstants.XVALS.RATRENCH && x < ShooterConstants.XVALS.REDWALL){
+        TARGET = new Translation3d(botPose.getX(), botPose.getY(), 10);
+      }
+      else if (x >= ShooterConstants.XVALS.BATRENCH && x <= ShooterConstants.XVALS.BMTRENCH || x >= ShooterConstants.XVALS.RMTRENCH && x <= ShooterConstants.XVALS.RATRENCH){
+        TARGET = new Translation3d(botPose.getX(), botPose.getY(), 10);
+      }
+      else if (x > ShooterConstants.XVALS.BMTRENCH && x < ShooterConstants.XVALS.RMTRENCH){
+        if (botPose.getY() >= 4.0){
+          TARGET = ShooterConstants.TAGRETS.REDPASSUP;
+        }
+        else if (botPose.getY() < 4.0){
+          TARGET = ShooterConstants.TAGRETS.REDPASSDOWN;
+        }
+      }
+      else {
+        TARGET = new Translation3d(botPose.getX(), botPose.getY(), 10);
+      }
+    }
+    else{
+      TARGET = new Translation3d(botPose.getX(), botPose.getY(), 10);
+    }
+    return TARGET;
+  }
+
 
   public ShotInfo iterateEstimatedShotInfo(ChassisSpeeds velocity, Translation3d target, Pose2d botPose, int iterations){
     double dist = botPose.getTranslation().getDistance(target.toTranslation2d());
