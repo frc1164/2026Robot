@@ -5,6 +5,10 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import com.pathplanner.lib.auto.AutoBuilder;
+
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -23,6 +27,8 @@ public class RobotContainer {
 
   private final CommandXboxController driveController;
 
+  private final SendableChooser<Command> autoChooser;
+
   public RobotContainer() {
     swerve = new SwerveSubsystem();
     shooter = new Shooter();
@@ -35,9 +41,13 @@ public class RobotContainer {
       () -> driveController.getLeftX(),
       () -> -driveController.getRightX(),
       () -> !driveController.povUp().getAsBoolean()));
-
+    
     shooter.setDefaultCommand(new ShootCommand(new Pose2d(), shooter, swerve));
-       
+
+    autoChooser = AutoBuilder.buildAutoChooser();
+
+    SmartDashboard.putData("Auto Chooser", autoChooser);
+
     configureBindings();
   }
 
@@ -47,6 +57,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return Commands.print("No autonomous command configured");
+    return autoChooser.getSelected();
   }
 }
