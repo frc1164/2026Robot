@@ -4,22 +4,23 @@
 
 package frc.robot.Shooter;
 
+import java.util.function.Supplier;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Swerve.SwerveSubsystem;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class ShootCommand extends Command {
   private final Shooter ShooterSubsystem;
 
-  private final double m_shootSpeed;
-  private final double m_turnAngle;
 
+  private final SwerveSubsystem Swerve;
   /** Creates a new ShootCommand. */
-  public ShootCommand(double shootSpeed, double turnAngle, Shooter shooter) {
+  public ShootCommand(Pose2d target, Shooter shooter, SwerveSubsystem swerve) {
     ShooterSubsystem = shooter;
-
-    m_shootSpeed = shootSpeed;
-    m_turnAngle = turnAngle;
+    Swerve = swerve;
 
     addRequirements(ShooterSubsystem);
     // Use addRequirements() here to declare subsystem dependencies.
@@ -32,9 +33,11 @@ public class ShootCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    //subsystem.setPID(turnAngle*90)
-    //ShooterSubsystem.setDriveVelocity(m_shootSpeed);
-    ShooterSubsystem.runPID(m_turnAngle * 180);
+    //ShooterSubsystem.setDriveVelocity(m_shootSpeed.get());
+    // ShooterSubsystem.runPID(m_turnAngle.get() * Math.PI / 2);
+    ShooterSubsystem.runPID(ShooterCalculator.botRelativeThetaNoVelRad(ShooterCalculator.distVector((ShooterConstants.blueHub2d), Swerve.getPose()), Swerve.getPose()));
+    // ShooterSubsystem.runPID(-Swerve.getPose().getRotation().getRadians() + Math.PI/2);
+    SmartDashboard.putNumber("turnAngle", ShooterCalculator.botRelativeThetaNoVelRad(ShooterCalculator.distVector(ShooterConstants.blueHub2d, Swerve.getPose()), Swerve.getPose()));
   }
 
   // Called once the command ends or is interrupted.
@@ -44,7 +47,6 @@ public class ShootCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    SmartDashboard.putNumber("turnAngle", m_shootSpeed);
     return false;
   }
 }

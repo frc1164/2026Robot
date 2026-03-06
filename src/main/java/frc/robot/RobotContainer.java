@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -14,6 +15,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Shooter.ShootCommand;
 import frc.robot.Shooter.Shooter;
+import frc.robot.Shooter.ShooterCalculator;
+import frc.robot.Shooter.ShooterConstants;
 import frc.robot.Swerve.SwerveJoystickCmd;
 import frc.robot.Swerve.SwerveSubsystem;
 
@@ -23,7 +26,6 @@ public class RobotContainer {
   private final Shooter shooter;
 
   private final CommandXboxController driveController;
-  private final CommandXboxController shooterController;
 
   private final SendableChooser<Command> autoChooser;
 
@@ -32,7 +34,6 @@ public class RobotContainer {
     shooter = new Shooter();
 
     driveController = new CommandXboxController(0);
-    shooterController = new CommandXboxController(1);
 
     swerve.setDefaultCommand(new SwerveJoystickCmd(
       swerve,
@@ -40,8 +41,8 @@ public class RobotContainer {
       () -> driveController.getLeftX(),
       () -> -driveController.getRightX(),
       () -> !driveController.povUp().getAsBoolean()));
-
-    shooter.setDefaultCommand(new ShootCommand(shooterController.getLeftY(), shooterController.getRightY(), shooter));
+    
+    shooter.setDefaultCommand(new ShootCommand(new Pose2d(), shooter, swerve));
 
     autoChooser = AutoBuilder.buildAutoChooser();
 
