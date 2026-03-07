@@ -31,11 +31,8 @@ public class ShootCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    //ShooterSubsystem.setDriveVelocity(m_shootSpeed.get());
-    // ShooterSubsystem.runPID(m_turnAngle.get() * Math.PI / 2);
-    ShooterSubsystem.runPID(ShooterCalculator.botRelativeThetaNoVelRad(ShooterCalculator.distVector((ShooterConstants.blueHub2d), Swerve.getPose()), Swerve.getPose()));
-    // ShooterSubsystem.runPID(-Swerve.getPose().getRotation().getRadians() + Math.PI/2);
-    SmartDashboard.putNumber("turnAngle", ShooterCalculator.botRelativeThetaNoVelRad(ShooterCalculator.distVector(ShooterConstants.blueHub2d, Swerve.getPose()), Swerve.getPose()));
+    ShooterSubsystem.runPID(ShooterCalculator.getThetaAngle(ShooterCalculator.distVector((ShooterConstants.blueHub2d), Swerve.getPose()), Swerve.getPose()));
+    SmartDashboard.putNumber("turnAngle", ShooterCalculator.getThetaAngle(ShooterCalculator.distVector(ShooterConstants.blueHub2d, Swerve.getPose()), Swerve.getPose()));
   }
 
   // Called once the command ends or is interrupted.

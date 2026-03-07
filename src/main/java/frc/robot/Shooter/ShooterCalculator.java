@@ -4,20 +4,22 @@
 
 package frc.robot.Shooter;
 
+import java.util.Optional;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class ShooterCalculator extends SubsystemBase {
-
+public class ShooterCalculator{
   public ShooterCalculator() {}
 
-  public static Translation2d distVector(Pose2d target, Pose2d current){//target pose in constants
+  //Dist between shooter and target, this might be more complicated than I thought??
+  public static Translation2d distVector(Pose2d target, Pose2d current){
     double xDist, yDist;
     double botDiffX = target.getX() - current.getX();
     double botDiffY = target.getY() - current.getY();
@@ -29,41 +31,26 @@ public class ShooterCalculator extends SubsystemBase {
     return new Translation2d(xDist, yDist);
   }
 
-  private static double getDist(Translation2d distVector){
+  //Just pythagoran applied to whatever given vector
+  private double getDist(Translation2d distVector){
     return Math.sqrt(Math.pow(distVector.getX(), 2) + Math.pow(distVector.getY(), 2));
   }
 
-  public static double phiAnglefromVelo(Pose2d target, Pose2d shooterLocation){//target pose in constants
-    double angle;
-    double h = (ShooterConstants.hubPose.getZ() - ShooterConstants.SHOOTEROFFSETS.vertical);
-    angle = Math.atan((ShooterConstants.exitVelocity + Math.sqrt(Math.pow(ShooterConstants.exitVelocity,4)- (ShooterConstants.gravity) * (ShooterConstants.gravity * (getDist(distVector(target, shooterLocation)) * getDist(distVector(target, shooterLocation)) + 2 * (ShooterConstants.exitVelocity * ShooterConstants.exitVelocity) * h)))
-                        / (ShooterConstants.gravity * getDist(distVector(target, shooterLocation)))));
-    return angle;
-  }
-
-  public static double calcT(double vertAngle, double dist){
-    return dist/(ShooterConstants.exitVelocity * Math.cos(vertAngle));
-  }
-
-  public static double botRelativeThetaNoVelRad(Translation2d distanceVector, Pose2d current){
+  //Locks the shooter horizontal angle on a given target
+  public static double getThetaAngle(Translation2d distanceVector, Pose2d current){
     return Math.atan2(distanceVector.getY(), distanceVector.getX()) - current.getRotation().getRadians() + Math.PI/2;
   }
 
-
-  public static double botThetaWithVelRad(double time, Translation2d botVelo, Translation2d distance){
-    return Math.atan2(distance.getY() + (botVelo.getY() * time), distance.getX() + (botVelo.getX() * time));
-  }
-
-
-  public Translation3d predictTargetpose(Translation3d target, double time, ChassisSpeeds velocity){
+  //Creates a target that is offset by current velocity and estimated flight time
+  private Translation3d predictTargetpose(Translation3d target, double time, ChassisSpeeds velocity){
     double xEstimate = target.getX() - velocity.vxMetersPerSecond * time;
     double yEstimate = target.getY() - velocity.vyMetersPerSecond * time;
     return new Translation3d(xEstimate, yEstimate, target.getZ());
   }
 
 
-  //Auromatically sets the shooter's base target. Need to add a constraint system for if alliance.get no worky.
-  public Translation3d target(Pose2d botPose){
+  //Automatically sets the shooter's baseline target. Need to add a constraint system for if alliance.get no worky.
+  public static Translation3d target(Pose2d botPose){
     Translation3d TARGET = new Translation3d();
     double x = botPose.getX();
     if (DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue)){
@@ -84,7 +71,7 @@ public class ShooterCalculator extends SubsystemBase {
       else {
         TARGET = new Translation3d(botPose.getX(), botPose.getY(), 10);
       }
-    } else if (DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue)){
+    } else if (DriverStation.getAlliance().get().equals(DriverStation.Alliance.Red)){
        if (x > ShooterConstants.XVALS.RATRENCH && x < ShooterConstants.XVALS.REDWALL){
         TARGET = new Translation3d(botPose.getX(), botPose.getY(), 10);
       }
@@ -109,17 +96,27 @@ public class ShooterCalculator extends SubsystemBase {
     return TARGET;
   }
 
+  public ShotInfo getShot(ChassisSpeeds velocity, Translation3d target, Pose2d botPose, int iterations){
+    //Flat ground dist to initial target
+    Pose2d targetPose = new Pose2d(target.getX(), target.getY(), null);
+    double dist = getDist(distVector(targetPose, botPose));
 
-  public ShotInfo iterateEstimatedShotInfo(ChassisSpeeds velocity, Translation3d target, Pose2d botPose, int iterations){
-    double dist = botPose.getTranslation().getDistance(target.toTranslation2d());
+    //Determine intital azimuth and estimate time of flight
     ShotInfo SHOT = ShooterConstants.shotMap.get(dist);
     SHOT = new ShotInfo(SHOT.exitVel(), SHOT.getVertAngle(), target);
     double time = ShooterConstants.timeMap.get(dist);
+
+    //Set predicted target to initial target
     Translation3d predictedTarget = target;
 
     for (int i = 0; i < iterations; i++){
+      //Predict where we have to aim based on estimated flight time and ball velocity
       predictedTarget = predictTargetpose(target, time, velocity);
+
+      //Update distance
       dist = botPose.getTranslation().getDistance(predictedTarget.toTranslation2d());
+
+      //Recalculate azimuth and time of flight with new distance
       SHOT = ShooterConstants.shotMap.get(dist);
       SHOT = new ShotInfo(SHOT.exitVel(), SHOT.getVertAngle(), predictedTarget);
       time = ShooterConstants.timeMap.get(dist);
@@ -161,8 +158,62 @@ public class ShooterCalculator extends SubsystemBase {
   }
 
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
+  public static boolean isHubActive() {
+    Optional<Alliance> alliance = DriverStation.getAlliance();
+    // If we have no alliance, we cannot be enabled, therefore no hub.
+    if (alliance.isEmpty()) {
+      return false;
+    }
+    // Hub is always enabled in autonomous.
+    if (DriverStation.isAutonomousEnabled()) {
+      return true;
+    }
+    // At this point, if we're not teleop enabled, there is no hub.
+    if (!DriverStation.isTeleopEnabled()) {
+      return false;
+    }
+
+    // We're teleop enabled, compute.
+    double matchTime = DriverStation.getMatchTime();
+    String gameData = DriverStation.getGameSpecificMessage();
+    // If we have no game data, we cannot compute, assume hub is active, as its likely early in teleop.
+    if (gameData.isEmpty()) {
+      return true;
+    }
+    boolean redInactiveFirst = false;
+    switch (gameData.charAt(0)) {
+      case 'R' -> redInactiveFirst = true;
+      case 'B' -> redInactiveFirst = false;
+      default -> {
+        // If we have invalid game data, assume hub is active.
+        return true;
+      }
+    }
+
+    // Shift was is active for blue if red won auto, or red if blue won auto.
+    boolean shift1Active = switch (alliance.get()) {
+      case Red -> !redInactiveFirst;
+      case Blue -> redInactiveFirst;
+    };
+
+    if (matchTime > 130) {
+      // Transition shift, hub is active.
+      return true;
+    } else if (matchTime > 105) {
+      // Shift 1
+      return shift1Active;
+    } else if (matchTime > 80) {
+      // Shift 2
+      return !shift1Active;
+    } else if (matchTime > 55) {
+      // Shift 3
+      return shift1Active;
+    } else if (matchTime > 30) {
+      // Shift 4
+      return !shift1Active;
+    } else {
+      // End game, hub always active.
+      return true;
+    }
   }
 }
