@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -13,6 +12,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Shooter.AimCommand;
+import frc.robot.Shooter.AutoShoot;
+import frc.robot.Shooter.Feeder;
+import frc.robot.Shooter.ManualShoot;
 import frc.robot.Shooter.Shooter;
 import frc.robot.Swerve.SwerveJoystickCmd;
 import frc.robot.Swerve.SwerveSubsystem;
@@ -21,16 +23,19 @@ import frc.robot.Swerve.SwerveSubsystem;
 public class RobotContainer {
   private final SwerveSubsystem swerve;
   private final Shooter shooter;
+  private final Feeder feeder;
 
-  private final CommandXboxController driveController;
+  private final CommandXboxController driveController, operatorController;
 
   private final SendableChooser<Command> autoChooser;
 
   public RobotContainer() {
     swerve = new SwerveSubsystem();
     shooter = new Shooter();
+    feeder = new Feeder();
 
     driveController = new CommandXboxController(0);
+    operatorController = new CommandXboxController(1);
 
     swerve.setDefaultCommand(new SwerveJoystickCmd(
       swerve,
@@ -41,6 +46,10 @@ public class RobotContainer {
     
     shooter.setDefaultCommand(new AimCommand(shooter, swerve));
 
+    //this SHOULD be overwritten by auton during auton period I hope, if not then this gets problematic
+    feeder.setDefaultCommand(new AutoShoot(feeder, swerve));
+    
+
     autoChooser = AutoBuilder.buildAutoChooser();
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
@@ -50,7 +59,7 @@ public class RobotContainer {
 
   private void configureBindings() {
     driveController.povDown().onTrue(new InstantCommand(() -> swerve.zeroHeading()));
-
+    operatorController.povDown().toggleOnTrue(new ManualShoot(feeder, operatorController));
   }
 
   public Command getAutonomousCommand() {

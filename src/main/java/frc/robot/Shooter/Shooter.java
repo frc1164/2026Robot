@@ -62,16 +62,13 @@ public class Shooter extends SubsystemBase {
     canCoder2 = new CANcoder(53);
     canCoderConfiguration2 = new CANcoderConfiguration();
 
+    //Vert needs soft limits, this configurator can apply them, will have them once we know gear ratio
     vertEncoder = new CANcoder(55);
     vertEncoderConfig = new CANcoderConfiguration();
-
-    thetaPID = new PIDController(0.35 * 2 , 0, 0.001);
-    vertPID = new PIDController(1, 0, 0);//TUNE TUNE TUNE TUNE TUNE before it runs.
-
-    //Vert needs soft limits, this configurator can apply them, will have them once we know gear ratio
     vertConfig.inverted(false).idleMode(IdleMode.kBrake);
     vert.configure(vertConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
+    turnConfig.inverted(false);
     turnConfig.idleMode(IdleMode.kBrake);
     // turnConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
     // turnConfig.Feedback.FeedbackRemoteSensorID = 52;
@@ -89,6 +86,9 @@ public class Shooter extends SubsystemBase {
     vertEncoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
     vertEncoderConfig.MagnetSensor.MagnetOffset = 0;
     vertEncoder.getConfigurator().apply(vertEncoderConfig);
+    
+    thetaPID = new PIDController(0.35 * 2 , 0, 0.001);
+    vertPID = new PIDController(1, 0, 0);//TUNE TUNE TUNE TUNE TUNE before it runs.
   }
 
   private double getGear3Rotation(double r1, double r2) {
