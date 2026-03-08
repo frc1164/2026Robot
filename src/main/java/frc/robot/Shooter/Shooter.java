@@ -6,34 +6,30 @@ package frc.robot.Shooter;
 
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
-import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Swerve.SwerveConstants.ModuleConstants;
 
 public class Shooter extends SubsystemBase {
   private final SparkMax vert;
   private final SparkMaxConfig vertConfig;
 
-  private final TalonFX turn;
-  private final TalonFXConfiguration turnConfig;
+  private final SparkMax turn;
+  private final SparkMaxConfig turnConfig;
   
   private final CANcoder canCoder1;
   private final CANcoderConfiguration canCoderConfiguration1;
   
-  // private final CANcoder canCoder2;
-  // private final CANcoderConfiguration canCoderConfiguration2;
+  private final CANcoder canCoder2;
+  private final CANcoderConfiguration canCoderConfiguration2;
 
   private final CANcoder vertEncoder;
   private final CANcoderConfiguration vertEncoderConfig;
@@ -53,18 +49,18 @@ public class Shooter extends SubsystemBase {
   /** Creates a new Shooter. */
   public Shooter() {
 
-    vert = new SparkMax(53, MotorType.kBrushless);
-    turn = new TalonFX(51);
+    vert = new SparkMax(54, MotorType.kBrushless);
+    turn = new SparkMax(51, MotorType.kBrushless);
 
     vertConfig = new SparkMaxConfig();
-    turnConfig = new TalonFXConfiguration();
+    turnConfig = new SparkMaxConfig();
 
     // Add Encoder Ids later
     canCoder1 = new CANcoder(52);
     canCoderConfiguration1 = new CANcoderConfiguration();
 
-    // canCoder2 = new CANcoder(0);
-    // canCoderConfiguration2 = new CANcoderConfiguration();
+    canCoder2 = new CANcoder(53);
+    canCoderConfiguration2 = new CANcoderConfiguration();
 
     vertEncoder = new CANcoder(55);
     vertEncoderConfig = new CANcoderConfiguration();
@@ -74,26 +70,25 @@ public class Shooter extends SubsystemBase {
 
     //Vert needs soft limits, this configurator can apply them, will have them once we know gear ratio
     vertConfig.inverted(false).idleMode(IdleMode.kBrake);
-    turnConfig.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
+    vert.configure(vertConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
+    turnConfig.idleMode(IdleMode.kBrake);
     // turnConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
     // turnConfig.Feedback.FeedbackRemoteSensorID = 52;
-    // turnConfig.Feedback.RotorToSensorRatio = 18.75;
+    // turnConfig.Feedback.RotorToSensorRatio = 18.75; //Should find this number
+    turn.configure(turnConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
 
     canCoderConfiguration1.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
     canCoderConfiguration1.MagnetSensor.MagnetOffset = -0.153320+0.05542;
     canCoder1.getConfigurator().apply(canCoderConfiguration1);
 
-    // canCoderConfiguration2.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
-    // canCoderConfiguration2.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
-    // canCoder2.getConfigurator().apply(canCoderConfiguration2);
+    canCoderConfiguration2.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
+    canCoder2.getConfigurator().apply(canCoderConfiguration2);
 
     vertEncoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
     vertEncoderConfig.MagnetSensor.MagnetOffset = 0;
     vertEncoder.getConfigurator().apply(vertEncoderConfig);
-
-    // turn.getConfigurator().apply(turnConfig);
-    // drive.getConfigurator().apply(driveConfig);
   }
 
   private double getGear3Rotation(double r1, double r2) {
@@ -113,11 +108,11 @@ public class Shooter extends SubsystemBase {
   }
 
   public double getThetaPosition() {
-    // double gear1Rotation = canCoder1.getPosition().getValueAsDouble() * 360;
-    // double gear2Rotation = canCoder2.getPosition().getValueAsDouble() * 360;
+    double gear1Rotation = canCoder1.getPosition().getValueAsDouble() * 360;
+    double gear2Rotation = canCoder2.getPosition().getValueAsDouble() * 360;
 
-    // return (getGear3Rotation(gear1Rotation, gear2Rotation) % 360) * Math.PI / 180;
-    return canCoder1.getPosition().getValueAsDouble() * 2 * Math.PI;
+    return (getGear3Rotation(gear1Rotation, gear2Rotation) % 360) * Math.PI / 180;
+    // return canCoder1.getPosition().getValueAsDouble() * 2 * Math.PI;
   }
 
   public double getPhiPosition(){
