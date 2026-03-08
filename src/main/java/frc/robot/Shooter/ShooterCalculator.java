@@ -118,6 +118,12 @@ public class ShooterCalculator {
       SHOT = new ShotInfo(SHOT.exitVel(), SHOT.getVertAngle(), predictedTarget);
       time = ShooterConstants.timeMap.get(dist);
     }
+    //This is a protective measure. Only time this would be true is when it is set in the target method, which is when on defense or in the trench.
+    if (targetPose.getTranslation() == botPose.getTranslation()){
+      SHOT = new ShotInfo(SHOT.exitVel, ShooterConstants.maxVert, predictedTarget);
+    }
+
+    //Spit out 'optimal' shot info
     return SHOT;
   }
 

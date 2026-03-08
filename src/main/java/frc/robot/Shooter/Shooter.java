@@ -14,6 +14,8 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -21,11 +23,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Swerve.SwerveConstants.ModuleConstants;
 
 public class Shooter extends SubsystemBase {
-  // private final SparkMax turnMotor;
-  // private final TalonFX drive;
-  private final TalonFX turn;
+  private final SparkMax vert;
+  private final SparkMaxConfig vertConfig;
 
-  // private final TalonFXConfiguration driveConfig;
+  private final TalonFX turn;
   private final TalonFXConfiguration turnConfig;
   
   private final CANcoder canCoder1;
@@ -34,13 +35,10 @@ public class Shooter extends SubsystemBase {
   // private final CANcoder canCoder2;
   // private final CANcoderConfiguration canCoderConfiguration2;
 
-  private final CANcoder verticalEncoder;
-  private final CANcoderConfiguration verticalEncoderConfig;
+  private final CANcoder vertEncoder;
+  private final CANcoderConfiguration vertEncoderConfig;
 
-  private final PIDController pid;
-
-  // private final double offset1;
-  // private final double offset2;
+  private final PIDController thetaPID, vertPID;
 
 
   private final double gear0TeethCount = 132;
@@ -54,12 +52,11 @@ public class Shooter extends SubsystemBase {
 
   /** Creates a new Shooter. */
   public Shooter() {
-    // turnMotor = new SparkMax(50, MotorType.kBrushless);
 
-    // drive = new TalonFX(50);
+    vert = new SparkMax(53, MotorType.kBrushless);
     turn = new TalonFX(51);
 
-    // driveConfig = new TalonFXConfiguration();
+    vertConfig = new SparkMaxConfig();
     turnConfig = new TalonFXConfiguration();
 
     // Add Encoder Ids later
@@ -69,35 +66,34 @@ public class Shooter extends SubsystemBase {
     // canCoder2 = new CANcoder(0);
     // canCoderConfiguration2 = new CANcoderConfiguration();
 
-    verticalEncoder = new CANcoder(55);
-    verticalEncoderConfig = new CANcoderConfiguration();
+    vertEncoder = new CANcoder(55);
+    vertEncoderConfig = new CANcoderConfiguration();
 
-    pid = new PIDController(0.35 * 2 , 0, 0.001);
+    thetaPID = new PIDController(0.35 * 2 , 0, 0.001);
+    vertPID = new PIDController(1, 0, 0);//TUNE TUNE TUNE TUNE TUNE before it runs.
 
-    // driveConfig.MotorOutput.withNeutralMode(NeutralModeValue.Coast);
-    // turnConfig.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
+    //Vert needs soft limits, this configurator can apply them, will have them once we know gear ratio
+    vertConfig.inverted(false).idleMode(IdleMode.kBrake);
+    turnConfig.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
 
-    // driveConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
     // turnConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
     // turnConfig.Feedback.FeedbackRemoteSensorID = 52;
     // turnConfig.Feedback.RotorToSensorRatio = 18.75;
 
-    // canCoderConfiguration1.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
     canCoderConfiguration1.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
     canCoderConfiguration1.MagnetSensor.MagnetOffset = -0.153320+0.05542;
     canCoder1.getConfigurator().apply(canCoderConfiguration1);
-
-    
 
     // canCoderConfiguration2.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
     // canCoderConfiguration2.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
     // canCoder2.getConfigurator().apply(canCoderConfiguration2);
 
+    vertEncoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
+    vertEncoderConfig.MagnetSensor.MagnetOffset = 0;
+    vertEncoder.getConfigurator().apply(vertEncoderConfig);
+
     // turn.getConfigurator().apply(turnConfig);
     // drive.getConfigurator().apply(driveConfig);
-
-    // offset1 = .156 * 2 * Math.PI;
-    // offset2 = .156 * 2 * Math.PI;
   }
 
   private double getGear3Rotation(double r1, double r2) {
@@ -116,7 +112,7 @@ public class Shooter extends SubsystemBase {
     return rot0;
   }
 
-  public double getTurningPosition() {
+  public double getThetaPosition() {
     // double gear1Rotation = canCoder1.getPosition().getValueAsDouble() * 360;
     // double gear2Rotation = canCoder2.getPosition().getValueAsDouble() * 360;
 
@@ -124,7 +120,17 @@ public class Shooter extends SubsystemBase {
     return canCoder1.getPosition().getValueAsDouble() * 2 * Math.PI;
   }
 
-  public void runThetaPID(double angle){//feed this radians
+  public double getPhiPosition(){
+    return vertEncoder.getPosition().getValueAsDouble() * 2 * Math.PI;
+  }
+
+  public void runPhiPID(double radians){
+    //might want to set limits here if the motor config soft limits dont work. Or do both.
+    vert.set(vertPID.calculate(getPhiPosition(), radians));
+  }
+
+  //Once we know the range of theta, we will have to program in limits to this in a weird way, hopefulle we can leave it swapping at 0.
+  public void runThetaPID(double radians){//feed this radians
     // double gear1Rotation = canCoder1.getPosition().getValueAsDouble() * 360;
     // double gear2Rotation = canCoder2.getPosition().getValueAsDouble() * 360;
 
@@ -133,13 +139,12 @@ public class Shooter extends SubsystemBase {
 
     // double pidGear0Speed = pid.calculate(getTurningPosition(), angle * Math.PI / 180);
     // double pidMotorSpeed = pidGear0Speed * gear0TeethCount / gear1TeethCount;
-    double pidMotorSpeed = pid.calculate(getTurningPosition(), angle);
+    double pidMotorSpeed = thetaPID.calculate(getThetaPosition(), radians);
     turn.set(pidMotorSpeed);
   }
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Angle", getTurningPosition());
     // This method will be called once per scheduler run
   }
 }

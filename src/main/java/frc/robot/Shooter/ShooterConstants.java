@@ -39,6 +39,8 @@ public class ShooterConstants{
   }
 
   public static final double exitVelocity = 0; 
+  public static final double minVert = 0;
+  public static final double maxVert = 0;
   public static final Translation3d hubPose = new Translation3d(4.63,4.0,1.68); 
   public static final Pose2d blueHub2d = new Pose2d(4.63, 4.0, null);
   public static final double targetHeightFromShooter = hubPose.getZ() - SHOOTEROFFSETS.vertical;

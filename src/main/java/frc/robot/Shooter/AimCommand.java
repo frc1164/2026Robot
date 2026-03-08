@@ -39,8 +39,7 @@ public class AimCommand extends Command {
     //Feed it into the shooter
     double theta = ShooterCalculator.getThetaAngle(ShooterCalculator.distVector(new Pose2d(shot.getTarget().getX(), shot.getTarget().getY(), null), botPose), botPose);
     ShooterSubsystem.runThetaPID(theta);
-
-    //DONT FORGET TO ADD THE PHI/VERTICAL AIMING
+    ShooterSubsystem.runPhiPID(shot.getVertAngle());
   }
 
   @Override
