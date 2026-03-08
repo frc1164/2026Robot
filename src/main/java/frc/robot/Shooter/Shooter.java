@@ -124,7 +124,7 @@ public class Shooter extends SubsystemBase {
     return canCoder1.getPosition().getValueAsDouble() * 2 * Math.PI;
   }
 
-  public void runPID(double angle){//feed this radians
+  public void runThetaPID(double angle){//feed this radians
     // double gear1Rotation = canCoder1.getPosition().getValueAsDouble() * 360;
     // double gear2Rotation = canCoder2.getPosition().getValueAsDouble() * 360;
 

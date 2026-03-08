@@ -15,108 +15,105 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class ShooterCalculator{
-  public ShooterCalculator() {}
+public class ShooterCalculator {
+  public ShooterCalculator() {
+  }
 
-  //Dist between shooter and target, this might be more complicated than I thought??
-  public static Translation2d distVector(Pose2d target, Pose2d current){
+  //Flat ground dist from shooter to target
+  public static Translation2d distVector(Pose2d target, Pose2d current) {
     double xDist, yDist;
     double botDiffX = target.getX() - current.getX();
     double botDiffY = target.getY() - current.getY();
     SmartDashboard.putNumber("currentX", current.getX());
-    xDist = botDiffX - ShooterConstants.SHOOTEROFFSETS.translation * (Math.cos(ShooterConstants.SHOOTEROFFSETS.theta + current.getRotation().getRadians()));
+    xDist = botDiffX - ShooterConstants.SHOOTEROFFSETS.translation
+        * (Math.cos(ShooterConstants.SHOOTEROFFSETS.theta + current.getRotation().getRadians()));
     SmartDashboard.putNumber("xDist", xDist);
-    yDist = botDiffY - ShooterConstants.SHOOTEROFFSETS.translation * (Math.sin(ShooterConstants.SHOOTEROFFSETS.theta + current.getRotation().getRadians()));
+    yDist = botDiffY - ShooterConstants.SHOOTEROFFSETS.translation
+        * (Math.sin(ShooterConstants.SHOOTEROFFSETS.theta + current.getRotation().getRadians()));
     SmartDashboard.putNumber("yDist", yDist);
     return new Translation2d(xDist, yDist);
   }
 
-  //Just pythagoran applied to whatever given vector
-  private double getDist(Translation2d distVector){
+  // Just pythagoran applied to whatever given vector
+  private static double getDist(Translation2d distVector) {
     return Math.sqrt(Math.pow(distVector.getX(), 2) + Math.pow(distVector.getY(), 2));
   }
 
-  //Locks the shooter horizontal angle on a given target
-  public static double getThetaAngle(Translation2d distanceVector, Pose2d current){
-    return Math.atan2(distanceVector.getY(), distanceVector.getX()) - current.getRotation().getRadians() + Math.PI/2;
+  // Locks the shooter horizontal angle on a given target
+  public static double getThetaAngle(Translation2d distanceVector, Pose2d current) {
+    return Math.atan2(distanceVector.getY(), distanceVector.getX()) - current.getRotation().getRadians() + Math.PI / 2;
   }
 
-  //Creates a target that is offset by current velocity and estimated flight time
-  private Translation3d predictTargetpose(Translation3d target, double time, ChassisSpeeds velocity){
+  // Creates a target that is offset by current velocity and estimated flight time
+  private static Translation3d predictTargetpose(Translation3d target, double time, ChassisSpeeds velocity) {
     double xEstimate = target.getX() - velocity.vxMetersPerSecond * time;
     double yEstimate = target.getY() - velocity.vyMetersPerSecond * time;
     return new Translation3d(xEstimate, yEstimate, target.getZ());
   }
 
-
-  //Automatically sets the shooter's baseline target. Need to add a constraint system for if alliance.get no worky.
-  public static Translation3d target(Pose2d botPose){
+  // Automatically sets the shooter's baseline target. Need to add a constraint
+  // system for if alliance.get no worky.
+  public static Translation3d target(Pose2d botPose) {
     Translation3d TARGET = new Translation3d();
     double x = botPose.getX();
-    if (DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue)){
-      if (x >= 0 && x < ShooterConstants.XVALS.BATRENCH){
+    if (DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue)) {
+      if (x >= 0 && x < ShooterConstants.XVALS.BATRENCH) {
         TARGET = ShooterConstants.TAGRETS.BLUEHUB;
-      }
-      else if (x >= ShooterConstants.XVALS.BATRENCH && x <= ShooterConstants.XVALS.BMTRENCH || x >= ShooterConstants.XVALS.RMTRENCH && x <= ShooterConstants.XVALS.RATRENCH){
+      } else if (x >= ShooterConstants.XVALS.BATRENCH && x <= ShooterConstants.XVALS.BMTRENCH
+          || x >= ShooterConstants.XVALS.RMTRENCH && x <= ShooterConstants.XVALS.RATRENCH) {
         TARGET = new Translation3d(botPose.getX(), botPose.getY(), 10);
-      }
-      else if (x > ShooterConstants.XVALS.BMTRENCH && x < ShooterConstants.XVALS.RMTRENCH){
-        if (botPose.getY() >= 4.0){
+      } else if (x > ShooterConstants.XVALS.BMTRENCH && x < ShooterConstants.XVALS.RMTRENCH) {
+        if (botPose.getY() >= 4.0) {
           TARGET = ShooterConstants.TAGRETS.BLUEPASSUP;
-        }
-        else if (botPose.getY() < 4.0){
+        } else if (botPose.getY() < 4.0) {
           TARGET = ShooterConstants.TAGRETS.BLUEPASSDOWN;
         }
-      }
-      else {
+      } else {
         TARGET = new Translation3d(botPose.getX(), botPose.getY(), 10);
       }
-    } else if (DriverStation.getAlliance().get().equals(DriverStation.Alliance.Red)){
-       if (x > ShooterConstants.XVALS.RATRENCH && x < ShooterConstants.XVALS.REDWALL){
+    } else if (DriverStation.getAlliance().get().equals(DriverStation.Alliance.Red)) {
+      if (x > ShooterConstants.XVALS.RATRENCH && x < ShooterConstants.XVALS.REDWALL) {
         TARGET = new Translation3d(botPose.getX(), botPose.getY(), 10);
-      }
-      else if (x >= ShooterConstants.XVALS.BATRENCH && x <= ShooterConstants.XVALS.BMTRENCH || x >= ShooterConstants.XVALS.RMTRENCH && x <= ShooterConstants.XVALS.RATRENCH){
+      } else if (x >= ShooterConstants.XVALS.BATRENCH && x <= ShooterConstants.XVALS.BMTRENCH
+          || x >= ShooterConstants.XVALS.RMTRENCH && x <= ShooterConstants.XVALS.RATRENCH) {
         TARGET = new Translation3d(botPose.getX(), botPose.getY(), 10);
-      }
-      else if (x > ShooterConstants.XVALS.BMTRENCH && x < ShooterConstants.XVALS.RMTRENCH){
-        if (botPose.getY() >= 4.0){
+      } else if (x > ShooterConstants.XVALS.BMTRENCH && x < ShooterConstants.XVALS.RMTRENCH) {
+        if (botPose.getY() >= 4.0) {
           TARGET = ShooterConstants.TAGRETS.REDPASSUP;
-        }
-        else if (botPose.getY() < 4.0){
+        } else if (botPose.getY() < 4.0) {
           TARGET = ShooterConstants.TAGRETS.REDPASSDOWN;
         }
-      }
-      else {
+      } else {
         TARGET = new Translation3d(botPose.getX(), botPose.getY(), 10);
       }
-    }
-    else{
+    } else {
       TARGET = new Translation3d(botPose.getX(), botPose.getY(), 10);
     }
     return TARGET;
   }
 
-  public ShotInfo getShot(ChassisSpeeds velocity, Translation3d target, Pose2d botPose, int iterations){
-    //Flat ground dist to initial target
+  // Actual Calculation of optimal shot, should write to be constrained on a certain error. Math is in the methodology.
+  public static ShotInfo getShot(ChassisSpeeds velocity, Translation3d target, Pose2d botPose, int iterations) {
+    // Flat ground dist to initial target
     Pose2d targetPose = new Pose2d(target.getX(), target.getY(), null);
     double dist = getDist(distVector(targetPose, botPose));
 
-    //Determine intital azimuth and estimate time of flight
+    // Determine intital azimuth and estimate time of flight
     ShotInfo SHOT = ShooterConstants.shotMap.get(dist);
     SHOT = new ShotInfo(SHOT.exitVel(), SHOT.getVertAngle(), target);
     double time = ShooterConstants.timeMap.get(dist);
 
-    //Set predicted target to initial target
+    // Set predicted target to initial target
     Translation3d predictedTarget = target;
 
-    for (int i = 0; i < iterations; i++){
-      //Predict where we have to aim based on estimated flight time and ball velocity
+    for (int i = 0; i < iterations; i++) {
+      // Predict where we have to aim based on estimated flight time and ball velocity
       predictedTarget = predictTargetpose(target, time, velocity);
 
-      //Update distance
+      // Update distance
       dist = botPose.getTranslation().getDistance(predictedTarget.toTranslation2d());
 
-      //Recalculate azimuth and time of flight with new distance
+      // Recalculate azimuth and time of flight with new distance
       SHOT = ShooterConstants.shotMap.get(dist);
       SHOT = new ShotInfo(SHOT.exitVel(), SHOT.getVertAngle(), predictedTarget);
       time = ShooterConstants.timeMap.get(dist);
@@ -124,39 +121,38 @@ public class ShooterCalculator{
     return SHOT;
   }
 
-
-  public record ShotInfo(double exitVel, double vertAngle, Translation3d target){
-    public ShotInfo(double exitVel, double vertAngle){
+  public record ShotInfo(double exitVel, double vertAngle, Translation3d target) {
+    public ShotInfo(double exitVel, double vertAngle) {
       this(exitVel, vertAngle, ShooterConstants.hubPose);
     }
-    public double getZComponent(){
+
+    public double getZComponent() {
       return exitVel * Math.sin(vertAngle);
     }
 
-    public double getXYComponent(){
+    public double getXYComponent() {
       return exitVel * Math.cos(vertAngle);
     }
 
-    public double getMag(){
+    public double getMag() {
       return exitVel;
     }
 
-    public double getVertAngle(){
+    public double getVertAngle() {
       return vertAngle();
     }
 
-    public Translation3d getTarget(){
+    public Translation3d getTarget() {
       return target();
     }
 
-    public static ShotInfo interpolate(ShotInfo estimate, ShotInfo result, double t){
+    public static ShotInfo interpolate(ShotInfo estimate, ShotInfo result, double t) {
       return new ShotInfo(estimate.getMag(),
-                  MathUtil.interpolate(estimate.getVertAngle(), result.getVertAngle(), t),
-                  result.getTarget());
+          MathUtil.interpolate(estimate.getVertAngle(), result.getVertAngle(), t),
+          result.getTarget());
     }
-    
-  }
 
+  }
 
   public static boolean isHubActive() {
     Optional<Alliance> alliance = DriverStation.getAlliance();
@@ -176,7 +172,8 @@ public class ShooterCalculator{
     // We're teleop enabled, compute.
     double matchTime = DriverStation.getMatchTime();
     String gameData = DriverStation.getGameSpecificMessage();
-    // If we have no game data, we cannot compute, assume hub is active, as its likely early in teleop.
+    // If we have no game data, we cannot compute, assume hub is active, as its
+    // likely early in teleop.
     if (gameData.isEmpty()) {
       return true;
     }
