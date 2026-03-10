@@ -8,10 +8,12 @@ package frc.robot.Shooter;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.AbsoluteEncoderConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
@@ -31,8 +33,8 @@ public class Shooter extends SubsystemBase {
   private final CANcoder canCoder2;
   private final CANcoderConfiguration canCoderConfiguration2;
 
-  private final CANcoder vertEncoder;
-  private final CANcoderConfiguration vertEncoderConfig;
+  private final AbsoluteEncoder vertEncoder;
+  private final AbsoluteEncoderConfig vertEncoderConfig;
 
   private final PIDController thetaPID, vertPID;
 
@@ -63,8 +65,6 @@ public class Shooter extends SubsystemBase {
     canCoderConfiguration2 = new CANcoderConfiguration();
 
     //Vert needs soft limits, this configurator can apply them, will have them once we know gear ratio
-    vertEncoder = new CANcoder(55);
-    vertEncoderConfig = new CANcoderConfiguration();
     vertConfig.inverted(false).idleMode(IdleMode.kBrake);
     vert.configure(vertConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
@@ -83,9 +83,13 @@ public class Shooter extends SubsystemBase {
     canCoderConfiguration2.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
     canCoder2.getConfigurator().apply(canCoderConfiguration2);
 
-    vertEncoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
-    vertEncoderConfig.MagnetSensor.MagnetOffset = 0;
-    vertEncoder.getConfigurator().apply(vertEncoderConfig);
+    vertEncoder = vert.getAbsoluteEncoder();
+    vertEncoderConfig = new AbsoluteEncoderConfig();
+    vertEncoderConfig.positionConversionFactor(0)  //whatever the hood gear ratio is
+                     .velocityConversionFactor(0)  //whatever the gear ratio is over 60
+                     .zeroOffset(0)                //find this
+                     .inverted(false);           //inverted?
+    
     
     thetaPID = new PIDController(0.35 * 2 , 0, 0.001);
     vertPID = new PIDController(1, 0, 0);//TUNE TUNE TUNE TUNE TUNE before it runs.
@@ -116,7 +120,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public double getPhiPosition(){
-    return vertEncoder.getPosition().getValueAsDouble() * 2 * Math.PI;
+    return vertEncoder.getPosition() * 2 * Math.PI;
   }
 
   public void runPhiPID(double radians){
