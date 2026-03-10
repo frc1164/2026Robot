@@ -47,7 +47,7 @@ public class AutoShoot extends Command {
       feeder.shootOn();
     }
     else if (ShooterCalculator.target(swerve.getPose()) == PASSUP || ShooterCalculator.target(swerve.getPose()) == PASSDOWN){
-      feeder.shootOn();
+      feeder.shootOff(); //this one might actually need to be up to human discretion so we are jsut gonna leave this off.
     }
     else {feeder.shootOff();}
   }
