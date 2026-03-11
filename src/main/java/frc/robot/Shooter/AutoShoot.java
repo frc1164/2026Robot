@@ -12,7 +12,8 @@ import frc.robot.Swerve.SwerveSubsystem;
 public class AutoShoot extends Command {
   private final Feeder feeder;
   private final SwerveSubsystem swerve;
-  private Translation3d HUB, PASSUP, PASSDOWN; 
+  private Translation3d HUB;
+  //private Translation3d PASSUP, PASSDOWN; 
 
   public AutoShoot(Feeder Feeder, SwerveSubsystem Swerve) {
     swerve = Swerve;
@@ -25,18 +26,18 @@ public class AutoShoot extends Command {
   public void initialize() {
     if (DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue)){
       HUB = ShooterConstants.TAGRETS.BLUEHUB;
-      PASSUP = ShooterConstants.TAGRETS.BLUEPASSUP;
-      PASSDOWN = ShooterConstants.TAGRETS.BLUEPASSDOWN;
+      // PASSUP = ShooterConstants.TAGRETS.BLUEPASSUP;
+      // PASSDOWN = ShooterConstants.TAGRETS.BLUEPASSDOWN;
     }
     else if (DriverStation.getAlliance().get().equals(DriverStation.Alliance.Red)){
       HUB = ShooterConstants.TAGRETS.REDHUB;
-      PASSUP = ShooterConstants.TAGRETS.REDPASSUP;
-      PASSDOWN = ShooterConstants.TAGRETS.REDPASSDOWN; 
+      // PASSUP = ShooterConstants.TAGRETS.REDPASSUP;
+      // PASSDOWN = ShooterConstants.TAGRETS.REDPASSDOWN; 
     }
     else{
       HUB = ShooterConstants.TAGRETS.BLUEHUB;
-      PASSUP = ShooterConstants.TAGRETS.BLUEPASSUP;
-      PASSDOWN = ShooterConstants.TAGRETS.BLUEPASSDOWN;
+      // PASSUP = ShooterConstants.TAGRETS.BLUEPASSUP;
+      // PASSDOWN = ShooterConstants.TAGRETS.BLUEPASSDOWN;
     }
   }
 
@@ -46,9 +47,9 @@ public class AutoShoot extends Command {
     if(ShooterCalculator.target(swerve.getPose()) == HUB && ShooterCalculator.isHubActive()){
       feeder.shootOn();
     }
-    else if (ShooterCalculator.target(swerve.getPose()) == PASSUP || ShooterCalculator.target(swerve.getPose()) == PASSDOWN){
-      feeder.shootOff(); //this one might actually need to be up to human discretion so we are jsut gonna leave this off.
-    }
+    // else if (ShooterCalculator.target(swerve.getPose()) == PASSUP || ShooterCalculator.target(swerve.getPose()) == PASSDOWN){
+    //   feeder.shootOff(); //this one might actually need to be up to human discretion so we are jsut gonna leave this off.
+    // }
     else {feeder.shootOff();}
   }
 

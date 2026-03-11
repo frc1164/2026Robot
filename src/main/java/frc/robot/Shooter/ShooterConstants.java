@@ -22,11 +22,11 @@ public class ShooterConstants{
   }
 
   public static final class XVALS{
-    public static final int BATRENCH = 4000;
-    public static final int BMTRENCH = 5400;
-    public static final int RMTRENCH = 11300;
-    public static final int RATRENCH = 12500;
-    public static final int REDWALL = 16500;
+    public static final double BATRENCH = 4.0;
+    public static final double BMTRENCH = 5.4;
+    public static final double RMTRENCH = 11.3;
+    public static final double RATRENCH = 12.5;
+    public static final double REDWALL = 16.5;
   }
 
   public static final class TAGRETS{
@@ -36,6 +36,8 @@ public class ShooterConstants{
     public static final Translation3d REDHUB = new Translation3d(11.919, 4.0, 1.68);
     public static final Translation3d REDPASSUP = new Translation3d(14.5, 6, 0);
     public static final Translation3d REDPASSDOWN = new Translation3d(14.5, 2, 0);
+    public static final Translation3d CENTERDOWN = new Translation3d(8.25, 1.5, 0);
+    public static final Translation3d CENTERUP = new Translation3d(8.25, 6.345, 0);
   }
 
   public static final double exitVelocity = 0; 

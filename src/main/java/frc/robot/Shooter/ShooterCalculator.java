@@ -69,7 +69,11 @@ public class ShooterCalculator {
           TARGET = ShooterConstants.TAGRETS.BLUEPASSDOWN;
         }
       } else {
-        TARGET = new Translation3d(botPose.getX(), botPose.getY(), 10);
+        if (botPose.getY() >= 4.0) {
+          TARGET = ShooterConstants.TAGRETS.CENTERUP;
+        } else if (botPose.getY() < 4.0) {
+          TARGET = ShooterConstants.TAGRETS.CENTERDOWN;
+        }
       }
     } else if (DriverStation.getAlliance().get().equals(DriverStation.Alliance.Red)) {
       if (x > ShooterConstants.XVALS.RATRENCH && x < ShooterConstants.XVALS.REDWALL) {
@@ -84,10 +88,18 @@ public class ShooterCalculator {
           TARGET = ShooterConstants.TAGRETS.REDPASSDOWN;
         }
       } else {
-        TARGET = new Translation3d(botPose.getX(), botPose.getY(), 10);
+        if (botPose.getY() >= 4.0) {
+          TARGET = ShooterConstants.TAGRETS.CENTERUP;
+        } else if (botPose.getY() < 4.0) {
+          TARGET = ShooterConstants.TAGRETS.CENTERDOWN;
+        }
       }
     } else {
-      TARGET = new Translation3d(botPose.getX(), botPose.getY(), 10);
+      if (botPose.getY() >= 4.0) {
+        TARGET = ShooterConstants.TAGRETS.CENTERUP;
+      } else if (botPose.getY() < 4.0) {
+        TARGET = ShooterConstants.TAGRETS.CENTERDOWN;
+      }
     }
     return TARGET;
   }
