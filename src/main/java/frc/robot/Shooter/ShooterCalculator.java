@@ -215,18 +215,30 @@ public class ShooterCalculator {
     if (matchTime > 130) {
       // Transition shift, hub is active.
       return HUBSTATE.ACTIVE;
-    } else if (matchTime > 105) {
+    } else if(matchTime > 110){
       // Shift 1
-      return shift1Active;
-    } else if (matchTime > 80) {
+      return shift1Active ? HUBSTATE.ACTIVE : HUBSTATE.INACTIVE;
+    } else if (matchTime > 105) {
+      // Switching, last 5 seconds of Shift 1
+      return HUBSTATE.SOON;
+    } else if (matchTime > 85) {
       // Shift 2
-      return !shift1Active;
-    } else if (matchTime > 55) {
+      return !shift1Active ? HUBSTATE.ACTIVE : HUBSTATE.INACTIVE;
+    } else if (matchTime > 80) {
+      // Shift 2 switching to Shift 3
+      return HUBSTATE.SOON;
+    } else if (matchTime > 60) {
       // Shift 3
-      return shift1Active;
-    } else if (matchTime > 30) {
+      return shift1Active ? HUBSTATE.ACTIVE : HUBSTATE.INACTIVE;
+    } else if (matchTime > 55) {
+      // Shift 3 switching to Shift 4
+      return HUBSTATE.SOON;
+    } else if (matchTime > 35) {
       // Shift 4
-      return !shift1Active;
+      return !shift1Active ? HUBSTATE.ACTIVE : HUBSTATE.INACTIVE;
+    } else if (matchTime > 30) {
+      // Shift 4 switching to Endgame
+      return HUBSTATE.SOON;
     } else {
       // End game, hub always active.
       return HUBSTATE.ACTIVE;
