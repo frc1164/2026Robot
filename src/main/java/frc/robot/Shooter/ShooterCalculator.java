@@ -14,6 +14,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Shooter.ShooterConstants.HUBSTATE;
 
 public class ShooterCalculator {
   public ShooterCalculator() {
@@ -172,19 +173,19 @@ public class ShooterCalculator {
 
   }
 
-  public static boolean isHubActive() {
+  public static ShooterConstants.HUBSTATE isHubActive() {
     Optional<Alliance> alliance = DriverStation.getAlliance();
     // If we have no alliance, we cannot be enabled, therefore no hub.
     if (alliance.isEmpty()) {
-      return false;
+      return HUBSTATE.INACTIVE;
     }
     // Hub is always enabled in autonomous.
     if (DriverStation.isAutonomousEnabled()) {
-      return true;
+      return HUBSTATE.ACTIVE;
     }
     // At this point, if we're not teleop enabled, there is no hub.
     if (!DriverStation.isTeleopEnabled()) {
-      return false;
+      return HUBSTATE.SOON;
     }
 
     // We're teleop enabled, compute.
@@ -193,7 +194,7 @@ public class ShooterCalculator {
     // If we have no game data, we cannot compute, assume hub is active, as its
     // likely early in teleop.
     if (gameData.isEmpty()) {
-      return true;
+      return HUBSTATE.ACTIVE;
     }
     boolean redInactiveFirst = false;
     switch (gameData.charAt(0)) {
@@ -201,7 +202,7 @@ public class ShooterCalculator {
       case 'B' -> redInactiveFirst = false;
       default -> {
         // If we have invalid game data, assume hub is active.
-        return true;
+        return HUBSTATE.ACTIVE;
       }
     }
 
@@ -213,7 +214,7 @@ public class ShooterCalculator {
 
     if (matchTime > 130) {
       // Transition shift, hub is active.
-      return true;
+      return HUBSTATE.ACTIVE;
     } else if (matchTime > 105) {
       // Shift 1
       return shift1Active;
@@ -228,7 +229,7 @@ public class ShooterCalculator {
       return !shift1Active;
     } else {
       // End game, hub always active.
-      return true;
+      return HUBSTATE.ACTIVE;
     }
   }
 }

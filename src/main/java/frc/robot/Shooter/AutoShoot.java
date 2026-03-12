@@ -7,6 +7,7 @@ package frc.robot.Shooter;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Shooter.ShooterConstants.HUBSTATE;
 import frc.robot.Swerve.SwerveSubsystem;
 
 public class AutoShoot extends Command {
@@ -44,7 +45,7 @@ public class AutoShoot extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(ShooterCalculator.target(swerve.getPose()) == HUB && ShooterCalculator.isHubActive()){
+    if(ShooterCalculator.target(swerve.getPose()) == HUB && ShooterCalculator.isHubActive() == HUBSTATE.ACTIVE){
       feeder.shootOn();
     }
     // else if (ShooterCalculator.target(swerve.getPose()) == PASSUP || ShooterCalculator.target(swerve.getPose()) == PASSDOWN){

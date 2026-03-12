@@ -40,6 +40,10 @@ public class ShooterConstants{
     public static final Translation3d CENTERUP = new Translation3d(8.25, 6.345, 0);
   }
 
+  public static enum HUBSTATE{
+    SOON, ACTIVE, INACTIVE;
+  };
+  
   public static final double exitVelocity = 0; 
   public static final double minVert = 0;
   public static final double maxVert = 0;
