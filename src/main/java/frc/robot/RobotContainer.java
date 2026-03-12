@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.Agitator.Agitator;
 import frc.robot.Climber.Climb;
 import frc.robot.Swerve.SwerveJoystickCmd;
 import frc.robot.Swerve.SwerveSubsystem;
@@ -19,14 +20,16 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 public class RobotContainer {
   private Climb m_climb = new Climb();
+  private Agitator m_agitate = new Agitator();
  // private final SwerveSubsystem swerve;
-  private final CommandXboxController driveController;
+  private final CommandXboxController driveController, operatorController;
   private static final Compressor m_compressor = new Compressor(5, PneumaticsModuleType.CTREPCM);
 
 
   public RobotContainer() {
    // swerve = new SwerveSubsystem();
     driveController = new CommandXboxController(0);
+    operatorController = new CommandXboxController(1);
 
     // swerve.setDefaultCommand(new SwerveJoystickCmd(
     //   swerve,
@@ -37,6 +40,8 @@ public class RobotContainer {
 
     configureBindings();
     m_compressor.enableDigital();
+
+    new InstantCommand(() -> m_agitate.spin());    
   }
 
   private void configureBindings() {
@@ -44,6 +49,7 @@ public class RobotContainer {
     driveController.x().onTrue(new InstantCommand(()-> m_climb.extend()));
     driveController.b().onTrue(new InstantCommand(()-> m_climb.retract()));
     driveController.y().onTrue(new InstantCommand(()-> m_climb.disable()));
+    operatorController.povDown().onTrue(new InstantCommand(() -> m_agitate.stop()));
   }
  
   
