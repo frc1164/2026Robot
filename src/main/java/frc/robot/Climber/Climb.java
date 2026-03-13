@@ -43,7 +43,6 @@ public class Climb extends SubsystemBase {
     climbMotorConfigB.inverted(false)
                      .idleMode(IdleMode.kBrake);
     climbMotorB.configure(climbMotorConfigB, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    
   }
 
   
@@ -68,6 +67,14 @@ public class Climb extends SubsystemBase {
   public void runClimber(double speed){
     climbMotorA.set(speed);
     climbMotorB.set(speed);
+  }
+
+  public void toggleClimber(){
+    if(isExtended()){
+      retract();
+    }else if (!isExtended()){
+      extend();
+    }
   }
 
   //Probably create a PID method based on the chassis pitch?

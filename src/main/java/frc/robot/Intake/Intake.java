@@ -52,7 +52,6 @@ public class Intake extends SubsystemBase {
   public boolean intakeExtended(){
     return m_extendSolenoid.get() == DoubleSolenoid.Value.kForward;
   }
-
   // the climb and intake cannot both be extended at the same time so when you
   // write the command to extend one, hte other needs to first be retracted.
   // the extension and retraction command can probably be a toggle between the two
