@@ -15,7 +15,6 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
-
 public class Intake extends SubsystemBase {
 
   private final SparkMax m_pickup;
@@ -26,13 +25,13 @@ public class Intake extends SubsystemBase {
     m_pickup = new SparkMax(60, MotorType.kBrushless);
     pickupMotConfig = new SparkMaxConfig();
     pickupMotConfig.inverted(false)
-                   .idleMode(IdleMode.kCoast);
+        .idleMode(IdleMode.kCoast);
     m_pickup.configure(pickupMotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     m_extendSolenoid = new DoubleSolenoid(5, PneumaticsModuleType.CTREPCM, 2, 5);
   }
 
-  public void runPickup(double speed){
+  public void runPickup(double speed) {
     m_pickup.set(speed);
   }
 
@@ -49,15 +48,23 @@ public class Intake extends SubsystemBase {
 
   }
 
-  public boolean intakeExtended(){
+  public boolean intakeExtended() {
     return m_extendSolenoid.get() == DoubleSolenoid.Value.kForward;
+  }
+
+  public void toggleIntake() {
+    if (intakeExtended()) {
+      retract();
+    } else if (!intakeExtended()) {
+      extend();
+    }
+
   }
 
   // the climb and intake cannot both be extended at the same time so when you
   // write the command to extend one, hte other needs to first be retracted.
   // the extension and retraction command can probably be a toggle between the two
   // today can you just write the subsystem for the intake
-
 
   @Override
   public void periodic() {
