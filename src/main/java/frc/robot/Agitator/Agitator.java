@@ -18,12 +18,13 @@ public class Agitator extends SubsystemBase {
   private final SparkMaxConfig agitatorConfig;
   
   public Agitator() {
-
     m_agitate = new SparkMax(68, MotorType.kBrushless);
     agitatorConfig = new SparkMaxConfig();
     agitatorConfig.inverted(false)
                    .idleMode(IdleMode.kCoast);
     m_agitate.configure(agitatorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+    spin(); //starting state
   }
 public void spin(){
 

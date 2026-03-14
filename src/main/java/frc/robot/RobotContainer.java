@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Agitator.Agitator;
 import frc.robot.Climber.Climb;
+import frc.robot.Climber.RunClimbMotors;
 import frc.robot.Intake.Intake;
 import frc.robot.Intake.ToggleIntake;
 import frc.robot.Swerve.SwerveJoystickCmd;
@@ -43,8 +44,6 @@ public class RobotContainer {
 
     configureBindings();
     m_compressor.enableDigital();
-
-    new InstantCommand(() -> m_agitate.spin());    
   }
 
   private void configureBindings() {
@@ -54,6 +53,7 @@ public class RobotContainer {
     // driveController.y().onTrue(new InstantCommand(()-> m_climb.disable()));
     operatorController.povDown().onTrue(new InstantCommand(() -> m_agitate.stop()));
     operatorController.b().onTrue(new ToggleIntake(m_intake, m_climb));
+    operatorController.rightBumper().whileTrue(new RunClimbMotors(m_climb, operatorController.getRightY()));
   }
  
   
