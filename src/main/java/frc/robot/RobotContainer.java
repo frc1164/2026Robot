@@ -15,8 +15,6 @@ import frc.robot.Climber.RunClimbMotors;
 import frc.robot.Intake.Intake;
 import frc.robot.Intake.Pickup;
 import frc.robot.Intake.ToggleIntake;
-import frc.robot.Swerve.SwerveJoystickCmd;
-import frc.robot.Swerve.SwerveSubsystem;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
@@ -25,29 +23,18 @@ public class RobotContainer {
   private Climb m_climb = new Climb();
   private Agitator m_agitate = new Agitator();
   private Intake m_intake = new Intake();
- // private final SwerveSubsystem swerve;
-  private final CommandXboxController driveController, operatorController;
+  private final CommandXboxController operatorController;
   private static final Compressor m_compressor = new Compressor(5, PneumaticsModuleType.CTREPCM);
 
 
   public RobotContainer() {
-   // swerve = new SwerveSubsystem();
-    driveController = new CommandXboxController(0);
     operatorController = new CommandXboxController(1);
-
-    // swerve.setDefaultCommand(new SwerveJoystickCmd(
-    //   swerve,
-    //   () -> driveController.getLeftY(),
-    //   () -> driveController.getLeftX(),
-    //   () -> -driveController.getRightX(),
-    //   () -> !driveController.povUp().getAsBoolean()));
 
     configureBindings();
     m_compressor.enableDigital();
   }
 
   private void configureBindings() {
-    //driveController.povDown().onTrue(new InstantCommand(() -> swerve.zeroHeading()));
     // driveController.x().onTrue(new InstantCommand(()-> m_climb.extend()));
     // driveController.b().onTrue(new InstantCommand(()-> m_climb.retract()));
     // driveController.y().onTrue(new InstantCommand(()-> m_climb.disable()));
