@@ -5,9 +5,6 @@
 package frc.robot.Shooter;
 
 
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
@@ -27,17 +24,15 @@ public class Shooter extends SubsystemBase {
   private final SparkMax turn;
   private final SparkMaxConfig turnConfig;
   
-  private final CANcoder canCoder1;
-  private final CANcoderConfiguration canCoderConfiguration1;
-  
-  private final CANcoder canCoder2;
-  private final CANcoderConfiguration canCoderConfiguration2;
+  private final AbsoluteEncoder encoder1;
+  private final AbsoluteEncoder encoder2;
 
   private final AbsoluteEncoder vertEncoder;
   private final AbsoluteEncoderConfig vertEncoderConfig;
 
   private final PIDController thetaPID, vertPID;
 
+  private final Feeder feeder;
 
   private final double gear0TeethCount = 132;
   private final double gear1TeethCount = 17;
@@ -49,39 +44,24 @@ public class Shooter extends SubsystemBase {
   
 
   /** Creates a new Shooter. */
-  public Shooter() {
+  public Shooter(Feeder m_feeder) {
 
-    vert = new SparkMax(54, MotorType.kBrushless);
+
+    //Instantiate and configure the pivot
     turn = new SparkMax(51, MotorType.kBrushless);
-
-    vertConfig = new SparkMaxConfig();
     turnConfig = new SparkMaxConfig();
-
-    // Add Encoder Ids later
-    canCoder1 = new CANcoder(52);
-    canCoderConfiguration1 = new CANcoderConfiguration();
-
-    canCoder2 = new CANcoder(53);
-    canCoderConfiguration2 = new CANcoderConfiguration();
-
-    //Vert needs soft limits, this configurator can apply them, will have them once we know gear ratio
-    vertConfig.inverted(false).idleMode(IdleMode.kBrake);
-    vert.configure(vertConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
     turnConfig.inverted(false);
     turnConfig.idleMode(IdleMode.kBrake);
-    // turnConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
-    // turnConfig.Feedback.FeedbackRemoteSensorID = 52;
-    // turnConfig.Feedback.RotorToSensorRatio = 18.75; //Should find this number
     turn.configure(turnConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
+    feeder = m_feeder;
+    encoder1 = feeder.getEncoder1(); //all the configuration logic occurs in Feeder
+    encoder2 = feeder.getEncoder2(); //all the configuration logic occurs in Feeders
 
-    canCoderConfiguration1.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
-    canCoderConfiguration1.MagnetSensor.MagnetOffset = -0.153320+0.05542;
-    canCoder1.getConfigurator().apply(canCoderConfiguration1);
 
-    canCoderConfiguration2.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
-    canCoder2.getConfigurator().apply(canCoderConfiguration2);
+    //Instantiate and configure the hood
+    vert = new SparkMax(54, MotorType.kBrushless);
+    vertConfig = new SparkMaxConfig();
 
     vertEncoder = vert.getAbsoluteEncoder();
     vertEncoderConfig = new AbsoluteEncoderConfig();
@@ -89,8 +69,13 @@ public class Shooter extends SubsystemBase {
                      .velocityConversionFactor(0)  //whatever the gear ratio is over 60
                      .zeroOffset(0)                //find this
                      .inverted(false);           //inverted?
-    
-    
+
+    vertConfig.apply(vertEncoderConfig);               
+    vertConfig.inverted(false).idleMode(IdleMode.kBrake);     //Hood needs soft limits, this configurator can apply them, will have them once we know gear ratio
+    vert.configure(vertConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+
+    //Instantiate PID's
     thetaPID = new PIDController(0.35 * 2 , 0, 0.001);
     vertPID = new PIDController(1, 0, 0);//TUNE TUNE TUNE TUNE TUNE before it runs.
   }
@@ -112,11 +97,10 @@ public class Shooter extends SubsystemBase {
   }
 
   public double getThetaPosition() {
-    double gear1Rotation = canCoder1.getPosition().getValueAsDouble() * 360;
-    double gear2Rotation = canCoder2.getPosition().getValueAsDouble() * 360;
+    double gear1Rotation = encoder1.getPosition() * 360;
+    double gear2Rotation = encoder2.getPosition() * 360;
 
     return (getGear3Rotation(gear1Rotation, gear2Rotation) % 360) * Math.PI / 180;
-    // return canCoder1.getPosition().getValueAsDouble() * 2 * Math.PI;
   }
 
   public double getPhiPosition(){
@@ -129,15 +113,11 @@ public class Shooter extends SubsystemBase {
   }
 
   //Once we know the range of theta, we will have to program in limits to this in a weird way, hopefulle we can leave it swapping at 0.
-  public void runThetaPID(double radians){//feed this radians
-    // double gear1Rotation = canCoder1.getPosition().getValueAsDouble() * 360;
-    // double gear2Rotation = canCoder2.getPosition().getValueAsDouble() * 360;
-
-    //PID will not stop running, only recieves updated angles
-    
+  public void runThetaPID(double radians){
+    //PID will not stop running, only recieves updated angles 
 
     // double pidGear0Speed = pid.calculate(getTurningPosition(), angle * Math.PI / 180);
-    // double pidMotorSpeed = pidGear0Speed * gear0TeethCount / gear1TeethCount;
+    // double pidMotorSpeed = pidGear0Speed * gear0TeethCount / gear1TeethCount; //this should be handles by position and velocity conversion factors
     double pidMotorSpeed = thetaPID.calculate(getThetaPosition(), radians);
     turn.set(pidMotorSpeed);
   }

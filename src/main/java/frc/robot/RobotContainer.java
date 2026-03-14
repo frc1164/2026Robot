@@ -31,8 +31,8 @@ public class RobotContainer {
 
   public RobotContainer() {
     swerve = new SwerveSubsystem();
-    shooter = new Shooter();
     feeder = new Feeder();
+    shooter = new Shooter(feeder);
 
     driveController = new CommandXboxController(0);
     operatorController = new CommandXboxController(1);
