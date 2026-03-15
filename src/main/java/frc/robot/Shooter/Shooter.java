@@ -117,7 +117,7 @@ public class Shooter extends SubsystemBase {
     //PID will not stop running, only recieves updated angles 
 
     // double pidGear0Speed = pid.calculate(getTurningPosition(), angle * Math.PI / 180);
-    // double pidMotorSpeed = pidGear0Speed * gear0TeethCount / gear1TeethCount; //this should be handles by position and velocity conversion factors
+    // double pidMotorSpeed = pidGear0Speed * gear0TeethCount / gear1TeethCount;
     double pidMotorSpeed = thetaPID.calculate(getThetaPosition(), radians);
     turn.set(pidMotorSpeed);
   }
