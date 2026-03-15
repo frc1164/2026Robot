@@ -65,8 +65,8 @@ public class Shooter extends SubsystemBase {
 
     vertEncoder = vert.getAbsoluteEncoder();
     vertEncoderConfig = new AbsoluteEncoderConfig();
-    vertEncoderConfig.positionConversionFactor(0)  //whatever the hood gear ratio is
-                     .velocityConversionFactor(0)  //whatever the gear ratio is over 60
+    vertEncoderConfig.positionConversionFactor(1/64)  //whatever the hood gear ratio is
+                     .velocityConversionFactor(1/64)  //whatever the gear ratio is over 60
                      .zeroOffset(0)                //find this
                      .inverted(false);           //inverted?
 
