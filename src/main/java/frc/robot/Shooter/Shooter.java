@@ -15,115 +15,67 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 public class Shooter extends SubsystemBase {
   private final SparkMax vert;
   private final SparkMaxConfig vertConfig;
 
-  private final SparkMax turn;
-  private final SparkMaxConfig turnConfig;
-  
-  private final AbsoluteEncoder encoder1;
-  private final AbsoluteEncoder encoder2;
-
   private final AbsoluteEncoder vertEncoder;
   private final AbsoluteEncoderConfig vertEncoderConfig;
 
-  private final PIDController thetaPID, vertPID;
+  private final PIDController vertPID;
 
-  private final Feeder feeder;
-
-  private final double gear0TeethCount = 132;
-  private final double gear1TeethCount = 17;
-  private final double gear2TeethCount = 36;
-
-  private final double n1 = 17; // g1 * n1 (mod g2) = 1
-  private final double n2 = 9; // g2 * n2 (mod g1) = 1
-  private final double lcm = 612; // lcm(g1, g2)
-  
+  private final CommandXboxController CONTROLLER;
 
   /** Creates a new Shooter. */
-  public Shooter(Feeder m_feeder) {
-
-
-    //Instantiate and configure the pivot
-    turn = new SparkMax(51, MotorType.kBrushless);
-    turnConfig = new SparkMaxConfig();
-    turnConfig.inverted(false);
-    turnConfig.idleMode(IdleMode.kBrake);
-    turn.configure(turnConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-    feeder = m_feeder;
-    encoder1 = feeder.getEncoder1(); //all the configuration logic occurs in Feeder
-    encoder2 = feeder.getEncoder2(); //all the configuration logic occurs in Feeders
-
-
+  public Shooter(CommandXboxController controller) {
     //Instantiate and configure the hood
     vert = new SparkMax(54, MotorType.kBrushless);
     vertConfig = new SparkMaxConfig();
 
     vertEncoder = vert.getAbsoluteEncoder();
     vertEncoderConfig = new AbsoluteEncoderConfig();
-    vertEncoderConfig.positionConversionFactor(1/64)  //whatever the hood gear ratio is
-                     .velocityConversionFactor(1/64)  //whatever the gear ratio is over 60
-                     .zeroOffset(0)                //find this
-                     .inverted(false);           //inverted?
+    vertEncoderConfig.zeroOffset(0.105)
+                     .inverted(false);           
 
     vertConfig.apply(vertEncoderConfig);               
-    vertConfig.inverted(false).idleMode(IdleMode.kBrake);     //Hood needs soft limits, this configurator can apply them, will have them once we know gear ratio
+    vertConfig.inverted(true).idleMode(IdleMode.kBrake); 
+    vertConfig.softLimit.reverseSoftLimit(.006).forwardSoftLimit(.061); //2.16 degrees and 21.96 degrees
     vert.configure(vertConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
+    vertPID = new PIDController(0.03, 0.00002, 0.0001);//TUNE TUNE TUNE TUNE TUNE before it runs.
+  
 
-    //Instantiate PID's
-    thetaPID = new PIDController(0.35 * 2 , 0, 0.001);
-    vertPID = new PIDController(1, 0, 0);//TUNE TUNE TUNE TUNE TUNE before it runs.
-  }
-
-  private double getGear3Rotation(double r1, double r2) {
-    final double d1 = r1 * 360;
-    final double d2 = r2 * 360;
-
-    final double t1 = d1 * gear1TeethCount / 360;
-    final double t2 = d2 * gear2TeethCount / 360;
-
-    final double bezout = (t1 * gear2TeethCount * n2 + t2 * gear1TeethCount * n1) % lcm;
-
-    final double totalRot1 = Math.floor(bezout / gear1TeethCount);
-
-    final double rot0 = (totalRot1 + d1 / 360) * gear1TeethCount / gear0TeethCount * 360;
-
-    return rot0;
-  }
-
-  public double getThetaPosition() {
-    double gear1Rotation = encoder1.getPosition() * 360;
-    double gear2Rotation = encoder2.getPosition() * 360;
-
-    return (getGear3Rotation(gear1Rotation, gear2Rotation) % 360) * Math.PI / 180;
+    CONTROLLER = controller;
   }
 
   public double getPhiPosition(){
-    return vertEncoder.getPosition() * 2 * Math.PI;
+    return vertEncoder.getPosition() * 360;
   }
 
-  public void runPhiPID(double radians){
-    //might want to set limits here if the motor config soft limits dont work. Or do both.
-    vert.set(vertPID.calculate(getPhiPosition(), radians));
-  }
+  public void runPhiPID(double degrees){
+    double angle = -(degrees - 85.6);
 
-  //Once we know the range of theta, we will have to program in limits to this in a weird way, hopefulle we can leave it swapping at 0.
-  public void runThetaPID(double radians){
-    //PID will not stop running, only recieves updated angles 
-
-    // double pidGear0Speed = pid.calculate(getTurningPosition(), angle * Math.PI / 180);
-    // double pidMotorSpeed = pidGear0Speed * gear0TeethCount / gear1TeethCount;
-    double pidMotorSpeed = thetaPID.calculate(getThetaPosition(), radians);
-    turn.set(pidMotorSpeed);
+    if(5 <= angle || angle <= 25){
+      vert.set(vertPID.calculate(getPhiPosition(), angle) + angle * (0.00214));
+    }
+    SmartDashboard.putNumber("setpt", angle);
+    SmartDashboard.putNumber("location", vertEncoder.getPosition() * 360);
   }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    double input = -CONTROLLER.getRightTriggerAxis() * 25 + 80;
+    runPhiPID(input);
+
+    SmartDashboard.putNumber("VoltageOut", vert.get());
+    SmartDashboard.putNumber("temp", vert.getMotorTemperature());
+
+
+    //85.6 is hi --> 0 
+    //61.4 is low --> 24.2
   }
 }
