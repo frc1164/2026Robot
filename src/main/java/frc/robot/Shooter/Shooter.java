@@ -41,7 +41,7 @@ public class Shooter extends SubsystemBase {
 
   private final double n1 = 17; // g1 * n1 (mod g2) = 1
   private final double n2 = 9; // g2 * n2 (mod g1) = 1
-  private final double lcm = 612; // lcm(g1, g2)
+  private final double lcm = gear1TeethCount * gear2TeethCount; // lcm(g1, g2)
 
   /** Creates a new Shooter. */
   public Shooter(Feeder m_feeder) {
@@ -53,10 +53,10 @@ public class Shooter extends SubsystemBase {
     turnConfig.idleMode(IdleMode.kBrake);
 
     feeder = m_feeder;
-    encoder1 = feeder.getEncoder2(); // all the configuration logic occurs in Feeder
-    encoder2 = turn.getAbsoluteEncoder(); 
+    encoder2 = feeder.getEncoder2(); // all the configuration logic occurs in Feeder
+    encoder1 = turn.getAbsoluteEncoder(); 
     config1 = new AbsoluteEncoderConfig();
-    config1.inverted(false)
+    config1.inverted(true)
            .zeroOffset(0.5370022);; //subject to change
     turnConfig.apply(config1);    
     turn.configure(turnConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -65,39 +65,70 @@ public class Shooter extends SubsystemBase {
     thetaPID = new PIDController(0.0001, 0, 0);
   }
 
-  private double getGear3Rotation(double r1, double r2) {
-    final double d1 = r1 * 360;
-    final double d2 = r2 * 360;
+  private double getGear3Rotation(double e1, double e2) {
+    double GEAR_0_TOOTH_COUNT = 132.0;
+    double GEAR_1_TOOTH_COUNT = 17.0;
+    double GEAR_2_TOOTH_COUNT = 36.0;    
+    double SLOPE = (GEAR_2_TOOTH_COUNT * GEAR_1_TOOTH_COUNT)
+            / ((GEAR_1_TOOTH_COUNT - GEAR_2_TOOTH_COUNT) * GEAR_0_TOOTH_COUNT);
+    double difference = e2 - e1;
+        // if (difference > 250) {
+        //     difference -= 360;
+        // }
+        // if (difference < -250) {
+        //     difference += 360;
+        // }
+        difference *= SLOPE;
 
-    SmartDashboard.putNumber("d1", d1);
-    SmartDashboard.putNumber("d2", d2);
+        double e1Rotations = (difference * GEAR_0_TOOTH_COUNT / GEAR_1_TOOTH_COUNT) / 360.0;
+        double e1RotationsFloored = Math.floor(e1Rotations);
+        double turretAngle = (e1RotationsFloored * 360.0 + e1) * (GEAR_1_TOOTH_COUNT / GEAR_0_TOOTH_COUNT);
+        if (turretAngle - difference < -100) {
+            turretAngle += GEAR_1_TOOTH_COUNT / GEAR_0_TOOTH_COUNT * 360.0;
+        } else if (turretAngle - difference > 100) {
+            turretAngle -= GEAR_1_TOOTH_COUNT / GEAR_0_TOOTH_COUNT * 360.0;
+        }
+        SmartDashboard.putNumber("Angle", turretAngle);
+        return turretAngle;
 
-    final double t1 = d1 * gear1TeethCount / 360;
-    final double t2 = d2 * gear2TeethCount / 360;
+    // final double d1 = r1 * 360;
+    // final double d2 = r2 * 360;
 
-    SmartDashboard.putNumber("t1", t1);
-    SmartDashboard.putNumber("t2", t2);
+    // SmartDashboard.putNumber("d1", d1);
+    // SmartDashboard.putNumber("d2", d2);
 
-    final double bezout = (t1 * gear2TeethCount * n2 + t2 * gear1TeethCount * n1) % lcm;
+    // final double t1 = d1 * gear1TeethCount / 360;
+    // final double t2 = d2 * gear2TeethCount / 360;
 
-    SmartDashboard.putNumber("bezout", bezout);
+    // SmartDashboard.putNumber("t1", t1);
+    // SmartDashboard.putNumber("t2", t2);
+    // // Teeth traveled 
+    // // final double bezout = (t1 * gear2TeethCount * n2 + t2 * gear1TeethCount * n1) % lcm;
+    // final double bezout = (t1 * gear2TeethCount * n2 + t2 * gear1TeethCount * n1) % lcm;
 
-    final double totalRot1 = Math.floor(bezout / gear1TeethCount);
+    // SmartDashboard.putNumber("bezout", bezout);
 
-    SmartDashboard.putNumber("totalrot1", totalRot1);
+    // final double totalRot1 = (bezout / gear2TeethCount);
 
-    final double rot0 = (totalRot1 + d1 / 360) * gear1TeethCount / gear0TeethCount * 360;
+    // SmartDashboard.putNumber("totalrot1", totalRot1);
 
-    SmartDashboard.putNumber("rot0 - maingear", rot0);
+    
+    // final double totalRot = (bezout / gear0TeethCount);
 
-    return totalRot1;
+    // SmartDashboard.putNumber("totalrot", totalRot);
+
+    // final double rot0 = (totalRot1 + d1 / 360) * gear1TeethCount / gear0TeethCount * 360;
+
+    // SmartDashboard.putNumber("rot0 - maingear", rot0);
+
+    // return totalRot1;
   }
 
   public double getThetaPosition() {
     double gear1Rotation = encoder1.getPosition();
     double gear2Rotation = encoder2.getPosition();
 
-    return (getGear3Rotation(gear1Rotation, gear2Rotation) % 360) * Math.PI / 180;
+    return (getGear3Rotation(gear1Rotation * 360, gear2Rotation * 360) % 360) * Math.PI / 180;
   }
 
   // Once we know the range of theta, we will have to program in limits to this in
