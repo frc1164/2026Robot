@@ -44,7 +44,7 @@ public class ShooterConstants{
     SOON, ACTIVE, INACTIVE;
   };
   
-  public static final double exitVelocity = 0; 
+  public static final double exitVelocity = 0; //5000rpm 
   public static final double minVert = 0;
   public static final double maxVert = 0;
   public static final Translation3d hubPose = new Translation3d(4.63,4.0,1.68); 
@@ -56,8 +56,14 @@ public class ShooterConstants{
   public static final InterpolatingTreeMap<Double, ShotInfo> shotMap = new InterpolatingTreeMap<>(InverseInterpolator.forDouble(), ShotInfo::interpolate);
   static{
     //example data point
-    shotMap.put(0.0, new ShotInfo(exitVelocity, Math.PI/2));
-    timeMap.put(0.0, Math.PI/2);
+      // shotMap.put(0.0, new ShotInfo(exitVelocity, Math.PI/2));
+      // timeMap.put(0.0, Math.PI/2);
     //first is dist, second is radians
+    shotMap.put(1.49, new ShotInfo(exitVelocity, 1.6581));
+    shotMap.put(3.15, new ShotInfo(exitVelocity, 1.7453));
+    shotMap.put(5.82, new ShotInfo(exitVelocity, 1.8326));
+    shotMap.put(6.47, new ShotInfo(exitVelocity, 1.9199));
+    shotMap.put(7.28, new ShotInfo(exitVelocity, 2.0071));
+
   }
 }
