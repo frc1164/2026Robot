@@ -79,7 +79,7 @@ public class Shooter extends SubsystemBase {
   public void runPhiPID(double degrees){
     double angle = -(degrees - 85.6) + 90;
 
-    double power = vertPID.calculate(getPhiPosition(), 105) + (angle-90) * 0.00456368213471;
+    double power = vertPID.calculate(getPhiPosition(), 97) + (angle-90) * 0.00456368213471;
 
     if (power > 0.25){
       power = 0.21;
@@ -116,7 +116,7 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("temp", vert.getMotorTemperature());
 
     SmartDashboard.putNumber("ShotSpeed", shootMot.getVelocity().getValueAsDouble() * 60);
-    setShotSpeed(2500);
+    setShotSpeed(4000);
 
     //85.6 is hi --> 0 
     //61.4 is low --> 24.2
