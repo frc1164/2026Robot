@@ -23,23 +23,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
-
-  private final SparkMax vert;
-  private final SparkMaxConfig vertConfig;
-
-  private final TalonFX shootMot;
-  private final TalonFXConfiguration shotConfig;
-
   private final SparkMax turn;
   private final SparkMaxConfig turnConfig;
 
   private final AbsoluteEncoder encoder1;
   private final AbsoluteEncoder encoder2;
 
-  private final AbsoluteEncoder vertEncoder;
-  private final AbsoluteEncoderConfig vertEncoderConfig;
+  private final AbsoluteEncoderConfig config1;
 
-  private final PIDController thetaPID, vertPID, shotPID;
+  private final PIDController thetaPID;
 
   private final Feeder feeder;
 
@@ -51,8 +43,6 @@ public class Shooter extends SubsystemBase {
   private final double n2 = 9; // g2 * n2 (mod g1) = 1
   private final double lcm = 612; // lcm(g1, g2)
 
-  private double lastSpeed;
-
   /** Creates a new Shooter. */
   public Shooter(Feeder m_feeder) {
 
@@ -61,92 +51,53 @@ public class Shooter extends SubsystemBase {
     turnConfig = new SparkMaxConfig();
     turnConfig.inverted(false);
     turnConfig.idleMode(IdleMode.kBrake);
-    turn.configure(turnConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     feeder = m_feeder;
-    encoder1 = feeder.getEncoder1(); // all the configuration logic occurs in Feeder
-    encoder2 = feeder.getEncoder2(); // all the configuration logic occurs in Feeders
-
-    // Instantiate and configure the hood
-    vert = new SparkMax(54, MotorType.kBrushless);
-    vertConfig = new SparkMaxConfig();
-
-    vertEncoder = vert.getAbsoluteEncoder();
-    vertEncoderConfig = new AbsoluteEncoderConfig();
-    vertEncoderConfig.zeroOffset(0.1004375 + 0.75)
-        .inverted(false);
-
-    vertConfig.apply(vertEncoderConfig);
-    vertConfig.inverted(true).idleMode(IdleMode.kBrake);
-    vert.configure(vertConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-    // Instantiate and configure shooter
-    shootMot = new TalonFX(55);
-    shotConfig = new TalonFXConfiguration();
-    shotConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-    shotConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-    shootMot.getConfigurator().apply(shotConfig);
+    encoder1 = feeder.getEncoder2(); // all the configuration logic occurs in Feeder
+    encoder2 = turn.getAbsoluteEncoder(); 
+    config1 = new AbsoluteEncoderConfig();
+    config1.inverted(false)
+           .zeroOffset(0.5370022);; //subject to change
+    turnConfig.apply(config1);    
+    turn.configure(turnConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     // Instantiate PID's
-    thetaPID = new PIDController(0.35 * 2, 0, 0.001);
-    vertPID = new PIDController(0.039, 0.00006, 0.0001);
-    shotPID = new PIDController(.0001, 0, 0.00003);
-
-    lastSpeed = 0;
-
+    thetaPID = new PIDController(0.0001, 0, 0);
   }
 
   private double getGear3Rotation(double r1, double r2) {
     final double d1 = r1 * 360;
     final double d2 = r2 * 360;
 
+    SmartDashboard.putNumber("d1", d1);
+    SmartDashboard.putNumber("d2", d2);
+
     final double t1 = d1 * gear1TeethCount / 360;
     final double t2 = d2 * gear2TeethCount / 360;
 
+    SmartDashboard.putNumber("t1", t1);
+    SmartDashboard.putNumber("t2", t2);
+
     final double bezout = (t1 * gear2TeethCount * n2 + t2 * gear1TeethCount * n1) % lcm;
+
+    SmartDashboard.putNumber("bezout", bezout);
 
     final double totalRot1 = Math.floor(bezout / gear1TeethCount);
 
+    SmartDashboard.putNumber("totalrot1", totalRot1);
+
     final double rot0 = (totalRot1 + d1 / 360) * gear1TeethCount / gear0TeethCount * 360;
 
-    return rot0;
+    SmartDashboard.putNumber("rot0 - maingear", rot0);
+
+    return totalRot1;
   }
 
   public double getThetaPosition() {
-    double gear1Rotation = encoder1.getPosition() * 360;
-    double gear2Rotation = encoder2.getPosition() * 360;
+    double gear1Rotation = encoder1.getPosition();
+    double gear2Rotation = encoder2.getPosition();
 
     return (getGear3Rotation(gear1Rotation, gear2Rotation) % 360) * Math.PI / 180;
-  }
-
-  public double getPhiPosition() {
-    return vertEncoder.getPosition() * 360;
-  }
-
-  public void runPhiPID(double degrees) {
-    double angle = -(degrees - 85.6) + 90;
-
-    double power = vertPID.calculate(getPhiPosition(), 97) + (angle - 90) * 0.00456368213471;
-
-    if (power > 0.25) {
-      power = 0.21;
-    } else if (power < -0.15) {
-      power = -0.17;
-    }
-    vert.set(power);
-    SmartDashboard.putNumber("setpt", angle);
-    SmartDashboard.putNumber("location", vertEncoder.getPosition() * 360);
-  }
-
-  public void setShotSpeed(double speed) {// 4000rpm
-    double PIDoutput = shotPID.calculate(shootMot.getVelocity().getValueAsDouble() * 60, speed);
-    double power = PIDoutput + lastSpeed;
-    if (power <= 0 || !DriverStation.isTeleopEnabled()) {
-      power = 0;
-    }
-    shootMot.set(power);
-    lastSpeed = power;
-    SmartDashboard.putNumber("lastSpeed", lastSpeed);
   }
 
   // Once we know the range of theta, we will have to program in limits to this in
@@ -154,15 +105,16 @@ public class Shooter extends SubsystemBase {
   public void runThetaPID(double radians) {
     // PID will not stop running, only recieves updated angles
 
-    // double pidGear0Speed = pid.calculate(getTurningPosition(), angle * Math.PI /
-    // 180);
-    // double pidMotorSpeed = pidGear0Speed * gear0TeethCount / gear1TeethCount;
-    double pidMotorSpeed = thetaPID.calculate(getThetaPosition(), radians);
+    double pidGear0Speed = thetaPID.calculate(getThetaPosition(), radians * Math.PI / 180);
+    double pidMotorSpeed = pidGear0Speed * gear0TeethCount / gear1TeethCount;
+    // double pidMotorSpeed = thetaPID.calculate(getThetaPosition(), radians);
     turn.set(pidMotorSpeed);
   }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    SmartDashboard.putNumber("main gear", getThetaPosition());
+    SmartDashboard.putNumber("gear1", encoder1.getPosition());
+    SmartDashboard.putNumber("gear 2", encoder2.getPosition());
   }
 }

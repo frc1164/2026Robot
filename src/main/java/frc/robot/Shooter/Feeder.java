@@ -16,45 +16,43 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Feeder extends SubsystemBase {
 
-  private final SparkMax feederA, feederB;
-  private final SparkMaxConfig feedConfigA, feedConfigB;
+  private final SparkMax feederA;
+  private final SparkMaxConfig feedConfigA;
 
-  private final AbsoluteEncoder encoder1, encoder2;
-  private final AbsoluteEncoderConfig config1, config2;
+  private final AbsoluteEncoder encoder2;
+  private final AbsoluteEncoderConfig config2;
   private boolean makeShootGo;
 
   
   public Feeder() {
     feederA = new SparkMax(56, MotorType.kBrushless);
-    feederB = new SparkMax(57, MotorType.kBrushless);
-    encoder1 = feederA.getAbsoluteEncoder();
-    encoder2 = feederB.getAbsoluteEncoder();
+    //feederB = new SparkMax(57, MotorType.kBrushless);
+    encoder2 = feederA.getAbsoluteEncoder();
+    //encoder1 = feederB.getAbsoluteEncoder();
 
     feedConfigA = new SparkMaxConfig();
-    feedConfigB = new SparkMaxConfig();
-    config1 = new AbsoluteEncoderConfig();
+    //feedConfigB = new SparkMaxConfig();
+    //config1 = new AbsoluteEncoderConfig();
     config2 = new AbsoluteEncoderConfig();
 
     
     feedConfigA.idleMode(IdleMode.kBrake).inverted(false);
-    feedConfigB.idleMode(IdleMode.kBrake).inverted(true).follow(56);
+    //feedConfigB.idleMode(IdleMode.kBrake).inverted(true).follow(56);
 
-    config1.inverted(false)
-           .zeroOffset(0) //subject to change
-           .positionConversionFactor(1); //also subject to change but since it is right on the gear probably just 1 or delete the line
+    // config1.inverted(false)
+    //        .zeroOffset(0.5370022); //subject to change
 
     config2.inverted(false)
-           .zeroOffset(0) //subject to change
-           .positionConversionFactor(1); //also subject to change but since it is right on the gear probably just 1 or delete the line
+           .zeroOffset(0.5882150); //subject to change
     
-    feedConfigA.apply(config1);
-    feedConfigB.apply(config2);
+    feedConfigA.apply(config2);
+    //feedConfigB.apply(config1);
 
 
     feederA.configure(feedConfigA, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    feederB.configure(feedConfigB, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    //feederB.configure(feedConfigB, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
    
-    makeShootGo = false;
+    //makeShootGo = false;
   }
 
   public void shootOn(){
@@ -77,13 +75,10 @@ public class Feeder extends SubsystemBase {
   }
 
   //might need to switch these depending on which is wired to which, these are actually the pivot encoders for the shooter though.
-  public AbsoluteEncoder getEncoder1(){    
-    return encoder1;
-  }
-
-  public AbsoluteEncoder getEncoder2(){
+  public AbsoluteEncoder getEncoder2(){    
     return encoder2;
   }
+
 
   @Override
   public void periodic() {}
