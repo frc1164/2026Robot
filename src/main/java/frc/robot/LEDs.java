@@ -12,11 +12,9 @@ import edu.wpi.first.wpilibj.AddressableLEDBufferView;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Shooter.ShooterCalculator;
 import frc.robot.Shooter.ShooterConstants;
-import frc.robot.Shooter.ShooterConstants.HUBSTATE;
 
 public class LEDs extends SubsystemBase {
   private static final int kPort = 0;
