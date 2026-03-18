@@ -4,6 +4,8 @@
 
 package frc.robot.Shooter;
 
+import java.util.Optional;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -20,6 +22,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -34,6 +37,8 @@ public class Shooter extends SubsystemBase {
   private final SparkMax turn;
   private final SparkMaxConfig turnConfig;
 
+  
+  @SuppressWarnings("unused")
   private final AbsoluteEncoder absEncoder;
   private final RelativeEncoder relEncoder;
 
@@ -54,6 +59,8 @@ public class Shooter extends SubsystemBase {
 
   private double lastSpeed;
   private double currentTheta;
+
+  private static Optional<Alliance> alliance;
 
   /** Creates a new Shooter. */
   public Shooter(Feeder m_feeder) {
@@ -99,6 +106,8 @@ public class Shooter extends SubsystemBase {
 
     lastSpeed = 0;
     currentTheta = Math.PI / 2; //might be 3/2 pi
+
+    alliance = DriverStation.getAlliance();
   }
 
   // private double getGear3Rotation(double r1, double r2) {
@@ -166,6 +175,10 @@ public class Shooter extends SubsystemBase {
   public void runThetaPID(double radians) {
     double pidMotorSpeed = thetaPID.calculate(getThetaPosition(), radians);
     turn.set(pidMotorSpeed);
+  }
+
+  public static Optional<Alliance> getAlliance(){
+    return alliance;
   }
 
   @Override

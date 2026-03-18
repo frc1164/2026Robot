@@ -54,10 +54,10 @@ public class ShooterCalculator {
 
   // Automatically sets the shooter's baseline target. Need to add a constraint
   // system for if alliance.get no worky.
-  public static Translation3d target(Pose2d botPose) {
+  public static Translation3d target(Pose2d botPose, boolean blue) {
     Translation3d TARGET = new Translation3d();
     double x = botPose.getX();
-    if (DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue)) {
+    if (blue) {
       if (x >= 0 && x < ShooterConstants.XVALS.BATRENCH) {
         TARGET = ShooterConstants.TAGRETS.BLUEHUB;
       } else if (x >= ShooterConstants.XVALS.BATRENCH && x <= ShooterConstants.XVALS.BMTRENCH
@@ -76,7 +76,7 @@ public class ShooterCalculator {
           TARGET = ShooterConstants.TAGRETS.CENTERDOWN;
         }
       }
-    } else if (DriverStation.getAlliance().get().equals(DriverStation.Alliance.Red)) {
+    } else if (!blue) {
       if (x > ShooterConstants.XVALS.RATRENCH && x < ShooterConstants.XVALS.REDWALL) {
         TARGET = new Translation3d(botPose.getX(), botPose.getY(), 10);
       } else if (x >= ShooterConstants.XVALS.BATRENCH && x <= ShooterConstants.XVALS.BMTRENCH
@@ -174,7 +174,7 @@ public class ShooterCalculator {
   }
 
   public static ShooterConstants.HUBSTATE isHubActive() {
-    Optional<Alliance> alliance = DriverStation.getAlliance();
+    Optional<Alliance> alliance = Shooter.getAlliance();
     // If we have no alliance, we cannot be enabled, therefore no hub.
     if (alliance.isEmpty()) {
       return HUBSTATE.INACTIVE;
@@ -182,10 +182,6 @@ public class ShooterCalculator {
     // Hub is always enabled in autonomous.
     if (DriverStation.isAutonomousEnabled()) {
       return HUBSTATE.ACTIVE;
-    }
-    // At this point, if we're not teleop enabled, there is no hub.
-    if (!DriverStation.isTeleopEnabled()) {
-      return HUBSTATE.SOON;
     }
 
     // We're teleop enabled, compute.

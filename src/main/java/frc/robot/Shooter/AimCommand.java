@@ -6,13 +6,14 @@ package frc.robot.Shooter;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Shooter.ShooterCalculator.ShotInfo;
 import frc.robot.Swerve.SwerveSubsystem;
 
 public class AimCommand extends Command {
   private final Shooter ShooterSubsystem;
-
+  boolean blue;
 
   private final SwerveSubsystem Swerve;
   public AimCommand(Shooter shooter, SwerveSubsystem swerve) {
@@ -23,7 +24,9 @@ public class AimCommand extends Command {
   }
 
   @Override
-  public void initialize() {}
+  public void initialize() {
+    blue = Shooter.getAlliance().get() == Alliance.Blue;
+  }
 
   @Override
   public void execute() {
@@ -31,7 +34,7 @@ public class AimCommand extends Command {
     Pose2d botPose = Swerve.getPose();
 
     //Get initial target
-    Translation3d target = ShooterCalculator.target(Swerve.getPose());
+    Translation3d target = ShooterCalculator.target(Swerve.getPose(), blue);
 
     //Calculate optimal shot/aiming
     ShotInfo shot = ShooterCalculator.getShot(Swerve.fieldRelativeVelocity(), target, botPose, 4);

@@ -5,7 +5,7 @@
 package frc.robot.Shooter;
 
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Shooter.ShooterConstants.HUBSTATE;
 import frc.robot.Swerve.SwerveSubsystem;
@@ -14,6 +14,7 @@ public class AutoShoot extends Command {
   private final Feeder feeder;
   private final SwerveSubsystem swerve;
   private Translation3d HUB;
+  boolean blue;
   //private Translation3d PASSUP, PASSDOWN; 
 
   public AutoShoot(Feeder Feeder, SwerveSubsystem Swerve) {
@@ -25,12 +26,14 @@ public class AutoShoot extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if (DriverStation.getAlliance().get().equals(DriverStation.Alliance.Blue)){
+    blue = Shooter.getAlliance().get() == Alliance.Blue;
+
+    if (blue){
       HUB = ShooterConstants.TAGRETS.BLUEHUB;
       // PASSUP = ShooterConstants.TAGRETS.BLUEPASSUP;
       // PASSDOWN = ShooterConstants.TAGRETS.BLUEPASSDOWN;
     }
-    else if (DriverStation.getAlliance().get().equals(DriverStation.Alliance.Red)){
+    else if (!blue){
       HUB = ShooterConstants.TAGRETS.REDHUB;
       // PASSUP = ShooterConstants.TAGRETS.REDPASSUP;
       // PASSDOWN = ShooterConstants.TAGRETS.REDPASSDOWN; 
@@ -45,7 +48,7 @@ public class AutoShoot extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(ShooterCalculator.target(swerve.getPose()) == HUB && ShooterCalculator.isHubActive() == HUBSTATE.ACTIVE){
+    if(ShooterCalculator.target(swerve.getPose(), blue) == HUB && ShooterCalculator.isHubActive() == HUBSTATE.ACTIVE){
       feeder.shootOn();
     }
     // else if (ShooterCalculator.target(swerve.getPose()) == PASSUP || ShooterCalculator.target(swerve.getPose()) == PASSDOWN){
