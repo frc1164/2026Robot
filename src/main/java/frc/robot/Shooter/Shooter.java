@@ -10,6 +10,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.PersistMode;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -26,7 +27,7 @@ public class Shooter extends SubsystemBase {
   private final SparkMax turn;
   private final SparkMaxConfig turnConfig;
 
-  private final AbsoluteEncoder encoder1;
+  private final RelativeEncoder encoder1;
   private final AbsoluteEncoder encoder2;
 
   private final AbsoluteEncoderConfig config1;
@@ -43,53 +44,58 @@ public class Shooter extends SubsystemBase {
   private final double n2 = 9; // g2 * n2 (mod g1) = 1
   private final double lcm = gear1TeethCount * gear2TeethCount; // lcm(g1, g2)
 
+  private double angle;
+
   /** Creates a new Shooter. */
   public Shooter(Feeder m_feeder) {
 
     // Instantiate and configure the pivot
-    turn = new SparkMax(51, MotorType.kBrushless);
+    turn = new SparkMax(56, MotorType.kBrushless);
     turnConfig = new SparkMaxConfig();
     turnConfig.inverted(false);
     turnConfig.idleMode(IdleMode.kBrake);
+    turnConfig.encoder.velocityConversionFactor(1)
+    .positionConversionFactor(1);
 
     feeder = m_feeder;
     encoder2 = feeder.getEncoder2(); // all the configuration logic occurs in Feeder
-    encoder1 = turn.getAbsoluteEncoder(); 
+    encoder1 = turn.getEncoder(); 
     config1 = new AbsoluteEncoderConfig();
     config1.inverted(true)
            .zeroOffset(0.5370022);; //subject to change
-    turnConfig.apply(config1);    
+    turnConfig.apply(config1);
     turn.configure(turnConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     // Instantiate PID's
     thetaPID = new PIDController(0.0001, 0, 0);
+    angle = 0;
   }
 
-  private double getGear3Rotation(double e1, double e2) {
-    double GEAR_0_TOOTH_COUNT = 132.0;
-    double GEAR_1_TOOTH_COUNT = 17.0;
-    double GEAR_2_TOOTH_COUNT = 36.0;    
-    double SLOPE = (GEAR_2_TOOTH_COUNT * GEAR_1_TOOTH_COUNT)
-            / ((GEAR_1_TOOTH_COUNT - GEAR_2_TOOTH_COUNT) * GEAR_0_TOOTH_COUNT);
-    double difference = e2 - e1;
-        // if (difference > 250) {
-        //     difference -= 360;
-        // }
-        // if (difference < -250) {
-        //     difference += 360;
-        // }
-        difference *= SLOPE;
+  // private double getGear3Rotation(double e1, double e2) {
+  //   double GEAR_0_TOOTH_COUNT = 132.0;
+  //   double GEAR_1_TOOTH_COUNT = 17.0;
+  //   double GEAR_2_TOOTH_COUNT = 36.0;    
+  //   double SLOPE = (GEAR_2_TOOTH_COUNT * GEAR_1_TOOTH_COUNT)
+  //           / ((GEAR_1_TOOTH_COUNT - GEAR_2_TOOTH_COUNT) * GEAR_0_TOOTH_COUNT);
+  //   double difference = e2 - e1;
+  //       // if (difference > 250) {
+  //       //     difference -= 360;
+  //       // }
+  //       // if (difference < -250) {
+  //       //     difference += 360;
+  //       // }
+  //       difference *= SLOPE;
 
-        double e1Rotations = (difference * GEAR_0_TOOTH_COUNT / GEAR_1_TOOTH_COUNT) / 360.0;
-        double e1RotationsFloored = Math.floor(e1Rotations);
-        double turretAngle = (e1RotationsFloored * 360.0 + e1) * (GEAR_1_TOOTH_COUNT / GEAR_0_TOOTH_COUNT);
-        if (turretAngle - difference < -100) {
-            turretAngle += GEAR_1_TOOTH_COUNT / GEAR_0_TOOTH_COUNT * 360.0;
-        } else if (turretAngle - difference > 100) {
-            turretAngle -= GEAR_1_TOOTH_COUNT / GEAR_0_TOOTH_COUNT * 360.0;
-        }
-        SmartDashboard.putNumber("Angle", turretAngle);
-        return turretAngle;
+  //       double e1Rotations = (difference * GEAR_0_TOOTH_COUNT / GEAR_1_TOOTH_COUNT) / 360.0;
+  //       double e1RotationsFloored = Math.floor(e1Rotations);
+  //       double turretAngle = (e1RotationsFloored * 360.0 + e1) * (GEAR_1_TOOTH_COUNT / GEAR_0_TOOTH_COUNT);
+  //       if (turretAngle - difference < -100) {
+  //           turretAngle += GEAR_1_TOOTH_COUNT / GEAR_0_TOOTH_COUNT * 360.0;
+  //       } else if (turretAngle - difference > 100) {
+  //           turretAngle -= GEAR_1_TOOTH_COUNT / GEAR_0_TOOTH_COUNT * 360.0;
+  //       }
+  //       SmartDashboard.putNumber("Angle", turretAngle);
+  //       return turretAngle;
 
     // final double d1 = r1 * 360;
     // final double d2 = r2 * 360;
@@ -122,13 +128,15 @@ public class Shooter extends SubsystemBase {
     // SmartDashboard.putNumber("rot0 - maingear", rot0);
 
     // return totalRot1;
-  }
+  // }
 
   public double getThetaPosition() {
-    double gear1Rotation = encoder1.getPosition();
-    double gear2Rotation = encoder2.getPosition();
+    // double gear1Rotation = encoder1.getPosition();
+    // double gear2Rotation = encoder2.getPosition();
 
-    return (getGear3Rotation(gear1Rotation * 360, gear2Rotation * 360) % 360) * Math.PI / 180;
+    // return (getGear3Rotation(gear1Rotation * 360, gear2Rotation * 360) % 360) * Math.PI / 180;
+    angle = encoder1.getPosition() * 1.0/9.0 * 36.0/132.0 * Math.PI * 2.0;
+    return angle;
   }
 
   // Once we know the range of theta, we will have to program in limits to this in
@@ -144,6 +152,7 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
+
     SmartDashboard.putNumber("main gear", getThetaPosition());
     SmartDashboard.putNumber("gear1", encoder1.getPosition());
     SmartDashboard.putNumber("gear 2", encoder2.getPosition());

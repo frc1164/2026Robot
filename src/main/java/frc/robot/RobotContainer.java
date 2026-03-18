@@ -24,8 +24,6 @@ public class RobotContainer {
   private final CommandXboxController driveController;
 
   
-  @SuppressWarnings("unused")
-
   public RobotContainer() {
     feeder = new Feeder();
     shooter = new Shooter(feeder);

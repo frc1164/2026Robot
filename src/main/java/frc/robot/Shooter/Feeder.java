@@ -25,7 +25,7 @@ public class Feeder extends SubsystemBase {
 
   
   public Feeder() {
-    feederA = new SparkMax(56, MotorType.kBrushless);
+    feederA = new SparkMax(57, MotorType.kBrushless);
     //feederB = new SparkMax(57, MotorType.kBrushless);
     encoder2 = feederA.getAbsoluteEncoder();
     //encoder1 = feederB.getAbsoluteEncoder();
