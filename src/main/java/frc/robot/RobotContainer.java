@@ -18,11 +18,8 @@ import frc.robot.Shooter.Feeder;
 import frc.robot.Shooter.ManualShoot;
 import frc.robot.Shooter.Shooter;
 import frc.robot.Agitator.Agitator;
-import frc.robot.Climber.Climb;
-import frc.robot.Climber.RunClimbMotors;
 import frc.robot.Intake.Intake;
 import frc.robot.Intake.Pickup;
-import frc.robot.Intake.ToggleIntake;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import frc.robot.Swerve.SwerveSubsystem;
@@ -40,7 +37,6 @@ public class RobotContainer {
   
   @SuppressWarnings("unused")
   private final LEDs leds = new LEDs();
-  private Climb m_climb = new Climb();
   private Agitator m_agitate = new Agitator();
   private Intake m_intake = new Intake();
   private static final Compressor m_compressor = new Compressor(5, PneumaticsModuleType.CTREPCM);
@@ -71,7 +67,7 @@ public class RobotContainer {
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
-    
+
     configureBindings();
     m_compressor.enableDigital();
   }
@@ -79,12 +75,8 @@ public class RobotContainer {
   private void configureBindings() {
     driveController.povDown().onTrue(new InstantCommand(() -> swerve.zeroHeading()));
     operatorController.povDown().toggleOnTrue(new ManualShoot(feeder, operatorController, shooter));
-    // driveController.x().onTrue(new InstantCommand(()-> m_climb.extend()));
-    // driveController.b().onTrue(new InstantCommand(()-> m_climb.retract()));
-    // driveController.y().onTrue(new InstantCommand(()-> m_climb.disable()));
     operatorController.povDown().onTrue(new InstantCommand(() -> m_agitate.stop()));
-    operatorController.b().onTrue(new ToggleIntake(m_intake, m_climb));
-    operatorController.rightBumper().whileTrue(new RunClimbMotors(m_climb, operatorController.getRightY()));
+    operatorController.b().onTrue(new InstantCommand(() -> m_intake.toggleIntake()));
     operatorController.a().whileTrue(new Pickup(m_intake));
   }
  
