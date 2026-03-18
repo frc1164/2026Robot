@@ -38,6 +38,8 @@ public class RobotContainer {
   
   @SuppressWarnings("unused")
   private final LEDs leds = new LEDs();
+
+  @SuppressWarnings("unused")
   private Agitator m_agitate = new Agitator();
   private Intake m_intake = new Intake();
   private static final Compressor m_compressor = new Compressor(5, PneumaticsModuleType.CTREPCM);
@@ -76,7 +78,6 @@ public class RobotContainer {
 
   private void configureBindings() {
     driveController.povDown().onTrue(new InstantCommand(() -> swerve.zeroHeading()));
-    operatorController.povDown().onTrue(new InstantCommand(() -> m_agitate.stop()));
     operatorController.rightBumper().toggleOnTrue(new ManualShoot(feeder, operatorController, shooter, agitator));
     operatorController.b().onTrue(new InstantCommand(() -> m_intake.toggleIntake()));
     operatorController.a().whileTrue(new Pickup(m_intake));

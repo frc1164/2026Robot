@@ -52,6 +52,13 @@ public class ShooterCalculator {
     return new Translation3d(xEstimate, yEstimate, target.getZ());
   }
 
+  //determine the error in the shot should return meters
+  private static double predictError(Translation2d distVect, ChassisSpeeds velocity, double time){
+    double errorX = distVect.getX() - velocity.vxMetersPerSecond * time;
+    double errorY = distVect.getY() - velocity.vyMetersPerSecond * time;
+    return Math.sqrt(errorX * errorX + errorY + errorY);
+  }
+
   // Automatically sets the shooter's baseline target.
   public static Translation3d target(Pose2d botPose, boolean blue) {
     Translation3d TARGET = new Translation3d();
@@ -108,7 +115,8 @@ public class ShooterCalculator {
   public static ShotInfo getShot(ChassisSpeeds velocity, Translation3d target, Pose2d botPose, int iterations) {
     // Flat ground dist to initial target
     Pose2d targetPose = new Pose2d(target.getX(), target.getY(), null);
-    double dist = getDist(distVector(targetPose, botPose));
+    Translation2d distVect = distVector(targetPose, botPose);
+    double dist = getDist(distVect);
 
     // Determine intital azimuth and estimate time of flight
     ShotInfo SHOT = ShooterConstants.shotMap.get(dist);
@@ -117,8 +125,9 @@ public class ShooterCalculator {
 
     // Set predicted target to initial target
     Translation3d predictedTarget = target;
+    int i = 0;
 
-    for (int i = 0; i < iterations; i++) {
+    while (predictError(distVect, velocity, time) > .2) {//While error is greater than 8 inches, keep iterating. Hopefully this isnt too bad
       // Predict where we have to aim based on estimated flight time and ball velocity
       predictedTarget = predictTargetpose(target, time, velocity);
 
@@ -129,11 +138,17 @@ public class ShooterCalculator {
       SHOT = ShooterConstants.shotMap.get(dist);
       SHOT = new ShotInfo(SHOT.exitVel(), SHOT.getVertAngle(), predictedTarget);
       time = ShooterConstants.timeMap.get(dist);
+
+      //count up iterations
+      i += 1;
     }
     //This is a protective measure. Only time this would be true is when it is set in the target method, which is when on defense or in the trench.
     if (targetPose.getTranslation() == botPose.getTranslation()){
       SHOT = new ShotInfo(SHOT.exitVel, ShooterConstants.maxVert, predictedTarget);
     }
+
+    //Spit out iterations this tick
+    SmartDashboard.putNumber("iterations", i);
 
     //Spit out 'optimal' shot info
     return SHOT;
