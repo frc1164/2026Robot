@@ -52,8 +52,7 @@ public class ShooterCalculator {
     return new Translation3d(xEstimate, yEstimate, target.getZ());
   }
 
-  // Automatically sets the shooter's baseline target. Need to add a constraint
-  // system for if alliance.get no worky.
+  // Automatically sets the shooter's baseline target.
   public static Translation3d target(Pose2d botPose, boolean blue) {
     Translation3d TARGET = new Translation3d();
     double x = botPose.getX();

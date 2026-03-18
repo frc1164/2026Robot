@@ -50,19 +50,18 @@ public class RobotContainer {
     shooter.setDefaultCommand(new AimCommand(shooter, swerve));
 
     //this SHOULD be overwritten by auton during auton period I hope, if not then this gets problematic
-    feeder.setDefaultCommand(new AutoShoot(feeder, swerve));
+    feeder.setDefaultCommand(new AutoShoot(feeder, swerve, shooter));
     
 
     autoChooser = AutoBuilder.buildAutoChooser();
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
-
     configureBindings();
   }
 
   private void configureBindings() {
     driveController.povDown().onTrue(new InstantCommand(() -> swerve.zeroHeading()));
-    operatorController.povDown().toggleOnTrue(new ManualShoot(feeder, operatorController));
+    operatorController.povDown().toggleOnTrue(new ManualShoot(feeder, operatorController, shooter));
   }
 
   public Command getAutonomousCommand() {

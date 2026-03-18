@@ -110,30 +110,6 @@ public class Shooter extends SubsystemBase {
     alliance = DriverStation.getAlliance();
   }
 
-  // private double getGear3Rotation(double r1, double r2) {
-  //   final double d1 = r1 * 360;
-  //   final double d2 = r2 * 360;
-
-  //   final double t1 = d1 * gear1TeethCount / 360;
-  //   final double t2 = d2 * gear2TeethCount / 360;
-
-  //   final double bezout = (t1 * gear2TeethCount * n2 + t2 * gear1TeethCount * n1) % lcm;
-
-  //   final double totalRot1 = Math.floor(bezout / gear1TeethCount);
-
-  //   final double rot0 = (totalRot1 + d1 / 360) * gear1TeethCount / gear0TeethCount * 360;
-
-  //   return rot0;
-  // }
-
-  // public double getThetaPosition() {
-  //   double gear1Rotation = encoder1.getPosition() * 360;
-  //   double gear2Rotation = encoder2.getPosition() * 360;
-
-  //   return (getGear3Rotation(gear1Rotation, gear2Rotation) % 360) * Math.PI / 180;
-  // }
-
-
   public final double getThetaPosition(){
     currentTheta = relEncoder.getPosition();
     return currentTheta * Math.PI * 2;
@@ -159,7 +135,7 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("location", vertEncoder.getPosition() * 360);
   }
 
-  public void setShotSpeed(double speed) {// 4000rpm
+  public void setShotSpeed(double speed) {// 4000rpm to shoot
     double PIDoutput = shotPID.calculate(shootMot.getVelocity().getValueAsDouble() * 60, speed);
     double power = PIDoutput + lastSpeed;
     if (power <= 0 || !DriverStation.isTeleopEnabled()) {

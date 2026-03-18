@@ -13,13 +13,15 @@ import frc.robot.Swerve.SwerveSubsystem;
 public class AutoShoot extends Command {
   private final Feeder feeder;
   private final SwerveSubsystem swerve;
+  private final Shooter shooter;
   private Translation3d HUB;
   boolean blue;
   //private Translation3d PASSUP, PASSDOWN; 
 
-  public AutoShoot(Feeder Feeder, SwerveSubsystem Swerve) {
+  public AutoShoot(Feeder Feeder, SwerveSubsystem Swerve, Shooter Shooter) {
     swerve = Swerve;
     feeder = Feeder;
+    shooter = Shooter;
     addRequirements(feeder);
   }
 
@@ -50,6 +52,7 @@ public class AutoShoot extends Command {
   public void execute() {
     if(ShooterCalculator.target(swerve.getPose(), blue) == HUB && ShooterCalculator.isHubActive() == HUBSTATE.ACTIVE){
       feeder.shootOn();
+      shooter.setShotSpeed(4000);
     }
     // else if (ShooterCalculator.target(swerve.getPose()) == PASSUP || ShooterCalculator.target(swerve.getPose()) == PASSDOWN){
     //   feeder.shootOff(); //this one might actually need to be up to human discretion so we are jsut gonna leave this off.

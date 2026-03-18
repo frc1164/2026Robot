@@ -58,6 +58,9 @@ public class Feeder extends SubsystemBase {
     feederA.set(0);
   }
 
+  public void shootHeld(double speed){
+    feederA.set(speed);
+  }
   public void toggleShoot(){
     if(makeShootGo){
       shootOn();

@@ -4,7 +4,6 @@
 
 package frc.robot.Shooter;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
@@ -16,9 +15,9 @@ import frc.robot.Shooter.ShooterCalculator.ShotInfo;
 //ALL ANGLE MEASUREMENTS IN RADIANS
 public class ShooterConstants{
   public static final class SHOOTEROFFSETS{
-    public static final double vertical = .5;
-    public static final double translation = 0;
-    public static final double theta = 0;
+    public static final double vertical = 0.47625;
+    public static final double translation = 0.1709801;
+    public static final double theta = 2.11746;
   }
 
   public static final class XVALS{
@@ -44,11 +43,10 @@ public class ShooterConstants{
     SOON, ACTIVE, INACTIVE;
   };
   
-  public static final double exitVelocity = 0; //5000rpm 
-  public static final double minVert = 0;
-  public static final double maxVert = 0;
+  public static final double exitVelocity = 13.2994089; //5000rpm to m/s wheel is 4 in radius. Divide tangential velo by 2 for slippage.
+  public static final double minVert = 85.6-17;
+  public static final double maxVert = 85.6;
   public static final Translation3d hubPose = new Translation3d(4.63,4.0,1.68); 
-  public static final Pose2d blueHub2d = new Pose2d(4.63, 4.0, null);
   public static final double targetHeightFromShooter = hubPose.getZ() - SHOOTEROFFSETS.vertical;
   public static final double gravity = 9.81; //We do NOT need any more accurate than this
 
