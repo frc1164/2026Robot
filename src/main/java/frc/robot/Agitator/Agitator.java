@@ -18,7 +18,7 @@ public class Agitator extends SubsystemBase {
   private final SparkMaxConfig agitatorConfig;
 
   public Agitator() {
-    m_agitate = new SparkMax(68, MotorType.kBrushless);
+    m_agitate = new SparkMax(61, MotorType.kBrushless);
     agitatorConfig = new SparkMaxConfig();
     agitatorConfig.inverted(false)
         .idleMode(IdleMode.kCoast);

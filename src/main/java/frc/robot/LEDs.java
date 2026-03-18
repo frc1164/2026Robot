@@ -5,7 +5,9 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Percent;
+import static edu.wpi.first.units.Units.Second;
 
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.AddressableLEDBufferView;
@@ -33,15 +35,19 @@ public class LEDs extends SubsystemBase {
   AddressableLEDBufferView ziaArms;
   AddressableLEDBufferView hubStatus;
 
+  LEDPattern lastPattern;
+
   public LEDs() {
     m_led = new AddressableLED(kPort);
     m_buffer = new AddressableLEDBuffer(kLength);
     m_led.setLength(kLength);
     m_led.start();
 
-    ziaCenter = m_buffer.createView(56, 67);
-    ziaArms = m_buffer.createView(30, 55);
-    hubStatus = m_buffer.createView(0, 29);
+    // ziaCenter = m_buffer.createView(56, 67);
+    // ziaArms = m_buffer.createView(30, 55);
+    // hubStatus = m_buffer.createView(0, 29);
+
+    hubStatus = m_buffer.createView(0, 67);
 
     //solid color patterns which run at altered brightness 
     orange = LEDPattern.solid(Color.kOrangeRed).atBrightness(Percent.of(15));
@@ -50,15 +56,30 @@ public class LEDs extends SubsystemBase {
     green = LEDPattern.solid(Color.kGreen).atBrightness(Percent.of(25));
     yellow = LEDPattern.solid(Color.kYellow).atBrightness(Percent.of(25));
 
-
     runHubStatus(red);
+    lastPattern = LEDPattern.kOff;
 }
 
 //applying colors to zia symbol
- public void runZia() {
-    orange.applyTo(ziaCenter);
-    purple.applyTo(ziaArms);
+//  public void runZia() {
+//     orange.applyTo(ziaCenter);
+//     purple.applyTo(ziaArms);
     
+//   }
+
+  //pulsify
+  private LEDPattern pulsify(LEDPattern base){
+    return base.breathe(Time.ofBaseUnits(.33, Second));
+  }
+
+  private LEDPattern countUP(){
+    LEDPattern mask = LEDPattern.progressMaskLayer(() -> Robot.getHubTime());
+    return purple.mask(mask);
+  }
+
+  private LEDPattern countDOWN(){
+    LEDPattern mask = LEDPattern.progressMaskLayer(() -> 25 - Robot.getHubTime());
+    return orange.mask(mask);
   }
 
 //applying colors to hub status lights based on hubstate
@@ -72,25 +93,26 @@ public class LEDs extends SubsystemBase {
     ShooterConstants.HUBSTATE m_hubstate = ShooterCalculator.isHubActive();
 
     switch(m_hubstate){
-      case INACTIVE: runHubStatus(red);
+      case INACTIVE: runHubStatus(countDOWN()); lastPattern = purple;
       break;
-      case ACTIVE: runHubStatus(green);
+      case ACTIVE: runHubStatus(countUP()); lastPattern = orange;
       break;
-      case SOON: runHubStatus(yellow);
+      case SOON: pulsify(lastPattern);
       break;
-
     }
     
-    runZia();
+    // runZia();
 
 
     m_led.setData(m_buffer);
 
     SmartDashboard.putString("hubstate", m_hubstate.name());
 
-    //yellow when soon to change
-    //green when scoring time
-    //red when opposing score
+    //orange countdown when active till 5 seconds before
+    //pulse orange when soon to deactiate
+    //purple count up when inactive till 5 seconds before
+    //pulse purple when soon to activate
+
   }
 }
 
