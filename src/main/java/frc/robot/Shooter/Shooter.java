@@ -136,6 +136,7 @@ public class Shooter extends SubsystemBase {
 
   public void runPhiPID(double degrees) {
     double angle = -(degrees - 85.6) + 90;
+    angle = Math.max(91, Math.min(angle, 117));
 
     double power = vertPID.calculate(getPhiPosition(), angle) + (6 - 90) * 0.00456368213471;
 
