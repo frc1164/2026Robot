@@ -69,16 +69,16 @@ public class LEDs extends SubsystemBase {
 
   //pulsify
   private LEDPattern pulsify(LEDPattern base){
-    return base.breathe(Time.ofBaseUnits(.33, Second));
+    return base.breathe(Time.ofBaseUnits(.5, Second));
   }
 
   private LEDPattern countUP(){
-    LEDPattern mask = LEDPattern.progressMaskLayer(() -> Robot.getHubTime());
+    LEDPattern mask = LEDPattern.progressMaskLayer(() -> (Robot.getHubTime() - 5) / 20);
     return purple.mask(mask);
   }
 
   private LEDPattern countDOWN(){
-    LEDPattern mask = LEDPattern.progressMaskLayer(() -> 25 - Robot.getHubTime());
+    LEDPattern mask = LEDPattern.progressMaskLayer(() -> (20 - (Robot.getHubTime() - 5) ) / 20);
     return orange.mask(mask);
   }
 
@@ -97,7 +97,7 @@ public class LEDs extends SubsystemBase {
       break;
       case ACTIVE: runHubStatus(countUP()); lastPattern = orange;
       break;
-      case SOON: pulsify(lastPattern);
+      case SOON: runHubStatus(pulsify(lastPattern));
       break;
     }
     
