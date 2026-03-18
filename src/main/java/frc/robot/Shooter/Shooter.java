@@ -93,12 +93,12 @@ public class Shooter extends SubsystemBase {
     shootMot.getConfigurator().apply(shotConfig);
 
     // Instantiate PID's
-    thetaPID = new PIDController(0, 0, 0);
+    thetaPID = new PIDController(0.001, 0, 0);
     vertPID = new PIDController(0.039, 0.00006, 0.0001);
     shotPID = new PIDController(.0001, 0, 0.00003);
 
     lastSpeed = 0;
-    currentTheta = 0;
+    currentTheta = Math.PI / 2; //might be 3/2 pi
   }
 
   // private double getGear3Rotation(double r1, double r2) {
