@@ -78,9 +78,9 @@ public class RobotContainer {
 
   private void configureBindings() {
     driveController.povDown().onTrue(new InstantCommand(() -> swerve.zeroHeading()));
-    operatorController.rightBumper().toggleOnTrue(new ManualShoot(feeder, operatorController, shooter, agitator));
-    operatorController.b().onTrue(new InstantCommand(() -> m_intake.toggleIntake()));
-    operatorController.a().whileTrue(new Pickup(m_intake));
+    operatorController.y().toggleOnTrue(new ManualShoot(feeder, operatorController, shooter, agitator));
+    operatorController.a().onTrue(new InstantCommand(() -> m_intake.toggleIntake()));
+    operatorController.rightBumper().whileTrue(new Pickup(m_intake));
   }
  
   

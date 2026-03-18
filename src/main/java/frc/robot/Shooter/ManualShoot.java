@@ -33,10 +33,10 @@ public class ManualShoot extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    controller.x().whileTrue(new ParallelCommandGroup(new InstantCommand(() -> feeder.shootHeld(.5)),
+    controller.rightTrigger(.25).whileTrue(new ParallelCommandGroup(new InstantCommand(() -> feeder.shootHeld(.5)),
         new InstantCommand(() -> shooter.setShotSpeed(4000)),
         new InstantCommand(() -> agitator.spin())));
-    controller.x().whileFalse(new ParallelCommandGroup(new InstantCommand(() -> feeder.shootHeld(0)),
+    controller.rightTrigger(.25).whileFalse(new ParallelCommandGroup(new InstantCommand(() -> feeder.shootHeld(0)),
         new InstantCommand(() -> shooter.setShotSpeed(0)),
         new InstantCommand(() -> agitator.stop())));
 
