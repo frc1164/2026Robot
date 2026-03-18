@@ -70,8 +70,8 @@ public class RobotContainer {
     autoChooser = AutoBuilder.buildAutoChooser();
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
-    operatorController = new CommandXboxController(1);
 
+    
     configureBindings();
     m_compressor.enableDigital();
   }
