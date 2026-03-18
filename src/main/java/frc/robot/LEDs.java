@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.AddressableLEDBufferView;
 import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -40,17 +41,19 @@ public class LEDs extends SubsystemBase {
     m_led.setLength(kLength);
     m_led.start();
 
-    ziaCenter = m_buffer.createView(0, 11);
-    ziaArms = m_buffer.createView(12, 30);
-    hubStatus = m_buffer.createView(31, 67);
+    ziaCenter = m_buffer.createView(56, 67);
+    ziaArms = m_buffer.createView(30, 55);
+    hubStatus = m_buffer.createView(0, 29);
 
     //solid color patterns which run at altered brightness 
-    orange = LEDPattern.solid(Color.kOrange).atBrightness(Percent.of(50));
-    purple = LEDPattern.solid(Color.kPurple).atBrightness(Percent.of(50));
-    red = LEDPattern.solid(Color.kRed).atBrightness(Percent.of(50));
-    green = LEDPattern.solid(Color.kGreen).atBrightness(Percent.of(50));
-    yellow = LEDPattern.solid(Color.kYellow).atBrightness(Percent.of(50));
+    orange = LEDPattern.solid(Color.kOrangeRed).atBrightness(Percent.of(15));
+    purple = LEDPattern.solid(Color.kPurple).atBrightness(Percent.of(15));
+    red = LEDPattern.solid(Color.kRed).atBrightness(Percent.of(25));
+    green = LEDPattern.solid(Color.kGreen).atBrightness(Percent.of(25));
+    yellow = LEDPattern.solid(Color.kYellow).atBrightness(Percent.of(25));
 
+
+    runHubStatus(red);
 }
 
 //applying colors to zia symbol
@@ -72,17 +75,24 @@ public class LEDs extends SubsystemBase {
 
     switch(m_hubstate){
       case INACTIVE: runHubStatus(red);
+      break;
       case ACTIVE: runHubStatus(green);
+      break;
       case SOON: runHubStatus(yellow);
+      break;
 
     }
     
     runZia();
 
+
     m_led.setData(m_buffer);
+
+    SmartDashboard.putString("hubstate", m_hubstate.name());
 
     //yellow when soon to change
     //green when scoring time
     //red when opposing score
   }
 }
+
