@@ -7,6 +7,7 @@ package frc.robot.Shooter;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Agitator.Agitator;
 import frc.robot.Shooter.ShooterConstants.HUBSTATE;
 import frc.robot.Swerve.SwerveSubsystem;
 
@@ -14,14 +15,16 @@ public class AutoShoot extends Command {
   private final Feeder feeder;
   private final SwerveSubsystem swerve;
   private final Shooter shooter;
+  private final Agitator agitator;
   private Translation3d HUB;
   boolean blue;
-  //private Translation3d PASSUP, PASSDOWN; 
+  // private Translation3d PASSUP, PASSDOWN;
 
-  public AutoShoot(Feeder Feeder, SwerveSubsystem Swerve, Shooter Shooter) {
+  public AutoShoot(Feeder Feeder, SwerveSubsystem Swerve, Shooter Shooter, Agitator Agitate) {
     swerve = Swerve;
     feeder = Feeder;
     shooter = Shooter;
+    agitator = Agitate;
     addRequirements(feeder);
   }
 
@@ -30,17 +33,15 @@ public class AutoShoot extends Command {
   public void initialize() {
     blue = Shooter.getAlliance().get() == Alliance.Blue;
 
-    if (blue){
+    if (blue) {
       HUB = ShooterConstants.TAGRETS.BLUEHUB;
       // PASSUP = ShooterConstants.TAGRETS.BLUEPASSUP;
       // PASSDOWN = ShooterConstants.TAGRETS.BLUEPASSDOWN;
-    }
-    else if (!blue){
+    } else if (!blue) {
       HUB = ShooterConstants.TAGRETS.REDHUB;
       // PASSUP = ShooterConstants.TAGRETS.REDPASSUP;
-      // PASSDOWN = ShooterConstants.TAGRETS.REDPASSDOWN; 
-    }
-    else{
+      // PASSDOWN = ShooterConstants.TAGRETS.REDPASSDOWN;
+    } else {
       HUB = ShooterConstants.TAGRETS.BLUEHUB;
       // PASSUP = ShooterConstants.TAGRETS.BLUEPASSUP;
       // PASSDOWN = ShooterConstants.TAGRETS.BLUEPASSDOWN;
@@ -50,19 +51,27 @@ public class AutoShoot extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(ShooterCalculator.target(swerve.getPose(), blue) == HUB && ShooterCalculator.isHubActive() == HUBSTATE.ACTIVE){
+    if (ShooterCalculator.target(swerve.getPose(), blue) == HUB && ShooterCalculator.isHubActive() == HUBSTATE.ACTIVE) {
       feeder.shootOn();
       shooter.setShotSpeed(4000);
+      agitator.spin();
     }
-    // else if (ShooterCalculator.target(swerve.getPose()) == PASSUP || ShooterCalculator.target(swerve.getPose()) == PASSDOWN){
-    //   feeder.shootOff(); //this one might actually need to be up to human discretion so we are jsut gonna leave this off.
+    // else if (ShooterCalculator.target(swerve.getPose()) == PASSUP ||
+    // ShooterCalculator.target(swerve.getPose()) == PASSDOWN){
+    // feeder.shootOff(); //this one might actually need to be up to human
+    // discretion so we are jsut gonna leave this off.
     // }
-    else {feeder.shootOff();}
+    else {
+      feeder.shootOff();
+      shooter.setShotSpeed(0);
+      agitator.stop();
+    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+  }
 
   // Returns true when the command should end.
   @Override

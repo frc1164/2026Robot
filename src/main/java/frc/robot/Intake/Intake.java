@@ -30,7 +30,7 @@ public class Intake extends SubsystemBase {
 
     m_extendSolenoid = new DoubleSolenoid(5, PneumaticsModuleType.CTREPCM, 2, 5);
 
-    extend(); //starting state
+    extend(); // starting state
   }
 
   public void runPickup(double speed) {

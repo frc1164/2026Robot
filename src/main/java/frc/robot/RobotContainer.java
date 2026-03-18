@@ -30,6 +30,7 @@ public class RobotContainer {
   private final SwerveSubsystem swerve;
   private final Shooter shooter;
   private final Feeder feeder;
+  private final Agitator agitator;
 
   private final CommandXboxController driveController, operatorController;
 
@@ -46,6 +47,7 @@ public class RobotContainer {
     swerve = new SwerveSubsystem();
     feeder = new Feeder();
     shooter = new Shooter(feeder);
+    agitator = new Agitator();
 
     driveController = new CommandXboxController(0);
     operatorController = new CommandXboxController(1);
@@ -60,7 +62,7 @@ public class RobotContainer {
     shooter.setDefaultCommand(new AimCommand(shooter, swerve));
 
     //this SHOULD be overwritten by auton during auton period I hope, if not then this gets problematic
-    feeder.setDefaultCommand(new AutoShoot(feeder, swerve, shooter));
+    feeder.setDefaultCommand(new AutoShoot(feeder, swerve, shooter, agitator));
     
 
     autoChooser = AutoBuilder.buildAutoChooser();
@@ -74,8 +76,8 @@ public class RobotContainer {
 
   private void configureBindings() {
     driveController.povDown().onTrue(new InstantCommand(() -> swerve.zeroHeading()));
-    operatorController.povDown().toggleOnTrue(new ManualShoot(feeder, operatorController, shooter));
     operatorController.povDown().onTrue(new InstantCommand(() -> m_agitate.stop()));
+    operatorController.rightBumper().toggleOnTrue(new ManualShoot(feeder, operatorController, shooter, agitator));
     operatorController.b().onTrue(new InstantCommand(() -> m_intake.toggleIntake()));
     operatorController.a().whileTrue(new Pickup(m_intake));
   }

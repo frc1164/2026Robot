@@ -16,27 +16,28 @@ public class Agitator extends SubsystemBase {
   /** Creates a new Agitator. */
   private final SparkMax m_agitate;
   private final SparkMaxConfig agitatorConfig;
-  
+
   public Agitator() {
     m_agitate = new SparkMax(68, MotorType.kBrushless);
     agitatorConfig = new SparkMaxConfig();
     agitatorConfig.inverted(false)
-                   .idleMode(IdleMode.kCoast);
+        .idleMode(IdleMode.kCoast);
     m_agitate.configure(agitatorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-    spin(); //starting state
   }
-public void spin(){
 
-  m_agitate.set(.1);
+  public void spin() {
 
-}
+    m_agitate.set(.1);
 
-public void stop(){
+  }
 
-m_agitate.set(0);
+  public void stop() {
 
-}
+    m_agitate.set(0);
+
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
