@@ -34,40 +34,40 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 public class SwerveSubsystem extends SubsystemBase {
     private final SwerveModule frontLeft = new SwerveModule(
-            DriveConstants.kFrontLeftDriveMotorPort,
-            DriveConstants.kFrontLeftTurningMotorPort,
-            DriveConstants.kFrontLeftDriveEncoderReversed,
-            DriveConstants.kFrontLeftTurningEncoderReversed,
-            DriveConstants.kFrontLeftDriveAbsoluteEncoderPort,
-            DriveConstants.kFrontLeftDriveAbsoluteEncoderOffsetRad,
-            DriveConstants.kFrontLeftDriveAbsoluteEncoderReversed);
+            SwerveConstants.DriveConstants.kFrontLeftDriveMotorPort,
+            SwerveConstants.DriveConstants.kFrontLeftTurningMotorPort,
+            SwerveConstants.DriveConstants.kFrontLeftDriveEncoderReversed,
+            SwerveConstants.DriveConstants.kFrontLeftTurningEncoderReversed,
+            SwerveConstants.DriveConstants.kFrontLeftDriveAbsoluteEncoderPort,
+            SwerveConstants.DriveConstants.kFrontLeftDriveAbsoluteEncoderOffsetRad,
+            SwerveConstants.DriveConstants.kFrontLeftDriveAbsoluteEncoderReversed);
 
     private final SwerveModule frontRight = new SwerveModule(
-            DriveConstants.kFrontRightDriveMotorPort,
-            DriveConstants.kFrontRightTurningMotorPort,
-            DriveConstants.kFrontRightDriveEncoderReversed,
-            DriveConstants.kFrontRightTurningEncoderReversed,
-            DriveConstants.kFrontRightDriveAbsoluteEncoderPort,
-            DriveConstants.kFrontRightDriveAbsoluteEncoderOffsetRad,
-            DriveConstants.kFrontRightDriveAbsoluteEncoderReversed);
+            SwerveConstants.DriveConstants.kFrontRightDriveMotorPort,
+            SwerveConstants.DriveConstants.kFrontRightTurningMotorPort,
+            SwerveConstants.DriveConstants.kFrontRightDriveEncoderReversed,
+            SwerveConstants.DriveConstants.kFrontRightTurningEncoderReversed,
+            SwerveConstants.DriveConstants.kFrontRightDriveAbsoluteEncoderPort,
+            SwerveConstants.DriveConstants.kFrontRightDriveAbsoluteEncoderOffsetRad,
+            SwerveConstants.DriveConstants.kFrontRightDriveAbsoluteEncoderReversed);
 
     private final SwerveModule backLeft = new SwerveModule(
-            DriveConstants.kBackLeftDriveMotorPort,
-            DriveConstants.kBackLeftTurningMotorPort,
-            DriveConstants.kBackLeftDriveEncoderReversed,
-            DriveConstants.kBackLeftTurningEncoderReversed,
-            DriveConstants.kBackLeftDriveAbsoluteEncoderPort,
-            DriveConstants.kBackLeftDriveAbsoluteEncoderOffsetRad,
-            DriveConstants.kBackLeftDriveAbsoluteEncoderReversed);
+            SwerveConstants.DriveConstants.kBackLeftDriveMotorPort,
+            SwerveConstants.DriveConstants.kBackLeftTurningMotorPort,
+            SwerveConstants.DriveConstants.kBackLeftDriveEncoderReversed,
+            SwerveConstants.DriveConstants.kBackLeftTurningEncoderReversed,
+            SwerveConstants.DriveConstants.kBackLeftDriveAbsoluteEncoderPort,
+            SwerveConstants.DriveConstants.kBackLeftDriveAbsoluteEncoderOffsetRad,
+            SwerveConstants.DriveConstants.kBackLeftDriveAbsoluteEncoderReversed);
 
     private final SwerveModule backRight = new SwerveModule(
-            DriveConstants.kBackRightDriveMotorPort,
-            DriveConstants.kBackRightTurningMotorPort,
-            DriveConstants.kBackRightDriveEncoderReversed,
-            DriveConstants.kBackRightTurningEncoderReversed,
-            DriveConstants.kBackRightDriveAbsoluteEncoderPort,
-            DriveConstants.kBackRightDriveAbsoluteEncoderOffsetRad,
-            DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
+            SwerveConstants.DriveConstants.kBackRightDriveMotorPort,
+            SwerveConstants.DriveConstants.kBackRightTurningMotorPort,
+            SwerveConstants.DriveConstants.kBackRightDriveEncoderReversed,
+            SwerveConstants.DriveConstants.kBackRightTurningEncoderReversed,
+            SwerveConstants.DriveConstants.kBackRightDriveAbsoluteEncoderPort,
+            SwerveConstants.DriveConstants.kBackRightDriveAbsoluteEncoderOffsetRad,
+            SwerveConstants.DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
 
     public Command currentPath;
     private final AHRS gyro = new AHRS(NavXComType.kUSB1);
