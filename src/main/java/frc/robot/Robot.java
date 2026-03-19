@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
-  public static Timer hubTime;
 
   
   @SuppressWarnings("unused")
@@ -20,10 +19,6 @@ public class Robot extends TimedRobot {
 
   public Robot() {
     m_robotContainer = new RobotContainer();
-  }
-
-  public static double getHubTime(){
-    return hubTime.get();
   }
 
   @Override
@@ -50,7 +45,6 @@ public class Robot extends TimedRobot {
       CommandScheduler.getInstance().schedule(m_autonomousCommand);
     }
 
-    hubTime.start();
   }
 
   @Override
@@ -58,7 +52,6 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousExit() {
-    hubTime.stop();
   }
 
   @Override
@@ -66,14 +59,10 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    hubTime.start();
   }
 
   @Override
   public void teleopPeriodic() {
-    if(hubTime.get() >= 25){
-      hubTime.reset();
-    }
   }
 
   @Override

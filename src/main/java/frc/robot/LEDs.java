@@ -11,6 +11,7 @@ import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.AddressableLEDBufferView;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
@@ -20,7 +21,7 @@ import frc.robot.Shooter.ShooterConstants;
 
 public class LEDs extends SubsystemBase {
   private static final int kPort = 0;
-  private static final int kLength = 68; //length NOT updated
+  private static final int kLength = 68; // length NOT updated
 
   private final AddressableLED m_led;
   private final AddressableLEDBuffer m_buffer;
@@ -49,7 +50,7 @@ public class LEDs extends SubsystemBase {
 
     hubStatus = m_buffer.createView(0, 67);
 
-    //solid color patterns which run at altered brightness 
+    // solid color patterns which run at altered brightness
     orange = LEDPattern.solid(Color.kOrangeRed).atBrightness(Percent.of(15));
     purple = LEDPattern.solid(Color.kPurple).atBrightness(Percent.of(15));
     red = LEDPattern.solid(Color.kRed).atBrightness(Percent.of(25));
@@ -58,61 +59,89 @@ public class LEDs extends SubsystemBase {
 
     runHubStatus(red);
     lastPattern = LEDPattern.kOff;
-}
+  }
 
-//applying colors to zia symbol
-//  public void runZia() {
-//     orange.applyTo(ziaCenter);
-//     purple.applyTo(ziaArms);
-    
-//   }
+  // applying colors to zia symbol
+  // public void runZia() {
+  // orange.applyTo(ziaCenter);
+  // purple.applyTo(ziaArms);
 
-  //pulsify
-  private LEDPattern pulsify(LEDPattern base){
+  // }
+
+
+  //time left in shift
+  private double timeleft(){
+    double matchTime = DriverStation.getMatchTime();
+    if (matchTime > 135) {
+      // Transition shift
+      return matchTime - 130;
+    } else if(matchTime > 110){
+      // Shift 1
+      return matchTime - 110;
+    } else if (matchTime > 85) {
+      // Shift 2
+      return matchTime - 85;
+    } else if (matchTime > 60) {
+      // Shift 3
+      return matchTime - 60;
+    } else if (matchTime > 35) {
+      // Shift 4
+      return matchTime - 35;
+    } else {
+      // Endgame
+      return matchTime;
+    }
+  }
+
+  // pulsify
+  private LEDPattern pulsify(LEDPattern base) {
     return base.breathe(Time.ofBaseUnits(.5, Second));
   }
 
-  private LEDPattern countUP(){
-    LEDPattern mask = LEDPattern.progressMaskLayer(() -> (Robot.getHubTime() - 5) / 20);
+  private LEDPattern countUP() {
+    LEDPattern mask = LEDPattern.progressMaskLayer(() -> (20 - (timeleft())) / 20);
     return purple.mask(mask);
   }
 
-  private LEDPattern countDOWN(){
-    LEDPattern mask = LEDPattern.progressMaskLayer(() -> (20 - (Robot.getHubTime() - 5) ) / 20);
+  private LEDPattern countDOWN() {
+    LEDPattern mask = LEDPattern.progressMaskLayer(() -> (timeleft()) / 20);
     return orange.mask(mask);
   }
 
-//applying colors to hub status lights based on hubstate
+  // applying colors to hub status lights based on hubstate
   public void runHubStatus(LEDPattern pattern) {
     pattern.applyTo(hubStatus);
   }
-  
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     ShooterConstants.HUBSTATE m_hubstate = ShooterCalculator.isHubActive();
 
-    switch(m_hubstate){
-      case INACTIVE: runHubStatus(countDOWN()); lastPattern = purple;
-      break;
-      case ACTIVE: runHubStatus(countUP()); lastPattern = orange;
-      break;
-      case SOON: runHubStatus(pulsify(lastPattern));
-      break;
+    switch (m_hubstate) {
+      case INACTIVE:
+        runHubStatus(countDOWN());
+        lastPattern = orange;
+        break;
+      case ACTIVE:
+        runHubStatus(countUP());
+        lastPattern = purple;
+        break;
+      case SOON:
+        runHubStatus(pulsify(lastPattern));
+        break;
     }
-    
-    // runZia();
 
+    // runZia();
 
     m_led.setData(m_buffer);
 
     SmartDashboard.putString("hubstate", m_hubstate.name());
 
-    //orange countdown when active till 5 seconds before
-    //pulse orange when soon to deactiate
-    //purple count up when inactive till 5 seconds before
-    //pulse purple when soon to activate
+    // orange countdown when active till 5 seconds before
+    // pulse orange when soon to deactiate
+    // purple count up when inactive till 5 seconds before
+    // pulse purple when soon to activate
 
   }
 }
-
