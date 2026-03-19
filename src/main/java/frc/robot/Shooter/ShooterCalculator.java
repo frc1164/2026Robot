@@ -173,11 +173,7 @@ public class ShooterCalculator {
   }
 
   public static ShooterConstants.HUBSTATE isHubActive() {
-    Optional<Alliance> alliance = Shooter.getAlliance();
-    // If we have no alliance, we cannot be enabled, therefore no hub.
-    if (alliance.isEmpty()) {
-      return HUBSTATE.INACTIVE;
-    }
+    Optional<Alliance> alliance = DriverStation.getAlliance();
     // Hub is always enabled in autonomous.
     if (DriverStation.isAutonomousEnabled()) {
       return HUBSTATE.ACTIVE;

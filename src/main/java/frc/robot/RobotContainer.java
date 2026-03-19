@@ -21,50 +21,50 @@ import frc.robot.Swerve.SwerveSubsystem;
 
 
 public class RobotContainer {
-  private final SwerveSubsystem swerve;
-  private final Shooter shooter;
-  private final Feeder feeder;
+  // private final SwerveSubsystem swerve;
+  // private final Shooter shooter;
+  // private final Feeder feeder;
 
   private final CommandXboxController driveController, operatorController;
 
-  private final SendableChooser<Command> autoChooser;
+  // private final SendableChooser<Command> autoChooser;
   
   @SuppressWarnings("unused")
   private final LEDs leds = new LEDs();
 
   public RobotContainer() {
-    swerve = new SwerveSubsystem();
-    feeder = new Feeder();
-    shooter = new Shooter(feeder);
+    // swerve = new SwerveSubsystem();
+    // feeder = new Feeder();
+    // shooter = new Shooter(feeder);
 
     driveController = new CommandXboxController(0);
     operatorController = new CommandXboxController(1);
 
-    swerve.setDefaultCommand(new SwerveJoystickCmd(
-      swerve,
-      () -> driveController.getLeftY(),
-      () -> driveController.getLeftX(),
-      () -> -driveController.getRightX(),
-      () -> !driveController.povUp().getAsBoolean()));
+    // swerve.setDefaultCommand(new SwerveJoystickCmd(
+    //   swerve,
+    //   () -> driveController.getLeftY(),
+    //   () -> driveController.getLeftX(),
+    //   () -> -driveController.getRightX(),
+    //   () -> !driveController.povUp().getAsBoolean()));
     
-    shooter.setDefaultCommand(new AimCommand(shooter, swerve));
+    // shooter.setDefaultCommand(new AimCommand(shooter, swerve));
 
-    //this SHOULD be overwritten by auton during auton period I hope, if not then this gets problematic
-    feeder.setDefaultCommand(new AutoShoot(feeder, swerve, shooter));
+    // //this SHOULD be overwritten by auton during auton period I hope, if not then this gets problematic
+    // feeder.setDefaultCommand(new AutoShoot(feeder, swerve, shooter));
     
 
-    autoChooser = AutoBuilder.buildAutoChooser();
+    // autoChooser = AutoBuilder.buildAutoChooser();
 
-    SmartDashboard.putData("Auto Chooser", autoChooser);
-    configureBindings();
+    // SmartDashboard.putData("Auto Chooser", autoChooser);
+    // configureBindings();
   }
 
-  private void configureBindings() {
-    driveController.povDown().onTrue(new InstantCommand(() -> swerve.zeroHeading()));
-    operatorController.povDown().toggleOnTrue(new ManualShoot(feeder, operatorController, shooter));
-  }
+  // private void configureBindings() {
+  //   driveController.povDown().onTrue(new InstantCommand(() -> swerve.zeroHeading()));
+  //   operatorController.povDown().toggleOnTrue(new ManualShoot(feeder, operatorController, shooter));
+  // }
 
-  public Command getAutonomousCommand() {
-    return autoChooser.getSelected();
-  }
+  // public Command getAutonomousCommand() {
+  //   return autoChooser.getSelected();
+  // }
 }

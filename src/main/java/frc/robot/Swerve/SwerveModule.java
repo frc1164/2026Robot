@@ -42,7 +42,7 @@ public class SwerveModule {
 
         this.absoluteEncoderOffsetRad = absoluteEncoderOffset;
         this.absoluteEncoderReversed = absoluteEncoderReversed;
-        absoluteEncoder = new CANcoder(absoluteEncoderId, "rio");
+        absoluteEncoder = new CANcoder(absoluteEncoderId);
         config = new CANcoderConfiguration();
 
 
