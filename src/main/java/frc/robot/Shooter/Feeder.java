@@ -16,8 +16,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Feeder extends SubsystemBase {
 
-  private final SparkMax feederA, feederB;
-  private final SparkMaxConfig feedConfigA, feedConfigB;
+  private final SparkMax feederB;
+  private final SparkMaxConfig feedConfigB;
 
   private final AbsoluteEncoder shooterAbsoluteEncoder;
   private final AbsoluteEncoderConfig config1;
@@ -25,16 +25,16 @@ public class Feeder extends SubsystemBase {
 
   
   public Feeder() {
-    feederA = new SparkMax(56, MotorType.kBrushless);
+    // feederA = new SparkMax(56, MotorType.kBrushless);
     feederB = new SparkMax(57, MotorType.kBrushless);
     shooterAbsoluteEncoder = feederB.getAbsoluteEncoder();
 
-    feedConfigA = new SparkMaxConfig();
+    // feedConfigA = new SparkMaxConfig();
     feedConfigB = new SparkMaxConfig();
     config1 = new AbsoluteEncoderConfig();
 
     
-    feedConfigA.idleMode(IdleMode.kBrake).inverted(false);
+    // feedConfigA.idleMode(IdleMode.kBrake).inverted(false);
     feedConfigB.idleMode(IdleMode.kBrake).inverted(true).follow(56);
 
     config1.inverted(false)
@@ -42,24 +42,24 @@ public class Feeder extends SubsystemBase {
            .positionConversionFactor(1); //also subject to change but since it is right on the gear probably just 1 or delete the line
 
    
-    feedConfigA.apply(config1);
+    // feedConfigA.apply(config1);
 
-    feederA.configure(feedConfigA, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    // feederA.configure(feedConfigA, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     feederB.configure(feedConfigB, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
    
     makeShootGo = false;
   }
 
   public void shootOn(){
-    feederA.set(1);
+    feederB.set(1);
   }
 
   public void shootOff(){
-    feederA.set(0);
+    feederB.set(0);
   }
 
   public void shootHeld(double speed){
-    feederA.set(speed);
+    feederB.set(speed);
   }
   public void toggleShoot(){
     if(makeShootGo){

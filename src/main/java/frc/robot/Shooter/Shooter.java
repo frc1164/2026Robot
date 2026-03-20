@@ -70,8 +70,8 @@ public class Shooter extends SubsystemBase {
     turnConfig = new SparkMaxConfig();
     turnConfig.inverted(false);
     turnConfig.idleMode(IdleMode.kBrake);
-    turnConfig.encoder.velocityConversionFactor(1/9 * 36 / 132);
-    turnConfig.encoder.positionConversionFactor(1/9 * 36 / 132);
+    turnConfig.encoder.velocityConversionFactor(1.0/9.0 * 36.0 / 132.0);
+    turnConfig.encoder.positionConversionFactor(1.0/9.0 * 36.0 / 132.0);
     turn.configure(turnConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     feeder = m_feeder;
@@ -121,7 +121,14 @@ public class Shooter extends SubsystemBase {
 
   public void runPhiPID(double degrees) {
     double angle = -(degrees - 85.6) + 90;
-    angle = Math.max(91, Math.min(angle, 117));
+    angle = Math.max(91, Math.min(angle, 105));
+
+
+    if (angle >= 20) {
+      angle = 15;
+    } else if (angle <= 5) {
+      angle = 10;
+    }
 
     double power = vertPID.calculate(getPhiPosition(), angle) + (6 - 90) * 0.00456368213471;
 
@@ -130,9 +137,12 @@ public class Shooter extends SubsystemBase {
     } else if (power < -0.15) {
       power = -0.17;
     }
+
+    
     vert.set(power);
     SmartDashboard.putNumber("setpt", angle);
     SmartDashboard.putNumber("location", vertEncoder.getPosition() * 360);
+    SmartDashboard.putNumber("power", power);
   }
 
   public void setShotSpeed(double speed) {// 4000rpm to shoot
@@ -149,7 +159,7 @@ public class Shooter extends SubsystemBase {
   // Once we know the range of theta, we will have to program in limits to this in
   // a weird way, hopefully we can leave it swapping at 0.
   public void runThetaPID(double radians) {
-    double pidMotorSpeed = thetaPID.calculate(getThetaPosition(), radians);
+    double pidMotorSpeed = thetaPID.calculate(getThetaPosition() * Math.PI/180, radians);
     turn.set(pidMotorSpeed);
   }
 

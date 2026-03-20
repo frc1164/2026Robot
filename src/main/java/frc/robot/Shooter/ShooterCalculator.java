@@ -127,7 +127,7 @@ public class ShooterCalculator {
     Translation3d predictedTarget = target;
     int i = 0;
 
-    while (predictError(distVect, velocity, time) > .2) {//While error is greater than 8 inches, keep iterating. Hopefully this isnt too bad
+    for (i = 0; i < 5; i++) {//While error is greater than 8 inches, keep iterating. Hopefully this isnt too bad
       // Predict where we have to aim based on estimated flight time and ball velocity
       predictedTarget = predictTargetpose(target, time, velocity);
 
@@ -138,9 +138,6 @@ public class ShooterCalculator {
       SHOT = ShooterConstants.shotMap.get(dist);
       SHOT = new ShotInfo(SHOT.exitVel(), SHOT.getVertAngle(), predictedTarget);
       time = ShooterConstants.timeMap.get(dist);
-
-      //count up iterations
-      i += 1;
     }
     //This is a protective measure. Only time this would be true is when it is set in the target method, which is when on defense or in the trench.
     if (targetPose.getTranslation() == botPose.getTranslation()){
