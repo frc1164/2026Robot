@@ -95,14 +95,17 @@ public class RobotContainer {
 
     configureBindings();
     m_compressor.enableDigital();
+    new Extend(m_intake);
   }
 
   private void configureBindings() {
     driveController.povDown().onTrue(new InstantCommand(() -> swerve.zeroHeading()));
+
+
     operatorController.y().toggleOnTrue(new ManualShoot(feeder, operatorController, shooter, agitator));
     // operatorController.a().onTrue(new InstantCommand(() -> m_intake.toggleIntake()));
-    operatorController.povDown().onTrue(new Extend(m_intake));
-    operatorController.povUp().onTrue(new Retract(shooter, m_intake));
+    operatorController.povUp().onTrue(new Extend(m_intake));
+    operatorController.povDown().onTrue(new Retract(shooter, m_intake));
     operatorController.rightBumper().whileTrue(new Pickup(m_intake));
   }
  
