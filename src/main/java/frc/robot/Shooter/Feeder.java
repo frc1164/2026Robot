@@ -51,7 +51,7 @@ public class Feeder extends SubsystemBase {
   }
 
   public void shootOn(){
-    feederA.set(.5);
+    feederA.set(1);
   }
 
   public void shootOff(){

@@ -6,11 +6,13 @@ package frc.robot;
 
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Shooter.AimCommand;
 import frc.robot.Shooter.AutoShoot;
@@ -72,6 +74,23 @@ public class RobotContainer {
     autoChooser = AutoBuilder.buildAutoChooser();
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
+
+    NamedCommands.registerCommand("ShootOn", new ParallelCommandGroup((
+        new InstantCommand(() -> feeder.shootOn())),
+        new InstantCommand(() -> shooter.setShotSpeed(4000)),
+        new InstantCommand(() -> agitator.spin())));
+
+    NamedCommands.registerCommand("ShootOff", new ParallelCommandGroup((
+        new InstantCommand(() -> feeder.shootOff())),
+        new InstantCommand(() -> shooter.setShotSpeed(0)),
+        new InstantCommand(() -> agitator.stop())));
+
+    NamedCommands.registerCommand("PickupOn", new InstantCommand(() -> m_intake.runPickup(1)));
+    NamedCommands.registerCommand("PickupOff", new InstantCommand(() -> m_intake.runPickup(0)));
+
+    NamedCommands.registerCommand("Deploy Intake", new InstantCommand(() -> m_intake.extend()));
+
+    NamedCommands.registerCommand(null, getAutonomousCommand());
 
 
     configureBindings();
