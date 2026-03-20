@@ -40,8 +40,8 @@ public class RobotContainer {
 
   private final SendableChooser<Command> autoChooser;
   
-  @SuppressWarnings("unused")
-  private final LEDs leds = new LEDs();
+  // @SuppressWarnings("unused")
+  // private final LEDs leds = new LEDs();
 
   @SuppressWarnings("unused")
   private Agitator m_agitate = new Agitator();
@@ -67,7 +67,7 @@ public class RobotContainer {
     
     shooter.setDefaultCommand(new AimCommand(shooter, swerve));
 
-    //this SHOULD be overwritten by auton during auton period I hope, if not then this gets problematic
+    // //this SHOULD be overwritten by auton during auton period I hope, if not then this gets problematic
     feeder.setDefaultCommand(new AutoShoot(feeder, swerve, shooter, agitator));
     
 
