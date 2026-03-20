@@ -28,7 +28,7 @@ public class SwerveConstants {
         public static final double kTurningEncoderRot2Rad = kTurningMotorGearRatio * 2.0 * Math.PI;
         public static final double kDriveEncoderRPM2MeterPerSec = kDriveEncoderRot2Meter / 60.0;
         public static final double kTurningEncoderRPM2RadPerSec = kTurningEncoderRot2Rad / 60.0;
-        public static final double kPTurning = 0.35;
+        public static final double kPTurning = 0.25;
     }
 
     public static final class DriveConstants {
@@ -53,15 +53,15 @@ public class SwerveConstants {
         public static final int kFrontRightTurningMotorPort = 21;
         public static final int kBackRightTurningMotorPort = 31;
 
-        public static final InvertedValue kFrontLeftTurningEncoderReversed = InvertedValue.Clockwise_Positive;
-        public static final InvertedValue kBackLeftTurningEncoderReversed = InvertedValue.Clockwise_Positive;
+        public static final InvertedValue kFrontLeftTurningEncoderReversed = InvertedValue.CounterClockwise_Positive;
+        public static final InvertedValue kBackLeftTurningEncoderReversed = InvertedValue.CounterClockwise_Positive;
         public static final InvertedValue kFrontRightTurningEncoderReversed = InvertedValue.CounterClockwise_Positive;
         public static final InvertedValue kBackRightTurningEncoderReversed = InvertedValue.CounterClockwise_Positive;
 
         public static final InvertedValue kFrontLeftDriveEncoderReversed = InvertedValue.Clockwise_Positive;
-        public static final InvertedValue kBackLeftDriveEncoderReversed = InvertedValue.Clockwise_Positive;
-        public static final InvertedValue kFrontRightDriveEncoderReversed = InvertedValue.CounterClockwise_Positive;
-        public static final InvertedValue kBackRightDriveEncoderReversed = InvertedValue.CounterClockwise_Positive;
+        public static final InvertedValue kBackLeftDriveEncoderReversed = InvertedValue.CounterClockwise_Positive;
+        public static final InvertedValue kFrontRightDriveEncoderReversed = InvertedValue.Clockwise_Positive;
+        public static final InvertedValue kBackRightDriveEncoderReversed = InvertedValue.Clockwise_Positive;
 
         public static final int kFrontLeftDriveAbsoluteEncoderPort = 12;
         public static final int kBackLeftDriveAbsoluteEncoderPort = 42;
@@ -74,10 +74,10 @@ public class SwerveConstants {
         public static final boolean kBackRightDriveAbsoluteEncoderReversed = false;
 
 
-        public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = 0.453725  * Math.PI *2;     
-        public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = 0.865479 * Math.PI *2;
-        public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = -0.236816 * Math.PI *2;
-        public static final double kBackRightDriveAbsoluteEncoderOffsetRad = 0.197021 * Math.PI *2;
+        public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = 0.452637 * Math.PI *2;     
+        public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = 0.196045 * Math.PI *2;
+        public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = (-0.365967+.5)  * Math.PI *2;
+        public static final double kBackRightDriveAbsoluteEncoderOffsetRad = 0.275635  * Math.PI *2;
 
         public static final double kPhysicalMaxSpeedMetersPerSecond = 5;
         public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * 2 * Math.PI;

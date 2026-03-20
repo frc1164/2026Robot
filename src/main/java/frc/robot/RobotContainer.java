@@ -32,9 +32,9 @@ import frc.robot.Swerve.SwerveJoystickCmd;
 
 public class RobotContainer {
   private final SwerveSubsystem swerve;
-  // private final Shooter shooter;
-  // private final Feeder feeder;
-  // private final Agitator agitator;
+  private final Shooter shooter;
+  private final Feeder feeder;
+  private final Agitator agitator;
 
   private final CommandXboxController driveController, operatorController;
 
@@ -43,17 +43,17 @@ public class RobotContainer {
   // @SuppressWarnings("unused")
   // private final LEDs leds = new LEDs();
 
-  // @SuppressWarnings("unused")
-  // private Agitator m_agitate = new Agitator();
-  // private Intake m_intake = new Intake();
+  @SuppressWarnings("unused")
+  private Agitator m_agitate = new Agitator();
+  private Intake m_intake = new Intake();
   private static final Compressor m_compressor = new Compressor(3, PneumaticsModuleType.CTREPCM);
 
 
   public RobotContainer() {
     swerve = new SwerveSubsystem();
-    // feeder = new Feeder();
-    // shooter = new Shooter(feeder);
-    // agitator = new Agitator();
+    feeder = new Feeder();
+    shooter = new Shooter(feeder);
+    agitator = new Agitator();
 
     driveController = new CommandXboxController(0);
     operatorController = new CommandXboxController(1);
@@ -65,48 +65,48 @@ public class RobotContainer {
       () -> -driveController.getRightX(),
       () -> !driveController.povUp().getAsBoolean()));
     
-    // shooter.setDefaultCommand(new AimCommand(shooter, swerve));
+    shooter.setDefaultCommand(new AimCommand(shooter, swerve));
 
     // //this SHOULD be overwritten by auton during auton period I hope, if not then this gets problematic
-    // feeder.setDefaultCommand(new AutoShoot(feeder, swerve, shooter, agitator));
+    feeder.setDefaultCommand(new AutoShoot(feeder, swerve, shooter, agitator));
     
 
     autoChooser = AutoBuilder.buildAutoChooser();
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
-    // NamedCommands.registerCommand("ShootOn", new ParallelCommandGroup((
-    //     new InstantCommand(() -> feeder.shootOn())),
-    //     new InstantCommand(() -> shooter.setShotSpeed(4000)),
-    //     new InstantCommand(() -> agitator.spin())));
+    NamedCommands.registerCommand("ShootOn", new ParallelCommandGroup((
+        new InstantCommand(() -> feeder.shootOn())),
+        new InstantCommand(() -> shooter.setShotSpeed(4000)),
+        new InstantCommand(() -> agitator.spin())));
 
-    // NamedCommands.registerCommand("ShootOff", new ParallelCommandGroup((
-    //     new InstantCommand(() -> feeder.shootOff())),
-    //     new InstantCommand(() -> shooter.setShotSpeed(0)),
-    //     new InstantCommand(() -> agitator.stop())));
+    NamedCommands.registerCommand("ShootOff", new ParallelCommandGroup((
+        new InstantCommand(() -> feeder.shootOff())),
+        new InstantCommand(() -> shooter.setShotSpeed(0)),
+        new InstantCommand(() -> agitator.stop())));
 
-    // NamedCommands.registerCommand("PickupOn", new InstantCommand(() -> m_intake.runPickup(1)));
-    // NamedCommands.registerCommand("PickupOff", new InstantCommand(() -> m_intake.runPickup(0)));
+    NamedCommands.registerCommand("PickupOn", new InstantCommand(() -> m_intake.runPickup(1)));
+    NamedCommands.registerCommand("PickupOff", new InstantCommand(() -> m_intake.runPickup(0)));
 
-    // NamedCommands.registerCommand("Deploy Intake", new InstantCommand(() -> m_intake.extend()));
+    NamedCommands.registerCommand("Deploy Intake", new InstantCommand(() -> m_intake.extend()));
 
     NamedCommands.registerCommand(null, getAutonomousCommand());
 
 
     configureBindings();
     m_compressor.enableDigital();
-    // new Extend(m_intake);
+    new Extend(m_intake);
   }
 
   private void configureBindings() {
     driveController.povDown().onTrue(new InstantCommand(() -> swerve.zeroHeading()));
 
 
-    // operatorController.y().toggleOnTrue(new ManualShoot(feeder, operatorController, shooter, agitator));
-    // // operatorController.a().onTrue(new InstantCommand(() -> m_intake.toggleIntake()));
-    // operatorController.povUp().onTrue(new Extend(m_intake));
-    // operatorController.povDown().onTrue(new Retract(shooter, m_intake));
-    // operatorController.rightBumper().whileTrue(new Pickup(m_intake));
+    operatorController.y().toggleOnTrue(new ManualShoot(feeder, operatorController, shooter, agitator));
+    // operatorController.a().onTrue(new InstantCommand(() -> m_intake.toggleIntake()));
+    operatorController.povUp().onTrue(new Extend(m_intake));
+    operatorController.povDown().onTrue(new Retract(shooter, m_intake));
+    operatorController.rightBumper().whileTrue(new Pickup(m_intake));
   }
  
   
