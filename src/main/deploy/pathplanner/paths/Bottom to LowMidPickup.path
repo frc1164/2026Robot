@@ -1,0 +1,116 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.8061626248216838,
+        "y": 0.6256633380884444
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.100028530670471,
+        "y": 0.71623395149786
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.623067047075606,
+        "y": 1.013823109843081
+      },
+      "prevControl": {
+        "x": 6.600912981455064,
+        "y": 0.6127246790299583
+      },
+      "nextControl": {
+        "x": 7.855790708729716,
+        "y": 1.1051450530238072
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.739514978601996,
+        "y": 3.39453637660485
+      },
+      "prevControl": {
+        "x": 7.645398274884013,
+        "y": 3.1629288506449593
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "LowMidPickup"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.4008528784648223,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.2238805970149065,
+      "rotationDegrees": 96.70983680775694
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 1.0155300472653583,
+      "maxWaypointRelativePos": 2.0,
+      "constraints": {
+        "maxVelocity": 0.75,
+        "maxAcceleration": 1.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "PickupOn",
+      "waypointRelativePos": 0.8534773801485499,
+      "endWaypointRelativePos": 1.9932478055367993,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "PickupOn"
+        }
+      }
+    },
+    {
+      "name": "PickupOff",
+      "waypointRelativePos": 2.0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "PickupOff"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": 109.29004621918897
+  },
+  "reversed": false,
+  "folder": null,
+  "idealStartingState": {
+    "velocity": 0.0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}

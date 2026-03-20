@@ -7,13 +7,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom to out to Center"
+            "pathName": "Bottom to LowMidPickup"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Center to Bottom Out"
+            "pathName": "LowMidPickup to Human"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 10.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootOff"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Human to LowMidPickup"
           }
         }
       ]
