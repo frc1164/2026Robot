@@ -55,8 +55,8 @@ public class SwerveConstants {
 
         public static final InvertedValue kFrontLeftTurningEncoderReversed = InvertedValue.Clockwise_Positive;
         public static final InvertedValue kBackLeftTurningEncoderReversed = InvertedValue.Clockwise_Positive;
-        public static final InvertedValue kFrontRightTurningEncoderReversed = InvertedValue.Clockwise_Positive;
-        public static final InvertedValue kBackRightTurningEncoderReversed = InvertedValue.Clockwise_Positive;
+        public static final InvertedValue kFrontRightTurningEncoderReversed = InvertedValue.CounterClockwise_Positive;
+        public static final InvertedValue kBackRightTurningEncoderReversed = InvertedValue.CounterClockwise_Positive;
 
         public static final InvertedValue kFrontLeftDriveEncoderReversed = InvertedValue.Clockwise_Positive;
         public static final InvertedValue kBackLeftDriveEncoderReversed = InvertedValue.Clockwise_Positive;
@@ -74,10 +74,10 @@ public class SwerveConstants {
         public static final boolean kBackRightDriveAbsoluteEncoderReversed = false;
 
 
-        public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = 51.76764  * Math.PI / 180.0;
-        public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = (234.9324 - 32.11272) * Math.PI / 180.0;
-        public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = (71.367120 - 16.787) * Math.PI / 180.0;
-        public static final double kBackRightDriveAbsoluteEncoderOffsetRad = (23.3536+12.24) * Math.PI / 180.0;
+        public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = 0.453725  * Math.PI *2;     
+        public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = 0.865479 * Math.PI *2;
+        public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = -0.236816 * Math.PI *2;
+        public static final double kBackRightDriveAbsoluteEncoderOffsetRad = 0.197021 * Math.PI *2;
 
         public static final double kPhysicalMaxSpeedMetersPerSecond = 5;
         public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * 2 * Math.PI;
