@@ -57,18 +57,18 @@ public class ShooterConstants{
       // shotMap.put(0.0, new ShotInfo(exitVelocity, Math.PI/2));
       // timeMap.put(0.0, Math.PI/2);
     //first is dist, second is radians
-    shotMap.put(1.49, new ShotInfo(exitVelocity, 1.6581));
+    shotMap.put(1.49, new ShotInfo(exitVelocity, 1.6581 * 180/Math.PI));
     timeMap.put(1.49, 1.375);
 
-    shotMap.put(3.15, new ShotInfo(exitVelocity, 1.7453));
+    shotMap.put(3.15, new ShotInfo(exitVelocity, 1.7453 * 180 / Math.PI));
     timeMap.put(3.15, 1.534375);
 
-    shotMap.put(5.82, new ShotInfo(exitVelocity, 1.8326));
+    shotMap.put(5.82, new ShotInfo(exitVelocity, 1.8326 * 180/Math.PI));
     timeMap.put(5.82, 1.6585);
 
-    shotMap.put(6.47, new ShotInfo(exitVelocity, 1.9199));
+    shotMap.put(6.47, new ShotInfo(exitVelocity, 1.9199 * 180/Math.PI));
     timeMap.put(6.47, 1.64075);
 
-    shotMap.put(7.28, new ShotInfo(exitVelocity, 2.0071));
+    shotMap.put(7.28, new ShotInfo(exitVelocity, 2.0071 * 180/Math.PI));
   }
 }
