@@ -77,9 +77,9 @@ public class ShooterCalculator {
         }
       } else {
         if (botPose.getY() >= 4.0) {
-          TARGET = ShooterConstants.TAGRETS.CENTERUP;
+          TARGET = ShooterConstants.TAGRETS.BLUEPASSUP;
         } else if (botPose.getY() < 4.0) {
-          TARGET = ShooterConstants.TAGRETS.CENTERDOWN;
+          TARGET = ShooterConstants.TAGRETS.BLUEPASSDOWN;
         }
       }
     } else if (!blue) {
@@ -96,9 +96,9 @@ public class ShooterCalculator {
         }
       } else {
         if (botPose.getY() >= 4.0) {
-          TARGET = ShooterConstants.TAGRETS.CENTERUP;
+          TARGET = ShooterConstants.TAGRETS.REDPASSUP;
         } else if (botPose.getY() < 4.0) {
-          TARGET = ShooterConstants.TAGRETS.CENTERDOWN;
+          TARGET = ShooterConstants.TAGRETS.REDPASSDOWN;
         }
       }
     } else {

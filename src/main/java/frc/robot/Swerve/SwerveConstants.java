@@ -22,8 +22,8 @@ public class SwerveConstants {
   
     public static final class ModuleConstants {
         public static final double kWheelDiameterMeters = Units.inchesToMeters(4);
-        public static final double kDriveMotorGearRatio = 1 / 6.75;
-        public static final double kTurningMotorGearRatio = 18.75;// 7 / 150;
+        public static final double kDriveMotorGearRatio = 1 / 6.12;
+        public static final double kTurningMotorGearRatio = 12.8;// 7 / 150;
         public static final double kDriveEncoderRot2Meter = kDriveMotorGearRatio * kWheelDiameterMeters * Math.PI;
         public static final double kTurningEncoderRot2Rad = kTurningMotorGearRatio * 2.0 * Math.PI;
         public static final double kDriveEncoderRPM2MeterPerSec = kDriveEncoderRot2Meter / 60.0;

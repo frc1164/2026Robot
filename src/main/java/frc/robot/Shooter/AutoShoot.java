@@ -18,7 +18,7 @@ public class AutoShoot extends Command {
   private final Agitator agitator;
   private Translation3d HUB;
   boolean blue;
-  // private Translation3d PASSUP, PASSDOWN;
+  private Translation3d PASSUP, PASSDOWN;
 
   public AutoShoot(Feeder Feeder, SwerveSubsystem Swerve, Shooter Shooter, Agitator Agitate) {
     swerve = Swerve;
@@ -35,12 +35,12 @@ public class AutoShoot extends Command {
 
     if (blue) {
       HUB = ShooterConstants.TAGRETS.BLUEHUB;
-      // PASSUP = ShooterConstants.TAGRETS.BLUEPASSUP;
-      // PASSDOWN = ShooterConstants.TAGRETS.BLUEPASSDOWN;
+      PASSUP = ShooterConstants.TAGRETS.BLUEPASSUP;
+      PASSDOWN = ShooterConstants.TAGRETS.BLUEPASSDOWN;
     } else if (!blue) {
       HUB = ShooterConstants.TAGRETS.REDHUB;
-      // PASSUP = ShooterConstants.TAGRETS.REDPASSUP;
-      // PASSDOWN = ShooterConstants.TAGRETS.REDPASSDOWN;
+      PASSUP = ShooterConstants.TAGRETS.REDPASSUP;
+      PASSDOWN = ShooterConstants.TAGRETS.REDPASSDOWN;
     } else {
       HUB = ShooterConstants.TAGRETS.BLUEHUB;
       // PASSUP = ShooterConstants.TAGRETS.BLUEPASSUP;
@@ -56,11 +56,11 @@ public class AutoShoot extends Command {
       shooter.setShotSpeed(4000);
       agitator.spin();
     }
-    // else if (ShooterCalculator.target(swerve.getPose()) == PASSUP ||
-    // ShooterCalculator.target(swerve.getPose()) == PASSDOWN){
-    // feeder.shootOff(); //this one might actually need to be up to human
-    // discretion so we are jsut gonna leave this off.
-    // }
+    else if (ShooterCalculator.target(swerve.getPose(), blue) == PASSUP || ShooterCalculator.target(swerve.getPose(), blue) == PASSDOWN){
+      feeder.shootOn(); 
+      shooter.setShotSpeed(4000);
+      agitator.spin();
+    }
     else {
       feeder.shootOff();
       shooter.setShotSpeed(0);

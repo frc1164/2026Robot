@@ -18,8 +18,10 @@ import frc.robot.Shooter.Feeder;
 import frc.robot.Shooter.ManualShoot;
 import frc.robot.Shooter.Shooter;
 import frc.robot.Agitator.Agitator;
+import frc.robot.Intake.Extend;
 import frc.robot.Intake.Intake;
 import frc.robot.Intake.Pickup;
+import frc.robot.Intake.Retract;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import frc.robot.Swerve.SwerveSubsystem;
@@ -42,7 +44,7 @@ public class RobotContainer {
   @SuppressWarnings("unused")
   private Agitator m_agitate = new Agitator();
   private Intake m_intake = new Intake();
-  private static final Compressor m_compressor = new Compressor(5, PneumaticsModuleType.CTREPCM);
+  private static final Compressor m_compressor = new Compressor(3, PneumaticsModuleType.CTREPCM);
 
 
   public RobotContainer() {
@@ -79,7 +81,9 @@ public class RobotContainer {
   private void configureBindings() {
     driveController.povDown().onTrue(new InstantCommand(() -> swerve.zeroHeading()));
     operatorController.y().toggleOnTrue(new ManualShoot(feeder, operatorController, shooter, agitator));
-    operatorController.a().onTrue(new InstantCommand(() -> m_intake.toggleIntake()));
+    // operatorController.a().onTrue(new InstantCommand(() -> m_intake.toggleIntake()));
+    operatorController.povDown().onTrue(new Extend(m_intake));
+    operatorController.povUp().onTrue(new Retract(shooter, m_intake));
     operatorController.rightBumper().whileTrue(new Pickup(m_intake));
   }
  
