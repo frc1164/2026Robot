@@ -24,7 +24,7 @@ public class Intake extends SubsystemBase {
   public Intake() {
     m_pickup = new SparkMax(60, MotorType.kBrushless);
     pickupMotConfig = new SparkMaxConfig();
-    pickupMotConfig.inverted(false)
+    pickupMotConfig.inverted(true)
         .idleMode(IdleMode.kCoast);
     m_pickup.configure(pickupMotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 

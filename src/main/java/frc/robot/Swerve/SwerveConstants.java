@@ -89,14 +89,20 @@ public class SwerveConstants {
         public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3;
 
  
+        public static final double kSLeft = 0;
+        public static final double kVLeft = 0;
+        public static final double kALeft = 0;
+        public static final double kSRight = 0;
+        public static final double kVRight = 0;
+        public static final double kARight = 0;
 
-        public static final double kSLeft = 0.32614;
-        public static final double kVLeft = 4.0056;
-        public static final double kALeft = 0.33487;
+        // public static final double kSLeft = 0.32614;
+        // public static final double kVLeft = 4.0056;
+        // public static final double kALeft = 0.33487;
 
-        public static final double kSRight = 0.28932;
-        public static final double kVRight = 4.0178;
-        public static final double kARight = 0.10801;
+        // public static final double kSRight = 0.28932;
+        // public static final double kVRight = 4.0178;
+        // public static final double kARight = 0.10801;
 
 
         // Drive/Rotation gain

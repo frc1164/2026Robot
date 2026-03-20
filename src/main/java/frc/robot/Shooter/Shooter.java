@@ -39,7 +39,7 @@ public class Shooter extends SubsystemBase {
 
   
   @SuppressWarnings("unused")
-  private final AbsoluteEncoder absEncoder;
+  // private final AbsoluteEncoder absEncoder;
   private final RelativeEncoder relEncoder;
 
   private final AbsoluteEncoder vertEncoder;
@@ -75,7 +75,7 @@ public class Shooter extends SubsystemBase {
     turn.configure(turnConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     feeder = m_feeder;
-    absEncoder = feeder.getAbsoluteEncoder(); // all the configuration logic occurs in Feeder
+    // absEncoder = feeder.getAbsoluteEncoder(); // all the configuration logic occurs in Feeder
     relEncoder = turn.getEncoder();
 
 
@@ -100,13 +100,13 @@ public class Shooter extends SubsystemBase {
     shootMot.getConfigurator().apply(shotConfig);
 
     // Instantiate PID's
-    thetaPID = new PIDController(0.001, 0, 0);
+    thetaPID = new PIDController(0.02, 0, 0);
     vertPID = new PIDController(0.039, 0.00006, 0.0001);
     shotPID = new PIDController(.0001, 0, 0.00003);
 
     lastSpeed = 0;
-    currentTheta = Math.PI / 2; //might be 3/2 pi
-
+    currentTheta = -.25; //might be 3/2 pi
+    relEncoder.setPosition(currentTheta);
     alliance = DriverStation.getAlliance();
   }
 
@@ -152,7 +152,8 @@ public class Shooter extends SubsystemBase {
   // Once we know the range of theta, we will have to program in limits to this in
   // a weird way, hopefully we can leave it swapping at 0.
   public void runThetaPID(double radians) {
-    double pidMotorSpeed = thetaPID.calculate(getThetaPosition() * Math.PI/180, radians);
+    double pidMotorSpeed = thetaPID.calculate(getThetaPosition() * Math.PI/180, 0);
+    SmartDashboard.putNumber("turnPower", pidMotorSpeed);
     turn.set(pidMotorSpeed);
   }
 
@@ -163,5 +164,6 @@ public class Shooter extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("theta", getThetaPosition());
   }
 }

@@ -68,7 +68,9 @@ public class RobotContainer {
     shooter.setDefaultCommand(new AimCommand(shooter, swerve));
 
     // //this SHOULD be overwritten by auton during auton period I hope, if not then this gets problematic
-    // feeder.setDefaultCommand(new AutoShoot(feeder, swerve, shooter, agitator));
+    feeder.setDefaultCommand(new AutoShoot(feeder, swerve, shooter, agitator));
+
+    m_intake.setDefaultCommand(new Pickup(m_intake, operatorController));
     
 
     autoChooser = AutoBuilder.buildAutoChooser();
@@ -90,7 +92,7 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("Deploy Intake", new InstantCommand(() -> m_intake.extend()));
 
-    NamedCommands.registerCommand(null, getAutonomousCommand());
+    // NamedCommands.registerCommand(null, getAutonomousCommand());
 
 
     configureBindings();
@@ -106,7 +108,7 @@ public class RobotContainer {
     // operatorController.a().onTrue(new InstantCommand(() -> m_intake.toggleIntake()));
     operatorController.povUp().onTrue(new Extend(m_intake));
     operatorController.povDown().onTrue(new Retract(shooter, m_intake));
-    operatorController.rightBumper().whileTrue(new Pickup(m_intake));
+    // operatorController.rightBumper().whileTrue(new Pickup(m_intake));
   }
  
   
