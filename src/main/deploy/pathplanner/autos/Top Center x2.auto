@@ -7,52 +7,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Top to Center"
+            "pathName": "Top to HighMidPickup"
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Center to Top Out"
-                }
-              }
-            ]
+            "pathName": "HighMidPickup to Top Out"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 2.0
+            "waitTime": 10.0
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Top to HighMidPickup"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Center to Top Out Out"
-                }
-              }
-            ]
+            "pathName": "Top Out to HighMidPickup"
           }
         }
       ]
