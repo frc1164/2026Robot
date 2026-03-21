@@ -51,6 +51,8 @@ public class SwerveModule {
 
         driveMotorConfig.MotorOutput.withInverted(driveMotorReversed);
         driveMotorConfig.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
+        driveMotorConfig.TorqueCurrent.PeakForwardTorqueCurrent = 60;
+        driveMotorConfig.TorqueCurrent.PeakReverseTorqueCurrent = 60;
         driveMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
 
 

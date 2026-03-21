@@ -22,6 +22,7 @@ public class Agitator extends SubsystemBase {
     agitatorConfig = new SparkMaxConfig();
     agitatorConfig.inverted(true)
         .idleMode(IdleMode.kCoast);
+    agitatorConfig.smartCurrentLimit(35);
     m_agitate.configure(agitatorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
   }
