@@ -28,7 +28,7 @@ public class Agitator extends SubsystemBase {
 
   public void spin() {
 
-    m_agitate.set(.5);
+    m_agitate.set(.2);
 
   }
 

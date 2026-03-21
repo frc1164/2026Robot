@@ -25,7 +25,7 @@ public class Pickup extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-        intake.runPickup(controller.getRightY());
+        intake.runPickup(controller.getRightY()/2);
 
   }
 

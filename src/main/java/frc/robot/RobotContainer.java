@@ -65,11 +65,10 @@ public class RobotContainer {
       () -> -driveController.getRightX(),
       () -> !driveController.povUp().getAsBoolean()));
     
-    shooter.setDefaultCommand(new AimCommand(shooter, swerve));
+    // shooter.setDefaultCommand(new AimCommand(shooter, swerve));
 
     // //this SHOULD be overwritten by auton during auton period I hope, if not then this gets problematic
-    feeder.setDefaultCommand(new AutoShoot(feeder, swerve, shooter, agitator));
-
+    // feeder.setDefaultCommand(new AutoShoot(fe   eder, swerve, shooter, agitator));
     m_intake.setDefaultCommand(new Pickup(m_intake, operatorController));
     
 
