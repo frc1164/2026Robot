@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 7.610128388017117,
-        "y": 4.869543509272469
+        "y": 5.87
       },
       "prevControl": null,
       "nextControl": {
         "x": 6.916830485367608,
-        "y": 5.403329814471218
+        "y": 6.403786305198749
       },
       "isLocked": false,
       "linkedName": "HighMidPickup"

@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.6120827389443653,
-        "y": 7.483152639087019
+        "x": 2.59,
+        "y": 7.431
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.847273973464755,
-        "y": 7.353551040659638
+        "x": 3.7156633380884436,
+        "y": 7.379245363766048
       },
       "isLocked": false,
       "linkedName": null
@@ -33,11 +33,11 @@
     {
       "anchor": {
         "x": 7.610128388017117,
-        "y": 4.87
+        "y": 5.87
       },
       "prevControl": {
         "x": 7.584251069900143,
-        "y": 6.228559201141226
+        "y": 7.228559201141226
       },
       "nextControl": null,
       "isLocked": false,
@@ -85,8 +85,19 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
+      "name": "ShootOff",
+      "waypointRelativePos": 0.2191235059760956,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "ShootOff"
+        }
+      }
+    },
+    {
       "name": "PickupOn",
-      "waypointRelativePos": 0.9237002025658271,
+      "waypointRelativePos": 0.6759628154050428,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
