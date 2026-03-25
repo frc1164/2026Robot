@@ -34,10 +34,10 @@ public class ManualShoot extends Command {
   @Override
   public void execute() {
     controller.rightTrigger(.25).whileTrue(new ParallelCommandGroup(new InstantCommand(() -> feeder.shootHeld(.5)),
-        new InstantCommand(() -> shooter.setShotSpeed(4000)),
+        new InstantCommand(() -> shooter.setShotSpeed(3500, false)),
         new InstantCommand(() -> agitator.spin())));
     controller.rightTrigger(.25).whileFalse(new ParallelCommandGroup(new InstantCommand(() -> feeder.shootHeld(0)),
-        new InstantCommand(() -> shooter.setShotSpeed(0)),
+        new InstantCommand(() -> shooter.setShotSpeed(0, true)),
         new InstantCommand(() -> agitator.stop())));
 
   }

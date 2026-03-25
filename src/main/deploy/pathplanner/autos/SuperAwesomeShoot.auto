@@ -15,6 +15,18 @@
           "data": {
             "name": "ShootOn"
           }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 6.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootOff"
+          }
         }
       ]
     }

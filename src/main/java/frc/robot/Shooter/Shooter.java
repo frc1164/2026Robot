@@ -97,6 +97,7 @@ public class Shooter extends SubsystemBase {
     shotConfig = new TalonFXConfiguration();
     shotConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     shotConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    shotConfig.TorqueCurrent.PeakForwardTorqueCurrent = 20;
     shootMot.getConfigurator().apply(shotConfig);
 
     // Instantiate PID's
@@ -121,7 +122,7 @@ public class Shooter extends SubsystemBase {
 
   public void runPhiPID(double degrees) {
     // double angle = -(degrees - 85.6) + 90;
-    double angle = Math.max(91, Math.min(degrees, 115));
+    double angle = Math.max(92, Math.min(degrees, 115));
 
     double power = vertPID.calculate(getPhiPosition(), angle) + (angle - 90) * 0.00456368213471;
 
@@ -131,20 +132,30 @@ public class Shooter extends SubsystemBase {
       power = -0.17;
     }
 
-    
+    if(getPhiPosition() < 92 && power > 0) {
+      power = 0;
+    }
+    if(getPhiPosition() > 115 && power < 0) {
+      power = 0;
+    }
     vert.set(power);
     SmartDashboard.putNumber("setpt", angle);
     SmartDashboard.putNumber("location", vertEncoder.getPosition() * 360);
     SmartDashboard.putNumber("power", power);
   }
 
-  public void setShotSpeed(double speed) {// 4000rpm to shoot
+  public void setShotSpeed(double speed, boolean stop) {// 4000rpm to shoot
     double PIDoutput = shotPID.calculate(shootMot.getVelocity().getValueAsDouble() * 60, speed);
     double power = PIDoutput + lastSpeed;
     if (power <= 0 || !DriverStation.isTeleopEnabled()) {
       power = 0;
     }
-    shootMot.set(power);
+
+    if(stop){
+      shootMot.set(0);
+    }else{
+      shootMot.set(power);
+    }
     lastSpeed = power;
     SmartDashboard.putNumber("lastSpeed", lastSpeed);
   }

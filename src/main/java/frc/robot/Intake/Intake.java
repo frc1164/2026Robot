@@ -26,7 +26,10 @@ public class Intake extends SubsystemBase {
     pickupMotConfig = new SparkMaxConfig();
     pickupMotConfig.inverted(true)
         .idleMode(IdleMode.kCoast);
+
+    pickupMotConfig.smartCurrentLimit(17);
     m_pickup.configure(pickupMotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
 
     m_extendSolenoid = new DoubleSolenoid(3, PneumaticsModuleType.CTREPCM, 2, 5);
 

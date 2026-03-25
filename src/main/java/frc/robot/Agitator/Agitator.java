@@ -22,14 +22,14 @@ public class Agitator extends SubsystemBase {
     agitatorConfig = new SparkMaxConfig();
     agitatorConfig.inverted(true)
         .idleMode(IdleMode.kCoast);
-    agitatorConfig.smartCurrentLimit(35);
+    agitatorConfig.smartCurrentLimit(70);
     m_agitate.configure(agitatorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
   }
 
   public void spin() {
 
-    m_agitate.set(.2);
+    m_agitate.set(.50);
 
   }
 

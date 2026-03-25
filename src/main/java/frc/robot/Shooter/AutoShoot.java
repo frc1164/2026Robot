@@ -53,17 +53,17 @@ public class AutoShoot extends Command {
   public void execute() {
     if (ShooterCalculator.target(swerve.getPose(), blue) == HUB && ShooterCalculator.isHubActive() == HUBSTATE.ACTIVE) {
       feeder.shootOn();
-      shooter.setShotSpeed(4000);
+      shooter.setShotSpeed(4000, false);
       agitator.spin();
     }
     else if (ShooterCalculator.target(swerve.getPose(), blue) == PASSUP || ShooterCalculator.target(swerve.getPose(), blue) == PASSDOWN){
       feeder.shootOn(); 
-      shooter.setShotSpeed(4000);
+      shooter.setShotSpeed(4000, false);
       agitator.spin();
     }
     else {
       feeder.shootOff();
-      shooter.setShotSpeed(0);
+      shooter.setShotSpeed(0, true);
       agitator.stop();
     }
   }
