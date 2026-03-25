@@ -49,13 +49,24 @@ public class Shooter extends SubsystemBase {
 
   private final Feeder feeder;
 
-  // private final double gear0TeethCount = 132;
-  // private final double gear1TeethCount = 17;
-  // private final double gear2TeethCount = 36;
+  private final double gear0TeethCount = 132;
+  private final double gear1TeethCount = 17;
+  private final double gear2TeethCount = 36;
 
-  // private final double n1 = 17; // g1 * n1 (mod g2) = 1
-  // private final double n2 = 9; // g2 * n2 (mod g1) = 1
-  // private final double lcm = 612; // lcm(g1, g2)
+  // Varience in each of the gears
+  private final double sigma1 = 1;
+  private final double sigma2 = 1;
+
+  // Classic CRT values
+  // (6) Modular multiplicative inverses
+  private final double n1 = 17; // g1 * n1 (mod g2) = 1
+  private final double n2 = 9; // g2 * n2 (mod g1) = 1
+
+  // (9) Kappa values are all modulo and their inverses that aren't the current index i
+  private final double y1 = n2 * gear2TeethCount;  
+  private final double y2 = n1 * gear1TeethCount;
+
+  private final double lcm = 612; // lcm(g1, g2)
 
   private double lastSpeed;
   private double currentTheta;
@@ -110,9 +121,66 @@ public class Shooter extends SubsystemBase {
     alliance = DriverStation.getAlliance();
   }
 
-  public final double getThetaPosition(){
-    currentTheta = relEncoder.getPosition();
-    return currentTheta * Math.PI * 2;
+    public double circularDistance(double a, double b, int modulo) {
+    // (11) Distance from a to b in a circular context circumfrance of modulo
+    return (a - b - modulo * Math.round((a - b) / modulo));
+  }
+
+  public double calculateCommonRemainder(double r1, double r2) {
+    // (37) Weights of each of the variances
+    double w1 = (1 / sigma1 * sigma1) / ((1 / sigma1 * sigma1) + (1 / sigma2 * sigma2));
+    double w2 = (1 / sigma2 * sigma2) / ((1 / sigma1 * sigma1) + (1 / sigma2 * sigma2));
+
+    // (26) Decimal values of each of the remainders
+    double rc1 = r1 - Math.floor(r1);
+    double rc2 = r2 - Math.floor(r2);
+
+    // (39) Set Omega contains L elements where L is amount of moduli
+    double o1 = (w1 * rc1 + w2 * rc2 + Math.min(w1, w2)) % 1;
+    double o2 = (w1 * rc1 + w2 * rc2 + w1 + w2) % 1;
+
+    // (45) Using elements from Omega, use them to check for where the function is at a minimum
+    double distRc1o1 = circularDistance(rc1, o1, 1);
+    double distRc1o2 = circularDistance(rc1, o2, 1);
+    double distRc2o1 = circularDistance(rc2, o1, 1);
+    double distRc2o2 = circularDistance(rc2, o2, 1);
+
+    double rcCandidate1 = w1 * distRc1o1 * distRc1o1 + w2 * distRc2o1 * distRc2o1;
+    double rcCandidate2 = w1 * distRc1o2 * distRc1o2 + w2 * distRc2o2 * distRc2o2;
+
+    // (45) return o1 if it was where the function was at its minimum, otherwise o2
+    if (rcCandidate1 < rcCandidate2) {
+      return o1;
+    } else {
+      return o2;
+    }
+  }
+
+  public double calculateMLECRT(double r1, double r2) {
+    // (26) Above this it states that rc is significant in the estimation
+    double rc = calculateCommonRemainder(r1, r2);
+
+    // (28) Uses the rc to make the whole component much more accurate
+    double q1 = Math.round(r1 - rc);
+    double q2 = Math.round(r2 - rc);
+
+    // (29) Again with Classic CRT except using the new values
+    double n0 = (q1 * y1 + q2 + y2) % lcm;
+
+    // (30) Final equation, since gcd of moduli is 1, just adds rc
+    double n = n0 + rc;
+
+    return n;
+  }
+
+  public final double getThetaPosition(){ 
+    // currentTheta = relEncoder.getPosition();
+    // return currentTheta * Math.PI * 2;
+
+    // Feed calculateMLECRT with the values from the 2 encoders we used previously
+    // I put the relative equations and their indexes that come from the document at https://www.eecis.udel.edu/~xxia/CRTR.pdf
+    // Key requirement for the measurement to be accurate is that the noise must be less than M/4 where M is the gcd of the moduli, in this case is 1. So needs 1/4 of a tooth of accuracy.
+    return calculateMLECRT(0, 0);
   }
 
   public double getPhiPosition() {
