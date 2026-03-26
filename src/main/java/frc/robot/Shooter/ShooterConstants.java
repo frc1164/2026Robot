@@ -44,7 +44,7 @@ public class ShooterConstants{
   };
   
   public static final double exitVelocity = 13.2994089; //5000rpm to m/s wheel is 4 in radius. Divide tangential velo by 2 for slippage.
-  public static final double minVert = 85.6-17;
+  public static final double minVert = 57;
   public static final double maxVert = 85.6;
   public static final Translation3d hubPose = new Translation3d(4.63,4.0,1.68); 
   public static final double targetHeightFromShooter = hubPose.getZ() - SHOOTEROFFSETS.vertical;

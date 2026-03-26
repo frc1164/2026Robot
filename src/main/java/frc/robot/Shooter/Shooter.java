@@ -121,10 +121,11 @@ public class Shooter extends SubsystemBase {
   }
 
   public void runPhiPID(double degrees) {
-    // double angle = -(degrees - 85.6) + 90;
-    double angle = Math.max(92, Math.min(degrees, 115));
+    degrees = Math.max(Math.min(degrees, 81), 57);
+    double angle = -(degrees - 85.6) + 90;
+    // angle = Math.max(92, Math.min(angle, 116));
 
-    double power = vertPID.calculate(getPhiPosition(), angle) + (angle - 90) * 0.00456368213471;
+    double power = vertPID.calculate(getPhiPosition(), angle) + (96.4 - 90) * 0.00456368213471;
 
     if (power > 0.25) {
       power = 0.21;
@@ -132,12 +133,13 @@ public class Shooter extends SubsystemBase {
       power = -0.17;
     }
 
-    if(getPhiPosition() < 92 && power > 0) {
-      power = 0;
-    }
-    if(getPhiPosition() > 115 && power < 0) {
-      power = 0;
-    }
+    // if(getPhiPosition() < 92 && power > 0) {
+    //   power = 0;
+    // }
+    // if(getPhiPosition() > 115 && power < 0) {
+    //   power = 0;
+    // }
+
     vert.set(power);
     SmartDashboard.putNumber("setpt", angle);
     SmartDashboard.putNumber("location", vertEncoder.getPosition() * 360);
