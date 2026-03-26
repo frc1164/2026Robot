@@ -109,7 +109,7 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
-    double input = Math.max(-CONTROLLER.getRightTriggerAxis() * 27 + 80, 59);
+    double input = Math.max(-CONTROLLER.getRightTriggerAxis() * 27 + 81, 57);
     runPhiPID(input);
     SmartDashboard.putNumber("input", input);
 
