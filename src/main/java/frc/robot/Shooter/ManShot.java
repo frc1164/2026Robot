@@ -36,9 +36,10 @@ public class ManShot extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    shooter.setShotSpeed(0, true);
+    shooter.setShotSpeed(4000, true);
     agitator.stop();
     feeder.shootOff();
+    shooter.resetLastSpeed();
   }
 
   // Returns true when the command should end.

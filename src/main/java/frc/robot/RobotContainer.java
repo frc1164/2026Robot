@@ -106,7 +106,7 @@ public class RobotContainer {
 
     // operatorController.y().toggleOnTrue(new ManualShoot(feeder, operatorController, shooter, agitator));
     // operatorController.a().onTrue(new InstantCommand(() -> m_intake.toggleIntake()));
-    operatorController.rightTrigger(.25).whileTrue(new ManShot(feeder, shooter, agitator));
+    operatorController.x().whileTrue(new ManShot(feeder, shooter, agitator));
     operatorController.povUp().onTrue(new Extend(m_intake));
     operatorController.povDown().onTrue(new Retract(shooter, m_intake));
     // operatorController.rightBumper().whileTrue(new Pickup(m_intake));

@@ -37,7 +37,6 @@ public class Shooter extends SubsystemBase {
   private final SparkMax turn;
   private final SparkMaxConfig turnConfig;
 
-  
   @SuppressWarnings("unused")
   // private final AbsoluteEncoder absEncoder;
   private final RelativeEncoder relEncoder;
@@ -70,14 +69,14 @@ public class Shooter extends SubsystemBase {
     turnConfig = new SparkMaxConfig();
     turnConfig.inverted(false);
     turnConfig.idleMode(IdleMode.kBrake);
-    turnConfig.encoder.velocityConversionFactor(1.0/9.0 * 36.0 / 132.0);
-    turnConfig.encoder.positionConversionFactor(1.0/9.0 * 36.0 / 132.0);
+    turnConfig.encoder.velocityConversionFactor(1.0 / 9.0 * 36.0 / 132.0);
+    turnConfig.encoder.positionConversionFactor(1.0 / 9.0 * 36.0 / 132.0);
     turn.configure(turnConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     feeder = m_feeder;
-    // absEncoder = feeder.getAbsoluteEncoder(); // all the configuration logic occurs in Feeder
+    // absEncoder = feeder.getAbsoluteEncoder(); // all the configuration logic
+    // occurs in Feeder
     relEncoder = turn.getEncoder();
-
 
     // Instantiate and configure the hood
     vert = new SparkMax(54, MotorType.kBrushless);
@@ -106,12 +105,12 @@ public class Shooter extends SubsystemBase {
     shotPID = new PIDController(.0001, 0, 0.00003);
 
     lastSpeed = 0;
-    currentTheta = -.25; //might be 3/2 pi
+    currentTheta = -.25; // might be 3/2 pi
     relEncoder.setPosition(currentTheta);
     alliance = DriverStation.getAlliance();
   }
 
-  public final double getThetaPosition(){
+  public final double getThetaPosition() {
     currentTheta = relEncoder.getPosition();
     return currentTheta * Math.PI * 2;
   }
@@ -134,14 +133,14 @@ public class Shooter extends SubsystemBase {
       power = -0.17;
     }
 
-    if(Double.isNaN(power) == true) {
+    if (Double.isNaN(power) == true) {
       power = 0;
     }
     // if(getPhiPosition() < 92 && power > 0) {
-    //   power = 0;
+    // power = 0;
     // }
     // if(getPhiPosition() > 115 && power < 0) {
-    //   power = 0;
+    // power = 0;
     // }
 
     vert.set(power);
@@ -156,26 +155,31 @@ public class Shooter extends SubsystemBase {
     if (power <= 0 || !DriverStation.isTeleopEnabled()) {
       power = 0;
     }
-
-    if(stop){
+    SmartDashboard.putNumber("PIDoutput", PIDoutput);
+    lastSpeed = power;
+    // lastSpeed = Math.max(0,Math.min(2, lastSpeed));
+    if (stop) {
       shootMot.set(0);
-    }else{
+      resetLastSpeed();
+    } else {
       shootMot.set(power);
     }
-    lastSpeed = power;
-    SmartDashboard.putNumber("lastSpeed", lastSpeed);
   }
 
   // Once we know the range of theta, we will have to program in limits to this in
   // a weird way, hopefully we can leave it swapping at 0.
   public void runThetaPID(double radians) {
-    double pidMotorSpeed = thetaPID.calculate(getThetaPosition() * Math.PI/180, 0);
+    double pidMotorSpeed = thetaPID.calculate(getThetaPosition() * Math.PI / 180, 0);
     SmartDashboard.putNumber("turnPower", pidMotorSpeed);
     turn.set(pidMotorSpeed);
   }
 
-  public static Optional<Alliance> getAlliance(){
+  public static Optional<Alliance> getAlliance() {
     return alliance;
+  }
+
+  public void resetLastSpeed() {
+    lastSpeed = 0;
   }
 
   @Override
@@ -183,5 +187,7 @@ public class Shooter extends SubsystemBase {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("theta", getThetaPosition());
     SmartDashboard.putNumber("ShooterSpeed", shootMot.getVelocity().getValueAsDouble() * 60);
+    // setShotSpeed(4000, false);
+    SmartDashboard.putNumber("lastSpeed", lastSpeed);
   }
 }
