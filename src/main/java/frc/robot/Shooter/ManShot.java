@@ -28,7 +28,7 @@ public class ManShot extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shooter.setShotSpeed(3500, false);
+    shooter.setShotSpeed(4000, false);
     agitator.spin();
     feeder.shootOn();
   }

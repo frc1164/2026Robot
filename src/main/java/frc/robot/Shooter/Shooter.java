@@ -121,9 +121,10 @@ public class Shooter extends SubsystemBase {
   }
 
   public void runPhiPID(double degrees) {
-    degrees = Math.max(Math.min(degrees, 81), 57);
-    double angle = -(degrees - 85.6) + 90;
-    // angle = Math.max(92, Math.min(angle, 116));
+    // degrees = Math.max(Math.min(degrees, 81), 57);
+    // double angle = -(degrees - 85.6) + 90;
+    double angle = degrees;
+    angle = Math.max(94.6, Math.min(angle, 116));
 
     double power = vertPID.calculate(getPhiPosition(), angle) + (96.4 - 90) * 0.00456368213471;
 
@@ -133,6 +134,9 @@ public class Shooter extends SubsystemBase {
       power = -0.17;
     }
 
+    if(Double.isNaN(power) == true) {
+      power = 0;
+    }
     // if(getPhiPosition() < 92 && power > 0) {
     //   power = 0;
     // }
@@ -178,5 +182,6 @@ public class Shooter extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("theta", getThetaPosition());
+    SmartDashboard.putNumber("ShooterSpeed", shootMot.getVelocity().getValueAsDouble() * 60);
   }
 }
