@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.0
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Top to HighMidPickup"
@@ -13,19 +19,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "HighMidPickup to Top Out"
+            "pathName": "Center to Top Out"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 10.0
+            "waitTime": 3.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootOff"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Top Out to HighMidPickup"
+            "pathName": "Top to HighMidPickup"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center to Top Out"
           }
         }
       ]

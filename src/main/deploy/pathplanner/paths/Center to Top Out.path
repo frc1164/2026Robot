@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 7.610128388017117,
-        "y": 5.87
+        "y": 4.869543509272469
       },
       "prevControl": null,
       "nextControl": {
         "x": 6.916830485367608,
-        "y": 6.403786305198749
+        "y": 5.403329814471218
       },
       "isLocked": false,
       "linkedName": "HighMidPickup"
@@ -32,16 +32,16 @@
     },
     {
       "anchor": {
-        "x": 3.0815977175463622,
-        "y": 7.496091298145506
+        "x": 3.6120827389443653,
+        "y": 7.483152639087019
       },
       "prevControl": {
-        "x": 3.7257803465680834,
-        "y": 7.441802060861417
+        "x": 4.256265367966087,
+        "y": 7.42886340180293
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Top Start"
     }
   ],
   "rotationTargets": [
@@ -70,7 +70,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -1.0708244547869654
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": null,
