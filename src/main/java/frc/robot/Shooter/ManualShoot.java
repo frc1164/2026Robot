@@ -8,13 +8,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Agitator.Agitator;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class ManShot extends Command {
+public class ManualShoot extends Command {
   /** Creates a new ManShot. */
   Feeder feeder;
   Shooter shooter;
   Agitator agitator;
 
-  public ManShot(Feeder m_feeder, Shooter m_shooter, Agitator m_agitator) {
+  public ManualShoot(Feeder m_feeder, Shooter m_shooter, Agitator m_agitator) {
     // Use addRequirements() here to declare subsystem dependencies.
     feeder = m_feeder;
     shooter = m_shooter;

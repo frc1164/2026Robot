@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Shooter.AimCommand;
 import frc.robot.Shooter.AutoShoot;
 import frc.robot.Shooter.Feeder;
-import frc.robot.Shooter.ManShot;
+import frc.robot.Shooter.ManualShoot;
 import frc.robot.Shooter.Shooter;
 import frc.robot.Agitator.Agitator;
 import frc.robot.Intake.Extend;
@@ -105,7 +105,7 @@ public class RobotContainer {
 
     // operatorController.y().toggleOnTrue(new ManualShoot(feeder, operatorController, shooter, agitator));
     // operatorController.a().onTrue(new InstantCommand(() -> m_intake.toggleIntake()));
-    operatorController.x().whileTrue(new ManShot(feeder, shooter, agitator));
+    operatorController.x().whileTrue(new ManualShoot(feeder, shooter, agitator));
     operatorController.povUp().onTrue(new Extend(m_intake));
     operatorController.povDown().onTrue(new Retract(shooter, m_intake));
     // operatorController.rightBumper().whileTrue(new Pickup(m_intake));
