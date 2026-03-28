@@ -7,10 +7,12 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.events.CancelCommandEvent;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -47,6 +49,7 @@ public class RobotContainer {
   private Agitator m_agitate;
   private Intake m_intake = new Intake();
   private static final Compressor m_compressor = new Compressor(3, PneumaticsModuleType.CTREPCM);
+  private final AutoShoot autonomousShoot;
 
 
   public RobotContainer() {
@@ -54,6 +57,8 @@ public class RobotContainer {
     feeder = new Feeder();
     shooter = new Shooter(feeder);
     agitator = new Agitator();
+
+    autonomousShoot = new AutoShoot(feeder, swerve, shooter, m_agitate);
 
     driveController = new CommandXboxController(0);
     operatorController = new CommandXboxController(1);
@@ -76,15 +81,9 @@ public class RobotContainer {
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
-    NamedCommands.registerCommand("ShootOn", new ParallelCommandGroup((
-        new InstantCommand(() -> feeder.shootOn())),
-        new InstantCommand(() -> shooter.setShotSpeed(4000, false)),
-        new InstantCommand(() -> agitator.spin())));
-
-    NamedCommands.registerCommand("ShootOff", new ParallelCommandGroup((
-        new InstantCommand(() -> feeder.shootOff())),
-        new InstantCommand(() -> shooter.setShotSpeed(0, true)),
-        new InstantCommand(() -> agitator.stop())));
+    //Might need to create a way to cancel that command or turn off the shooter
+    NamedCommands.registerCommand("ShootOn", autonomousShoot);
+    NamedCommands.registerCommand("ShootOff", new InstantCommand(() -> CommandScheduler.getInstance().cancel(autonomousShoot)));
 
     NamedCommands.registerCommand("PickupOn", new InstantCommand(() -> m_intake.runPickup(1)));
     NamedCommands.registerCommand("PickupOff", new InstantCommand(() -> m_intake.runPickup(0)));

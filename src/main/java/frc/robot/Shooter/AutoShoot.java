@@ -18,7 +18,6 @@ public class AutoShoot extends Command {
   private final Agitator agitator;
   private Translation3d HUB;
   boolean blue;
-  private Translation3d PASSUP, PASSDOWN;
 
   public AutoShoot(Feeder Feeder, SwerveSubsystem Swerve, Shooter Shooter, Agitator Agitate) {
     swerve = Swerve;
@@ -35,16 +34,10 @@ public class AutoShoot extends Command {
 
     if (blue) {
       HUB = ShooterConstants.TAGRETS.BLUEHUB;
-      PASSUP = ShooterConstants.TAGRETS.BLUEPASSUP;
-      PASSDOWN = ShooterConstants.TAGRETS.BLUEPASSDOWN;
     } else if (!blue) {
       HUB = ShooterConstants.TAGRETS.REDHUB;
-      PASSUP = ShooterConstants.TAGRETS.REDPASSUP;
-      PASSDOWN = ShooterConstants.TAGRETS.REDPASSDOWN;
     } else {
       HUB = ShooterConstants.TAGRETS.BLUEHUB;
-      // PASSUP = ShooterConstants.TAGRETS.BLUEPASSUP;
-      // PASSDOWN = ShooterConstants.TAGRETS.BLUEPASSDOWN;
     }
   }
 
@@ -53,17 +46,12 @@ public class AutoShoot extends Command {
   public void execute() {
     if (ShooterCalculator.target(swerve.getPose(), blue) == HUB && ShooterCalculator.isHubActive() == HUBSTATE.ACTIVE) {
       feeder.shootOn();
-      shooter.setShotSpeed(4000, false);
-      agitator.spin();
-    }
-    else if (ShooterCalculator.target(swerve.getPose(), blue) == PASSUP || ShooterCalculator.target(swerve.getPose(), blue) == PASSDOWN){
-      feeder.shootOn(); 
-      shooter.setShotSpeed(4000, false);
+      shooter.shooterGoShoot(true);
       agitator.spin();
     }
     else {
       feeder.shootOff();
-      shooter.setShotSpeed(0, true);
+      shooter.shooterGoShoot(false);
       agitator.stop();
     }
   }
@@ -71,6 +59,9 @@ public class AutoShoot extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+      feeder.shootOff();
+      shooter.shooterGoShoot(false);
+      agitator.stop();
   }
 
   // Returns true when the command should end.
