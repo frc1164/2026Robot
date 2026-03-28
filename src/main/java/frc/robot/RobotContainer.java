@@ -18,7 +18,6 @@ import frc.robot.Shooter.AimCommand;
 import frc.robot.Shooter.AutoShoot;
 import frc.robot.Shooter.Feeder;
 import frc.robot.Shooter.ManShot;
-import frc.robot.Shooter.ManualShoot;
 import frc.robot.Shooter.Shooter;
 import frc.robot.Agitator.Agitator;
 import frc.robot.Intake.Extend;

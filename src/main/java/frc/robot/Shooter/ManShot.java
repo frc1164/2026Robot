@@ -13,6 +13,7 @@ public class ManShot extends Command {
   Feeder feeder;
   Shooter shooter;
   Agitator agitator;
+
   public ManShot(Feeder m_feeder, Shooter m_shooter, Agitator m_agitator) {
     // Use addRequirements() here to declare subsystem dependencies.
     feeder = m_feeder;
@@ -23,20 +24,25 @@ public class ManShot extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    shooter.shooterGoShoot(true);
+    agitator.spin();
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shooter.setShotSpeed(4000, false);
-    agitator.spin();
-    feeder.shootOn();
+    if(shooter.shooterSpeed() > 3900 && shooter.shooterSpeed() < 4250){
+      feeder.shootOn();
+    } else {
+      feeder.shootOff();
+    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    shooter.setShotSpeed(4000, true);
+    shooter.shooterGoShoot(false);
     agitator.stop();
     feeder.shootOff();
     shooter.resetLastSpeed();

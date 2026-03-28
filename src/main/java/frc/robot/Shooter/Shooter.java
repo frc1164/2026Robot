@@ -44,7 +44,9 @@ public class Shooter extends SubsystemBase {
   private final AbsoluteEncoder vertEncoder;
   private final AbsoluteEncoderConfig vertEncoderConfig;
 
-  private final PIDController thetaPID, vertPID, shotPID;
+  private final PIDController thetaPID;
+  private PIDController vertPID;
+  private final PIDController shotPID;
 
   private final Feeder feeder;
 
@@ -60,6 +62,8 @@ public class Shooter extends SubsystemBase {
   private double currentTheta;
 
   private static Optional<Alliance> alliance;
+
+  private boolean runShooter;
 
   /** Creates a new Shooter. */
   public Shooter(Feeder m_feeder) {
@@ -102,12 +106,15 @@ public class Shooter extends SubsystemBase {
     // Instantiate PID's
     thetaPID = new PIDController(0.02, 0, 0);
     vertPID = new PIDController(0.039, 0.00006, 0.0001);
-    shotPID = new PIDController(.0001, 0, 0.00003);
+    shotPID = new PIDController(.0002, 0, 0.00003);
 
+
+    //Initialize Important Variables
     lastSpeed = 0;
     currentTheta = -.25; // might be 3/2 pi
     relEncoder.setPosition(currentTheta);
     alliance = DriverStation.getAlliance();
+    runShooter = false;
   }
 
   public final double getThetaPosition() {
@@ -125,7 +132,7 @@ public class Shooter extends SubsystemBase {
     double angle = degrees;
     angle = Math.max(94.6, Math.min(angle, 116));
 
-    double power = vertPID.calculate(getPhiPosition(), angle) + (96.4 - 90) * 0.00456368213471;
+    double power = vertPID.calculate(getPhiPosition(), 100 ) + (96.4 - 90) * 0.00456368213471;
 
     if (power > 0.25) {
       power = 0.21;
@@ -135,6 +142,7 @@ public class Shooter extends SubsystemBase {
 
     if (Double.isNaN(power) == true) {
       power = 0;
+      vertPID = new PIDController(0.039, 0.00006, 0.0001);
     }
     // if(getPhiPosition() < 92 && power > 0) {
     // power = 0;
@@ -182,12 +190,25 @@ public class Shooter extends SubsystemBase {
     lastSpeed = 0;
   }
 
+  public void shooterGoShoot(boolean makeItGo){
+    runShooter = makeItGo;
+  }
+
+  public double shooterSpeed(){
+    return shootMot.getVelocity().getValueAsDouble() * 60;
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    if (runShooter){
+      setShotSpeed(4000, false);
+    } else {
+      setShotSpeed(4000, true);
+    }
+
     SmartDashboard.putNumber("theta", getThetaPosition());
     SmartDashboard.putNumber("ShooterSpeed", shootMot.getVelocity().getValueAsDouble() * 60);
-    // setShotSpeed(4000, false);
     SmartDashboard.putNumber("lastSpeed", lastSpeed);
   }
 }
