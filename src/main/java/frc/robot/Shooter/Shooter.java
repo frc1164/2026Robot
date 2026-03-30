@@ -47,9 +47,6 @@ public class Shooter extends SubsystemBase {
   private final PIDController thetaPID;
   private PIDController vertPID;
   private final PIDController shotPID;
-
-  private final Feeder feeder;
-
   // private final double gear0TeethCount = 132;
   // private final double gear1TeethCount = 17;
   // private final double gear2TeethCount = 36;
@@ -66,7 +63,7 @@ public class Shooter extends SubsystemBase {
   private boolean runShooter;
 
   /** Creates a new Shooter. */
-  public Shooter(Feeder m_feeder) {
+  public Shooter() {
 
     // Instantiate and configure the pivot
     turn = new SparkMax(51, MotorType.kBrushless);
@@ -77,7 +74,6 @@ public class Shooter extends SubsystemBase {
     turnConfig.encoder.positionConversionFactor(1.0 / 9.0 * 36.0 / 132.0);
     turn.configure(turnConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-    feeder = m_feeder;
     // absEncoder = feeder.getAbsoluteEncoder(); // all the configuration logic
     // occurs in Feeder
     relEncoder = turn.getEncoder();
@@ -127,8 +123,6 @@ public class Shooter extends SubsystemBase {
   }
 
   public void runPhiPID(double degrees) {
-    // degrees = Math.max(Math.min(degrees, 81), 57);
-    // double angle = -(degrees - 85.6) + 90;
     double angle = degrees;
     angle = Math.max(94.6, Math.min(angle, 116));
 
@@ -144,12 +138,6 @@ public class Shooter extends SubsystemBase {
       power = 0;
       vertPID = new PIDController(0.039, 0.00006, 0.0001);
     }
-    // if(getPhiPosition() < 92 && power > 0) {
-    // power = 0;
-    // }
-    // if(getPhiPosition() > 115 && power < 0) {
-    // power = 0;
-    // }
 
     vert.set(power);
     SmartDashboard.putNumber("setpt", angle);

@@ -52,6 +52,7 @@ public class ShooterCalculator {
     return new Translation3d(xEstimate, yEstimate, target.getZ());
   }
 
+  @SuppressWarnings("unused")
   //determine the error in the shot should return meters
   private static double predictError(Translation2d distVect, ChassisSpeeds velocity, double time){
     double errorX = distVect.getX() - velocity.vxMetersPerSecond * time;
