@@ -31,7 +31,7 @@ public class Intake extends SubsystemBase {
     m_pickup.configure(pickupMotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
 
-    m_extendSolenoid = new DoubleSolenoid(3, PneumaticsModuleType.CTREPCM, 2, 5);
+    m_extendSolenoid = new DoubleSolenoid(3, PneumaticsModuleType.CTREPCM, 5, 2);
 
     extend(); // starting state
   }
