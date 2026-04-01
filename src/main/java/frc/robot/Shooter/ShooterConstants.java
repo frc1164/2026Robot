@@ -43,7 +43,7 @@ public class ShooterConstants{
     SOON, ACTIVE, INACTIVE;
   };
   
-  public static final double exitVelocity = 13.2994089; //5000rpm to m/s wheel is 4 in radius. Divide tangential velo by 2 for slippage.
+  public static final double exitVelocity = 13.2994089; //5000rpm to m/s wheel is 4 in radius. Divide tangential velo by 2 for slippage. CHANGE
   public static final double minVert = 57;
   public static final double maxVert = 85.6;
   public static final Translation3d hubPose = new Translation3d(4.63,4.0,1.68); 
@@ -57,18 +57,20 @@ public class ShooterConstants{
       // shotMap.put(0.0, new ShotInfo(exitVelocity, Math.PI/2));
       // timeMap.put(0.0, Math.PI/2);
     //first is dist, second is radians
-    shotMap.put(1.49, new ShotInfo(exitVelocity, 1.6581 * 180/Math.PI));
+    shotMap.put(4.443, new ShotInfo(exitVelocity, 110));
     timeMap.put(1.49, 1.375);
 
-    shotMap.put(3.15, new ShotInfo(exitVelocity, 1.7453 * 180 / Math.PI));
+    shotMap.put(3.2871, new ShotInfo(exitVelocity,105));
     timeMap.put(3.15, 1.534375);
 
-    shotMap.put(5.82, new ShotInfo(exitVelocity, 1.8326 * 180/Math.PI));
+    shotMap.put(1.5153, new ShotInfo(exitVelocity,100));
     timeMap.put(5.82, 1.6585);
 
-    shotMap.put(6.47, new ShotInfo(exitVelocity, 1.9199 * 180/Math.PI));
+    shotMap.put(1.2, new ShotInfo(exitVelocity, 95));
     timeMap.put(6.47, 1.64075);
 
-    shotMap.put(7.28, new ShotInfo(exitVelocity, 2.0071 * 180/Math.PI));
+    shotMap.put(2.25, new ShotInfo(exitVelocity, 102.5));
+    shotMap.put(3.522, new ShotInfo(exitVelocity,107.5));
+    shotMap.put(4.825, new ShotInfo(exitVelocity, 112.5));
   }
 }

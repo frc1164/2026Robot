@@ -20,7 +20,7 @@ public class Agitator extends SubsystemBase {
   public Agitator() {
     m_agitate = new SparkMax(61, MotorType.kBrushless);
     agitatorConfig = new SparkMaxConfig();
-    agitatorConfig.inverted(true)
+    agitatorConfig.inverted(false)
         .idleMode(IdleMode.kCoast);
     agitatorConfig.smartCurrentLimit(70);
     m_agitate.configure(agitatorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -29,7 +29,7 @@ public class Agitator extends SubsystemBase {
 
   public void spin() {
 
-    m_agitate.set(.50);
+    m_agitate.set(.6);
 
   }
 

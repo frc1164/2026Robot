@@ -43,7 +43,7 @@ public class AimCommand extends Command {
     //Feed it into the shooter
     double theta = ShooterCalculator.getThetaAngle(ShooterCalculator.distVector(new Pose2d(shot.getTarget().getX(), shot.getTarget().getY(), null), botPose), botPose);
     SmartDashboard.putNumber("TargetTheta", theta * 180 / Math.PI);
-    ShooterSubsystem.runThetaPID(theta * 180 / Math.PI);
+    ShooteSubsystem.runThetaPID(theta * 180 / Math.PI);
     
     ShooterSubsystem.runPhiPID(shot.getVertAngle());
     SmartDashboard.putNumber("vert", shot.getVertAngle());

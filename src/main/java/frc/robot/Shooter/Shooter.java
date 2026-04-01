@@ -105,6 +105,7 @@ public class Shooter extends SubsystemBase {
     shotPID = new PIDController(.0002, 0, 0.00003);
 
 
+
     //Initialize Important Variables
     lastSpeed = 0;
     currentTheta = .25; // might be 3/2 pi
@@ -126,7 +127,7 @@ public class Shooter extends SubsystemBase {
     double angle = degrees;
     angle = Math.max(94.6, Math.min(angle, 116));
 
-    double power = vertPID.calculate(getPhiPosition(), 100 ) + (96.4 - 90) * 0.00456368213471;
+    double power = vertPID.calculate(getPhiPosition(), angle ) + (96.4 - 90) * 0.00456368213471;
 
     if (power > 0.25) {
       power = 0.21;
@@ -152,7 +153,7 @@ public class Shooter extends SubsystemBase {
       power = 0;
     }
     SmartDashboard.putNumber("PIDoutput", PIDoutput);
-    lastSpeed = power;
+    lastSpeed = Math.min(power, 1);
     // lastSpeed = Math.max(0,Math.min(2, lastSpeed));
     if (stop) {
       shootMot.set(0);
@@ -193,9 +194,9 @@ public class Shooter extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     if (runShooter){
-      setShotSpeed(4000, false);
+      setShotSpeed(3250, false);
     } else {
-      setShotSpeed(4000, true);
+      setShotSpeed(3250, true);
     }
 
     SmartDashboard.putNumber("theta", getThetaPosition());

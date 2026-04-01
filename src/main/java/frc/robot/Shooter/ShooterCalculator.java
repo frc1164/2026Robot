@@ -37,12 +37,14 @@ public class ShooterCalculator {
 
   // Just pythagoran applied to whatever given vector
   private static double getDist(Translation2d distVector) {
-    return Math.sqrt(Math.pow(distVector.getX(), 2) + Math.pow(distVector.getY(), 2));
+    double distance = Math.sqrt(Math.pow(distVector.getX(), 2) + Math.pow(distVector.getY(), 2));
+    SmartDashboard.putNumber("dist to target", distance);
+    return distance;
   }
 
   // Locks the shooter horizontal angle on a given target
   public static double getThetaAngle(Translation2d distanceVector, Pose2d current) {
-    return Math.atan2(distanceVector.getY(), distanceVector.getX()) - current.getRotation().getRadians() + Math.PI / 2;
+    return Math.atan2(distanceVector.getY(), distanceVector.getX()) - current.getRotation().getRadians() + Math.PI;
   }
 
   // Creates a target that is offset by current velocity and estimated flight time

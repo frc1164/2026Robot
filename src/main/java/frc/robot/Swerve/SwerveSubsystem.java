@@ -210,13 +210,20 @@ public class SwerveSubsystem extends SubsystemBase {
         LimelightHelpers.SetRobotOrientation("limelight-tags", getHeading(), getYawRate(),0,0,0,0);
         LimelightHelpers.PoseEstimate botPose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-tags");
 
+        if(botPose == null) {
+            botPose = new LimelightHelpers.PoseEstimate();
+        }  
 
         return botPose;
     }
 
     public void updatePoseEstimatorWithVisionBotPose(LimelightHelpers.PoseEstimate poseEstimate) {
-        Pose2d visionPose = poseEstimate.pose;
+        if(poseEstimate == null) {
+            poseEstimate = new LimelightHelpers.PoseEstimate();
+        }        
         
+        Pose2d visionPose = poseEstimate.pose;
+
         if (visionPose.getX() == 0.0) {
             isUpdating = false;
             return;
@@ -275,7 +282,6 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Roll", gyro.getRoll());
                 
         boolean signalIsUpdating = false;
-                                
         updatePoseEstimatorWithVisionBotPose(getVisionEstimatedPose());
         if(isUpdating == true) {
             signalIsUpdating = true;

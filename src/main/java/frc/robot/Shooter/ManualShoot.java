@@ -26,17 +26,19 @@ public class ManualShoot extends Command {
   @Override
   public void initialize() {
     shooter.shooterGoShoot(true);
-    agitator.spin();
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(shooter.shooterSpeed() > 3900 && shooter.shooterSpeed() < 4250){
+    if(shooter.shooterSpeed() > 3200 && shooter.shooterSpeed() < 3300){
       feeder.shootOn();
     } else {
       feeder.shootOff();
     }
+    agitator.spin();
+          // feeder.shootOn();
   }
 
   // Called once the command ends or is interrupted.
