@@ -26,9 +26,10 @@ public class RobotContainer {
   
   public RobotContainer() {
     feeder = new Feeder();
-    shooter = new Shooter(feeder);
 
     driveController = new CommandXboxController(0);
+        shooter = new Shooter(driveController);
+
     configureBindings();
   }
 
