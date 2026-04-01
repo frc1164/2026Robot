@@ -42,7 +42,9 @@ public class AimCommand extends Command {
     SmartDashboard.putNumber("Sepecial2", shot.exitVel());
     //Feed it into the shooter
     double theta = ShooterCalculator.getThetaAngle(ShooterCalculator.distVector(new Pose2d(shot.getTarget().getX(), shot.getTarget().getY(), null), botPose), botPose);
-    // ShooterSubsystem.runThetaPID(theta);
+    SmartDashboard.putNumber("TargetTheta", theta * 180 / Math.PI);
+    ShooterSubsystem.runThetaPID(theta * 180 / Math.PI);
+    
     ShooterSubsystem.runPhiPID(shot.getVertAngle());
     SmartDashboard.putNumber("vert", shot.getVertAngle());
   }

@@ -107,7 +107,7 @@ public class Shooter extends SubsystemBase {
 
     //Initialize Important Variables
     lastSpeed = 0;
-    currentTheta = -.25; // might be 3/2 pi
+    currentTheta = .25; // might be 3/2 pi
     relEncoder.setPosition(currentTheta);
     alliance = DriverStation.getAlliance();
     runShooter = false;
@@ -115,7 +115,7 @@ public class Shooter extends SubsystemBase {
 
   public final double getThetaPosition() {
     currentTheta = relEncoder.getPosition();
-    return currentTheta * Math.PI * 2;
+    return currentTheta * 360;
   }
 
   public double getPhiPosition() {
@@ -164,10 +164,13 @@ public class Shooter extends SubsystemBase {
 
   // Once we know the range of theta, we will have to program in limits to this in
   // a weird way, hopefully we can leave it swapping at 0.
-  public void runThetaPID(double radians) {
-    double pidMotorSpeed = thetaPID.calculate(getThetaPosition() * Math.PI / 180, 0);
-    SmartDashboard.putNumber("turnPower", pidMotorSpeed);
+  public void runThetaPID(double degrees) {
+    degrees = ((degrees % 360) + 360) % 360;
+
+    double pidMotorSpeed = thetaPID.calculate(getThetaPosition(), degrees);
+    pidMotorSpeed = Math.max(Math.min(pidMotorSpeed, .75), -.75);
     turn.set(pidMotorSpeed);
+    SmartDashboard.putNumber("MotorOutput", pidMotorSpeed);
   }
 
   public static Optional<Alliance> getAlliance() {
