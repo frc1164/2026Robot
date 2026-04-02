@@ -21,10 +21,13 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Swerve.SwerveSubsystem;
 
 public class Shooter extends SubsystemBase {
 
@@ -60,10 +63,15 @@ public class Shooter extends SubsystemBase {
 
   private static Optional<Alliance> alliance;
 
-  private boolean runShooter;
+  private boolean runShooter, blue, active;
+
+  private SwerveSubsystem swerve;
+  private Translation3d HUB;
+
+  private Timer turnOnTimer;
 
   /** Creates a new Shooter. */
-  public Shooter() {
+  public Shooter(SwerveSubsystem Swerve) {
 
     // Instantiate and configure the pivot
     turn = new SparkMax(51, MotorType.kBrushless);
@@ -104,7 +112,8 @@ public class Shooter extends SubsystemBase {
     vertPID = new PIDController(0.039, 0.00006, 0.0001);
     shotPID = new PIDController(.0002, 0, 0.00003);
 
-
+    //Intantiate Swerve
+    swerve = Swerve;
 
     //Initialize Important Variables
     lastSpeed = 0;
@@ -112,6 +121,17 @@ public class Shooter extends SubsystemBase {
     relEncoder.setPosition(currentTheta);
     alliance = DriverStation.getAlliance();
     runShooter = false;
+    blue = Shooter.getAlliance().get() == Alliance.Blue;
+    active = false;
+    turnOnTimer = new Timer();
+
+    if (blue) {
+      HUB = ShooterConstants.TAGRETS.BLUEHUB;
+    } else if (!blue) {
+      HUB = ShooterConstants.TAGRETS.REDHUB;
+    } else {
+      HUB = ShooterConstants.TAGRETS.BLUEHUB;
+    }
   }
 
   public final double getThetaPosition() {
@@ -140,13 +160,23 @@ public class Shooter extends SubsystemBase {
       vertPID = new PIDController(0.039, 0.00006, 0.0001);
     }
 
-    vert.set(power);
+    if (active){
+      vert.set(power);
+    } else {
+      vert.set(0);
+    }
     SmartDashboard.putNumber("setpt", angle);
     SmartDashboard.putNumber("location", vertEncoder.getPosition() * 360);
     SmartDashboard.putNumber("power", power);
   }
 
-  public void setShotSpeed(double speed, boolean stop) {// 4000rpm to shoot
+  public void setShotSpeed(boolean stop) {// 4000rpm to shoot
+    double speed;
+    if (aimingAtHub()){
+      speed = 3250;
+    }else{
+      speed = 4750;
+    }
     double PIDoutput = shotPID.calculate(shootMot.getVelocity().getValueAsDouble() * 60, speed);
     double power = PIDoutput + lastSpeed;
     if (power <= 0 || !DriverStation.isTeleopEnabled()) {
@@ -170,7 +200,11 @@ public class Shooter extends SubsystemBase {
 
     double pidMotorSpeed = thetaPID.calculate(getThetaPosition(), degrees);
     pidMotorSpeed = Math.max(Math.min(pidMotorSpeed, .75), -.75);
-    turn.set(pidMotorSpeed);
+    if(active){
+      turn.set(pidMotorSpeed);
+    }else{
+      turn.set(0);
+    }
     SmartDashboard.putNumber("MotorOutput", pidMotorSpeed);
   }
 
@@ -190,14 +224,38 @@ public class Shooter extends SubsystemBase {
     return shootMot.getVelocity().getValueAsDouble() * 60;
   }
 
+  public boolean aimingAtHub(){
+    if (ShooterCalculator.target(swerve.getPose(), blue) == HUB){
+      return true;
+    }else{
+      return false;
+    }
+  }
+
+  public void resetTimer(){
+    turnOnTimer.reset();
+  }
+  public void startTimer(){
+    turnOnTimer.reset();
+    turnOnTimer.start();
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     if (runShooter){
-      setShotSpeed(3250, false);
+      setShotSpeed(false);
     } else {
-      setShotSpeed(3250, true);
+      setShotSpeed(true);
     }
+    SmartDashboard.putNumber("timer", turnOnTimer.get());
+    if(turnOnTimer.hasElapsed(.5)){
+      active = true;
+      turnOnTimer.stop();
+    } else {
+      active = false;
+    }
+
 
     SmartDashboard.putNumber("theta", getThetaPosition());
     SmartDashboard.putNumber("ShooterSpeed", shootMot.getVelocity().getValueAsDouble() * 60);

@@ -18,6 +18,7 @@ import frc.robot.Shooter.AutoShoot;
 import frc.robot.Shooter.Feeder;
 import frc.robot.Shooter.ManualShoot;
 import frc.robot.Shooter.Shooter;
+import frc.robot.Shooter.UnJamTheShooterLikeABoss;
 import frc.robot.Agitator.Agitator;
 import frc.robot.Intake.Extend;
 import frc.robot.Intake.Intake;
@@ -40,9 +41,8 @@ public class RobotContainer {
   private final SendableChooser<Command> autoChooser;
   
   // @SuppressWarnings("unused")
-  // private final LEDs leds = new LEDs();
+  private final LEDs leds = new LEDs();
 
-  @SuppressWarnings("unused")
   private Agitator m_agitate;
   private Intake m_intake = new Intake();
   private static final Compressor m_compressor = new Compressor(3, PneumaticsModuleType.CTREPCM);
@@ -52,10 +52,10 @@ public class RobotContainer {
   public RobotContainer() {
     swerve = new SwerveSubsystem();
     feeder = new Feeder();
-    shooter = new Shooter();
+    shooter = new Shooter(swerve);
     agitator = new Agitator();
 
-    autonomousShoot = new AutoShoot(feeder, swerve, shooter, m_agitate);
+    autonomousShoot = new AutoShoot(feeder, shooter, m_agitate);
 
     driveController = new CommandXboxController(0);
     operatorController = new CommandXboxController(1);
@@ -71,7 +71,7 @@ public class RobotContainer {
 
     // //this SHOULD be overwritten by auton during auton period I hope, if not then this gets problematic
     // feeder.setDefaultCommand(new AutoShoot(fe   eder, swerve, shooter, agitator));
-    m_intake.setDefaultCommand(new Pickup(m_intake, operatorController));
+    m_intake.setDefaultCommand(new Extend(m_intake, shooter));
     
 
     autoChooser = AutoBuilder.buildAutoChooser();
@@ -85,25 +85,23 @@ public class RobotContainer {
     NamedCommands.registerCommand("PickupOn", new InstantCommand(() -> m_intake.runPickup(1)));
     NamedCommands.registerCommand("PickupOff", new InstantCommand(() -> m_intake.runPickup(0)));
 
-    NamedCommands.registerCommand("Deploy Intake", new InstantCommand(() -> m_intake.extend()));
+    NamedCommands.registerCommand("Deploy Intake", new Extend(m_intake, shooter));
 
     NamedCommands.registerCommand(null, getAutonomousCommand());
 
 
     configureBindings();
     m_compressor.enableDigital();
-    new Extend(m_intake);
   }
 
   private void configureBindings() {
     driveController.povDown().onTrue(new InstantCommand(() -> swerve.zeroHeading()));
 
 
-    // operatorController.y().toggleOnTrue(new ManualShoot(feeder, operatorController, shooter, agitator));
-    // operatorController.a().onTrue(new InstantCommand(() -> m_intake.toggleIntake()));
+    operatorController.a().whileTrue(new UnJamTheShooterLikeABoss(shooter, agitator, feeder));
     operatorController.x().whileTrue(new ManualShoot(feeder, shooter, agitator));
-    // operatorController.povUp().onTrue(new Extend(m_intake));
-    // operatorController.povDown().onTrue(new Retract(shooter, m_intake));
+    operatorController.povUp().onTrue(new Extend(m_intake, shooter));
+    operatorController.povDown().toggleOnTrue(new Retract(shooter, m_intake));
     operatorController.rightBumper().whileTrue(new Pickup(m_intake, operatorController));
   }
  

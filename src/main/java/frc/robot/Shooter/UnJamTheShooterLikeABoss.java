@@ -6,45 +6,41 @@ package frc.robot.Shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Agitator.Agitator;
-import frc.robot.Shooter.ShooterConstants.HUBSTATE;
 
-public class AutoShoot extends Command {
-  private final Feeder feeder;
-  private final Shooter shooter;
-  private final Agitator agitator;
-
-  public AutoShoot(Feeder Feeder, Shooter Shooter, Agitator Agitate) {
-    feeder = Feeder;
+/* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
+public class UnJamTheShooterLikeABoss extends Command {
+  /** Creates a new UnJamTheShooterLikeABoss. */
+  Shooter shooter;
+  Agitator agitator;
+  Feeder feeder;
+  public UnJamTheShooterLikeABoss(Shooter Shooter, Agitator Agitator, Feeder Feeder) {
+    // Use addRequirements() here to declare subsystem dependencies.
     shooter = Shooter;
-    agitator = Agitate;
+    agitator = Agitator;
+    feeder = Feeder;
     addRequirements(feeder);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    shooter.shooterGoShoot(true);
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (shooter.aimingAtHub() && ShooterCalculator.isHubActive() == HUBSTATE.ACTIVE) {
-      feeder.shootOn();
-      shooter.shooterGoShoot(true);
-      agitator.spin();
-    }
-    else {
-      feeder.shootOff();
-      shooter.shooterGoShoot(false);
-      agitator.stop();
-    }
+    feeder.reverse();
+    agitator.reverse();
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-      feeder.shootOff();
-      shooter.shooterGoShoot(false);
-      agitator.stop();
+    shooter.shooterGoShoot(false);
+    agitator.stop();
+    feeder.shootOff();
+    shooter.resetLastSpeed();
   }
 
   // Returns true when the command should end.

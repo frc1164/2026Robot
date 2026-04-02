@@ -4,6 +4,7 @@
 
 package frc.robot.Shooter;
 
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Agitator.Agitator;
 
@@ -13,6 +14,7 @@ public class ManualShoot extends Command {
   Feeder feeder;
   Shooter shooter;
   Agitator agitator;
+  int topLim, bottomLim;
 
   public ManualShoot(Feeder m_feeder, Shooter m_shooter, Agitator m_agitator) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -25,20 +27,26 @@ public class ManualShoot extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    shooter.shooterGoShoot(true);
-
+    // shooter.shooterGoShoot(true);
+    if (shooter.aimingAtHub()){
+      topLim = 3300;
+      bottomLim = 3200;
+    } else {
+      topLim = 6000;
+      bottomLim = 3000;
+    }
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(shooter.shooterSpeed() > 3200 && shooter.shooterSpeed() < 3300){
-      feeder.shootOn();
+    if(shooter.shooterSpeed() > bottomLim && shooter.shooterSpeed() < topLim){
+      feeder.feedyMcFeedFeed();
     } else {
       feeder.shootOff();
     }
-    agitator.spin();
-          // feeder.shootOn();
+    agitator.agitationNation();
+    // feeder.shootOn();
   }
 
   // Called once the command ends or is interrupted.

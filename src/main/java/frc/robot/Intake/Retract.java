@@ -5,6 +5,7 @@
 package frc.robot.Intake;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Shooter.Shooter;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
@@ -28,16 +29,19 @@ public class Retract extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shooter.runThetaPID(Math.PI/2);
+    shooter.runThetaPID(90);
+    shooter.runPhiPID(95);
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    // CommandScheduler.getInstance().schedule(new Extend(intake, shooter));
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return intake.intakeExtended() == true;
+    return false;
   }
 }

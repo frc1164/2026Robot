@@ -11,21 +11,33 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Bottom to LowMidPickup"
+            "name": "PickupOn"
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "LowMidPickup to Human"
+            "name": "ShootOn"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 10.0
+            "waitTime": 3.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "New New AwesomeMiddleShotoPath"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PickupOff"
           }
         },
         {
@@ -35,9 +47,9 @@
           }
         },
         {
-          "type": "path",
+          "type": "wait",
           "data": {
-            "pathName": "Human to LowMidPickup"
+            "waitTime": 3.0
           }
         }
       ]

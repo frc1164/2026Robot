@@ -6,38 +6,43 @@ package frc.robot.Intake;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkMaxConfig;
+
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkFlexConfig;
+import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 public class Intake extends SubsystemBase {
 
-  private final SparkMax m_pickup;
-  private final SparkMaxConfig pickupMotConfig;
+  private final SparkFlex m_pickup;
+  private final SparkFlexConfig pickupMotConfig;
   private final DoubleSolenoid m_extendSolenoid;
+  public boolean ranit;
 
   public Intake() {
-    m_pickup = new SparkMax(60, MotorType.kBrushless);
-    pickupMotConfig = new SparkMaxConfig();
+    m_pickup = new SparkFlex(60, MotorType.kBrushless);
+    pickupMotConfig = new SparkFlexConfig();
     pickupMotConfig.inverted(true)
         .idleMode(IdleMode.kCoast);
 
-    pickupMotConfig.smartCurrentLimit(17);
+    pickupMotConfig.smartCurrentLimit(70);
     m_pickup.configure(pickupMotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
 
     m_extendSolenoid = new DoubleSolenoid(3, PneumaticsModuleType.CTREPCM, 5, 2);
 
-    extend(); // starting state
+    ranit = false;
+    // extend(); // starting state
   }
 
   public void runPickup(double speed) {
     m_pickup.set(speed);
+    SmartDashboard.putNumber("intake speed", speed);
   }
 
   public void extend() {
@@ -63,7 +68,13 @@ public class Intake extends SubsystemBase {
     } else if (!intakeExtended()) {
       extend();
     }
+  }
 
+  public void yesItRan(){
+    ranit = true;
+  }
+  public boolean didItRun(){
+    return ranit;
   }
   // the climb and intake cannot both be extended at the same time so when you
   // write the command to extend one, hte other needs to first be retracted.

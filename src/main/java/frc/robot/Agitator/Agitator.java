@@ -28,15 +28,23 @@ public class Agitator extends SubsystemBase {
   }
 
   public void spin() {
-
     m_agitate.set(.6);
-
   }
 
   public void stop() {
-
     m_agitate.set(0);
+  }
 
+  public void reverse(){
+    m_agitate.set(-.6);
+  }
+
+  public void agitationNation(){
+    if (Math.abs(m_agitate.getEncoder().getVelocity()) < 15) {
+      reverse();
+    } else {
+      spin();
+    }
   }
 
   @Override

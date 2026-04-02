@@ -14,7 +14,7 @@ public class Pickup extends Command {
   public Pickup(Intake m_intake, CommandXboxController m_controller) {
     intake = m_intake;
     controller = m_controller;
-    addRequirements(intake);
+    // addRequirements(intake);
   }
 
   // Called when the command is initially scheduled.
@@ -25,14 +25,14 @@ public class Pickup extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-        intake.runPickup(controller.getRightY());
+        intake.runPickup(.75);
 
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-      intake.runPickup(0);
+      intake.runPickup(0.1);
   }
 
   // Returns true when the command should end.
