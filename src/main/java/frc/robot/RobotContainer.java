@@ -24,6 +24,7 @@ import frc.robot.Intake.Extend;
 import frc.robot.Intake.Intake;
 import frc.robot.Intake.Pickup;
 import frc.robot.Intake.Retract;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import frc.robot.Swerve.SwerveSubsystem;
@@ -40,13 +41,13 @@ public class RobotContainer {
 
   private final SendableChooser<Command> autoChooser;
   
-  // @SuppressWarnings("unused")
+  @SuppressWarnings("unused")
   private final LEDs leds = new LEDs();
 
-  private Agitator m_agitate;
   private Intake m_intake = new Intake();
   private static final Compressor m_compressor = new Compressor(3, PneumaticsModuleType.CTREPCM);
   private final AutoShoot autonomousShoot;
+  private final Pickup autonomousPickup;
 
 
   public RobotContainer() {
@@ -55,10 +56,13 @@ public class RobotContainer {
     shooter = new Shooter(swerve);
     agitator = new Agitator();
 
-    autonomousShoot = new AutoShoot(feeder, shooter, m_agitate);
+    autonomousShoot = new AutoShoot(feeder, shooter, agitator);
 
     driveController = new CommandXboxController(0);
     operatorController = new CommandXboxController(1);
+
+    autonomousPickup = new Pickup(m_intake, driveController);
+
 
     swerve.setDefaultCommand(new SwerveJoystickCmd(
       swerve,
@@ -74,21 +78,19 @@ public class RobotContainer {
     m_intake.setDefaultCommand(new Extend(m_intake, shooter));
     
 
-    autoChooser = AutoBuilder.buildAutoChooser();
-
-    SmartDashboard.putData("Auto Chooser", autoChooser);
-
     //Might need to create a way to cancel that command or turn off the shooter
-    NamedCommands.registerCommand("ShootOn", autonomousShoot);
+    NamedCommands.registerCommand("ShootOn", new InstantCommand(() -> CommandScheduler.getInstance().schedule(autonomousShoot)));
     NamedCommands.registerCommand("ShootOff", new InstantCommand(() -> CommandScheduler.getInstance().cancel(autonomousShoot)));
 
-    NamedCommands.registerCommand("PickupOn", new InstantCommand(() -> m_intake.runPickup(1)));
-    NamedCommands.registerCommand("PickupOff", new InstantCommand(() -> m_intake.runPickup(0)));
+    NamedCommands.registerCommand("PickupOn", new InstantCommand(() -> CommandScheduler.getInstance().schedule(autonomousPickup)));
+    NamedCommands.registerCommand("PickupOff", new InstantCommand(() -> CommandScheduler.getInstance().cancel(autonomousPickup)));
 
     NamedCommands.registerCommand("Deploy Intake", new Extend(m_intake, shooter));
 
+    autoChooser = AutoBuilder.buildAutoChooser();
     NamedCommands.registerCommand(null, getAutonomousCommand());
 
+    SmartDashboard.putData("Auto Chooser", autoChooser);
 
     configureBindings();
     m_compressor.enableDigital();

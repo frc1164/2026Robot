@@ -27,7 +27,7 @@ public class ManualShoot extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    // shooter.shooterGoShoot(true);
+    shooter.shooterGoShoot(true);
     if (shooter.aimingAtHub()){
       topLim = 3300;
       bottomLim = 3200;

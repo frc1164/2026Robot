@@ -20,6 +20,7 @@ public class Pickup extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    System.out.println("intake running");
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -32,7 +33,7 @@ public class Pickup extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-      intake.runPickup(0.1);
+      intake.runPickup(0);
   }
 
   // Returns true when the command should end.

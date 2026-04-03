@@ -6,7 +6,6 @@ package frc.robot.Shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Agitator.Agitator;
-import frc.robot.Shooter.ShooterConstants.HUBSTATE;
 
 public class AutoShoot extends Command {
   private final Feeder feeder;
@@ -22,21 +21,26 @@ public class AutoShoot extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+          shooter.shooterGoShoot(true);
+
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (shooter.aimingAtHub() && ShooterCalculator.isHubActive() == HUBSTATE.ACTIVE) {
-      feeder.shootOn();
-      shooter.shooterGoShoot(true);
-      agitator.spin();
-    }
-    else {
-      feeder.shootOff();
-      shooter.shooterGoShoot(false);
-      agitator.stop();
-    }
+    // if (shooter.aimingAtHub()) {
+      
+    // }
+    // else {
+    //   feeder.shootOff();
+    //   shooter.shooterGoShoot(false);
+    //   agitator.stop();
+    // }
+
+    feeder.feedyMcFeedFeed();
+      // shooter.shooterGoShoot(true);
+      agitator.agitationNation();
   }
 
   // Called once the command ends or is interrupted.

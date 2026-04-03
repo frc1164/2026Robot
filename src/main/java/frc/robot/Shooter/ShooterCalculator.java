@@ -87,7 +87,7 @@ public class ShooterCalculator {
       }
     } else if (!blue) {
       if (x > ShooterConstants.XVALS.RATRENCH && x < ShooterConstants.XVALS.REDWALL) {
-        TARGET = new Translation3d(botPose.getX(), botPose.getY(), 10);
+        TARGET = ShooterConstants.TAGRETS.REDHUB;
       } else if (x >= ShooterConstants.XVALS.BATRENCH && x <= ShooterConstants.XVALS.BMTRENCH
           || x >= ShooterConstants.XVALS.RMTRENCH && x <= ShooterConstants.XVALS.RATRENCH) {
         TARGET = new Translation3d(botPose.getX(), botPose.getY(), 10);
@@ -111,6 +111,7 @@ public class ShooterCalculator {
         TARGET = ShooterConstants.TAGRETS.CENTERDOWN;
       }
     }
+    SmartDashboard.putString("TARGET", TARGET.toString());
     return TARGET;
   }
 

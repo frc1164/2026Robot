@@ -171,18 +171,19 @@ public class Shooter extends SubsystemBase {
   }
 
   public void setShotSpeed(boolean stop) {// 4000rpm to shoot
-    double speed;
-    if (aimingAtHub()){
-      speed = 3250;
-    }else{
-      speed = 4750;
-    }
+    double speed = 3250;
+    // if (aimingAtHub()){
+    //   speed = 3250;
+    // }else{
+    //   speed = 4750;
+    // }
     double PIDoutput = shotPID.calculate(shootMot.getVelocity().getValueAsDouble() * 60, speed);
     double power = PIDoutput + lastSpeed;
-    if (power <= 0 || !DriverStation.isTeleopEnabled()) {
+    if (power <= 0) {
       power = 0;
     }
     SmartDashboard.putNumber("PIDoutput", PIDoutput);
+    SmartDashboard.putBoolean("ShooterOn", stop);
     lastSpeed = Math.min(power, 1);
     // lastSpeed = Math.max(0,Math.min(2, lastSpeed));
     if (stop) {
