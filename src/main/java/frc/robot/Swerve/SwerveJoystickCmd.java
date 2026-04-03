@@ -4,7 +4,10 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Shooter.Shooter;
 import frc.robot.Swerve.SwerveConstants.DriveConstants;
 import frc.robot.Swerve.SwerveConstants.OperatorConstants;
 
@@ -39,6 +42,11 @@ public class SwerveJoystickCmd extends Command {
         double xSpeed = -xSpdFunction.get();
         double ySpeed = -ySpdFunction.get();
         double turningSpeed = turningSpdFunction.get();
+
+        if (swerveSubsystem.alliance.get() == Alliance.Red){
+            xSpeed = -xSpeed;
+            ySpeed = -ySpeed;
+        }
 
         // 2. Apply deadband
         xSpeed = Math.abs(xSpeed) > OperatorConstants.kDeadband ? (xSpeed * Math.pow(Math.E, (DriveConstants.kDriveGain * Math.abs(xSpeed))))/Math.pow(Math.E, DriveConstants.kDriveGain) : 0.0;

@@ -117,7 +117,7 @@ public class Shooter extends SubsystemBase {
 
     //Initialize Important Variables
     lastSpeed = 0;
-    currentTheta = .25; // might be 3/2 pi
+    currentTheta = .25 + 2.0/360.0; // might be 3/2 pi
     relEncoder.setPosition(currentTheta);
     alliance = DriverStation.getAlliance();
     runShooter = false;
@@ -172,11 +172,11 @@ public class Shooter extends SubsystemBase {
 
   public void setShotSpeed(boolean stop) {// 4000rpm to shoot
     double speed = 3250;
-    // if (aimingAtHub()){
-    //   speed = 3250;
-    // }else{
-    //   speed = 4750;
-    // }
+    if (!opposingAlliance()){
+      speed = 3250;
+    }else{
+      speed = 5000;
+    }
     double PIDoutput = shotPID.calculate(shootMot.getVelocity().getValueAsDouble() * 60, speed);
     double power = PIDoutput + lastSpeed;
     if (power <= 0) {
@@ -229,6 +229,14 @@ public class Shooter extends SubsystemBase {
     if (ShooterCalculator.target(swerve.getPose(), blue) == HUB){
       return true;
     }else{
+      return false;
+    }
+  }
+
+  public boolean opposingAlliance(){
+    if (ShooterCalculator.target(swerve.getPose(), blue) == ShooterConstants.TAGRETS.CENTERDOWN || ShooterCalculator.target(swerve.getPose(), blue) == ShooterConstants.TAGRETS.CENTERUP){
+      return true;
+    } else {
       return false;
     }
   }

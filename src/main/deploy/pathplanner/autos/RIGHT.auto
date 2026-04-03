@@ -1,0 +1,67 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Bottom to LowMidPickup"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LowMidPickup to Bottom"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PickupOff"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootOn"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 7.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootOff"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PickupOn"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Bottom to LowMidPickup"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PickupOff"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

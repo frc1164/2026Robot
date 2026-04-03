@@ -49,8 +49,9 @@ public class ShooterCalculator {
 
   // Creates a target that is offset by current velocity and estimated flight time
   private static Translation3d predictTargetpose(Translation3d target, double time, ChassisSpeeds velocity) {
-    double xEstimate = target.getX() - velocity.vxMetersPerSecond * time;
-    double yEstimate = target.getY() - velocity.vyMetersPerSecond * time;
+    double xEstimate = target.getX() - velocity.vxMetersPerSecond * time * 62.2857;
+    double yEstimate = target.getY() - velocity.vyMetersPerSecond * time * 62.2857;
+    SmartDashboard.putNumber("fieldEstimatedSpeed", Math.sqrt(Math.pow(velocity.vyMetersPerSecond, 2) + Math.pow(velocity.vxMetersPerSecond, 2)));
     return new Translation3d(xEstimate, yEstimate, target.getZ());
   }
 
@@ -80,9 +81,9 @@ public class ShooterCalculator {
         }
       } else {
         if (botPose.getY() >= 4.0) {
-          TARGET = ShooterConstants.TAGRETS.BLUEPASSUP;
+          TARGET = ShooterConstants.TAGRETS.CENTERUP;
         } else if (botPose.getY() < 4.0) {
-          TARGET = ShooterConstants.TAGRETS.BLUEPASSDOWN;
+          TARGET = ShooterConstants.TAGRETS.CENTERDOWN;
         }
       }
     } else if (!blue) {
@@ -99,9 +100,9 @@ public class ShooterCalculator {
         }
       } else {
         if (botPose.getY() >= 4.0) {
-          TARGET = ShooterConstants.TAGRETS.REDPASSUP;
+          TARGET = ShooterConstants.TAGRETS.CENTERUP;
         } else if (botPose.getY() < 4.0) {
-          TARGET = ShooterConstants.TAGRETS.REDPASSDOWN;
+          TARGET = ShooterConstants.TAGRETS.CENTERDOWN;
         }
       }
     } else {

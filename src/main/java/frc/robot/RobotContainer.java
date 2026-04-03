@@ -100,9 +100,9 @@ public class RobotContainer {
     driveController.povDown().onTrue(new InstantCommand(() -> swerve.zeroHeading()));
 
 
-    operatorController.a().whileTrue(new UnJamTheShooterLikeABoss(shooter, agitator, feeder));
-    operatorController.x().whileTrue(new ManualShoot(feeder, shooter, agitator));
-    operatorController.povUp().onTrue(new Extend(m_intake, shooter));
+    operatorController.leftTrigger(.25).whileTrue(new UnJamTheShooterLikeABoss(shooter, agitator, feeder));
+    operatorController.rightTrigger(.25).whileTrue(new ManualShoot(feeder, shooter, agitator));
+    // operatorController.povUp().onTrue(new Extend(m_intake, shooter));
     operatorController.povDown().toggleOnTrue(new Retract(shooter, m_intake));
     operatorController.rightBumper().whileTrue(new Pickup(m_intake, operatorController));
   }

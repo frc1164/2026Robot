@@ -27,7 +27,7 @@ public class Feeder extends SubsystemBase {
     feedConfigA = new SparkMaxConfig();
     feedConfigB = new SparkMaxConfig();
 
-    feedConfigA.idleMode(IdleMode.kBrake).inverted(true).smartCurrentLimit(15);
+    feedConfigA.idleMode(IdleMode.kBrake).inverted(true).smartCurrentLimit(40);
 
     feedConfigB.idleMode(IdleMode.kBrake).inverted(true).follow(56).smartCurrentLimit(5);
 
