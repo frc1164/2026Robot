@@ -31,7 +31,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 7.0
+            "waitTime": 5.0
           }
         },
         {
@@ -49,13 +49,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom to LowMidPickup"
+            "pathName": "Lower Bottom to LowMidPickup"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "PickupOff"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Copy of LowMidPickup to Bottom"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootOn"
           }
         }
       ]

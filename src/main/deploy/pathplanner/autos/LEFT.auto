@@ -31,7 +31,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 7.0
+            "waitTime": 5.0
           }
         },
         {
@@ -43,13 +43,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Top to HighMidPickup"
+            "pathName": "Lower Top to HighMidPickup"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "HighMid to Top"
+            "pathName": "Copy of HighMid to Top"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootOn"
           }
         }
       ]

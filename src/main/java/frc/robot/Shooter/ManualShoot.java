@@ -42,7 +42,7 @@ public class ManualShoot extends Command {
   public void execute() {
     if(shooter.shooterSpeed() > bottomLim && shooter.shooterSpeed() < topLim){
       feeder.feedyMcFeedFeed();
-    } else {
+    } else { 
       feeder.shootOff();
     }
     agitator.agitationNation();

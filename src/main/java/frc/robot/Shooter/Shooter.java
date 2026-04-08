@@ -117,7 +117,7 @@ public class Shooter extends SubsystemBase {
 
     //Initialize Important Variables
     lastSpeed = 0;
-    currentTheta = .25 + 2.0/360.0; // might be 3/2 pi
+    currentTheta = .25 + 4.0/360.0; // might be 3/2 pi
     relEncoder.setPosition(currentTheta);
     alliance = DriverStation.getAlliance();
     runShooter = false;

@@ -30,7 +30,6 @@ public class Intake extends SubsystemBase {
     pickupMotConfig.inverted(true)
         .idleMode(IdleMode.kCoast);
 
-    pickupMotConfig.smartCurrentLimit(70);
     m_pickup.configure(pickupMotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
 

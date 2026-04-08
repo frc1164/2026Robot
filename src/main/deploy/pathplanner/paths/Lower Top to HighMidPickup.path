@@ -3,66 +3,72 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.752453637660485,
-        "y": 4.61077032810271
+        "x": 3.663837375178317,
+        "y": 7.431398002853067
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.84631531869751,
-        "y": 5.701275699199267
+        "x": 4.650119550489527,
+        "y": 7.430877070233606
       },
       "isLocked": false,
-      "linkedName": "HighMidPickup"
+      "linkedName": "Top Start"
     },
     {
       "anchor": {
-        "x": 6.445649072753208,
-        "y": 7.250256776034237
+        "x": 6.5620970042796,
+        "y": 7.327888730385164
       },
       "prevControl": {
-        "x": 7.983207886640987,
-        "y": 6.367757497345701
+        "x": 6.342712805915831,
+        "y": 7.4488937763786955
       },
       "nextControl": {
-        "x": 6.009299891693409,
-        "y": 7.500704325788721
+        "x": 7.2131899662308445,
+        "y": 6.968767451849242
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.6120827389443653,
-        "y": 7.547845934379458
+        "x": 6.9502567760342355,
+        "y": 4.49432239657632
       },
       "prevControl": {
-        "x": 3.918366391061504,
-        "y": 7.447183998926888
+        "x": 7.066704707560627,
+        "y": 5.64586305278174
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "LowerHighPickup"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.997867803837946,
-      "rotationDegrees": 0.0
+      "waypointRelativePos": 0.8869936034115111,
+      "rotationDegrees": -65.10687748369915
     }
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "ShootOn",
-      "waypointRelativePos": 1.744767049291012,
+      "name": "PickupOn",
+      "waypointRelativePos": 0.9237002025658271,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "ShootOn"
+          "name": "PickupOn"
         }
       }
+    },
+    {
+      "name": "PickupOff",
+      "waypointRelativePos": 2.0,
+      "endWaypointRelativePos": null,
+      "command": null
     }
   ],
   "globalConstraints": {
@@ -75,13 +81,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -93.17983011986423
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -81.67434966957313
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }
