@@ -4,6 +4,9 @@
 
 package frc.robot.Shooter;
 
+import java.util.function.Supplier;
+
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -16,9 +19,7 @@ public class Feeder extends SubsystemBase {
 
   private final SparkMax feederB, feederA;
   private final SparkMaxConfig feedConfigB, feedConfigA;
-
-  // private final AbsoluteEncoder shooterAbsoluteEncoder;
-  // private final AbsoluteEncoderConfig config1;
+  private final AbsoluteEncoder gearEncoderA, gearEncoderC;
 
   public Feeder() {
     feederA = new SparkMax(56, MotorType.kBrushless);
@@ -30,6 +31,9 @@ public class Feeder extends SubsystemBase {
     feedConfigA.idleMode(IdleMode.kBrake).inverted(true).smartCurrentLimit(60);
 
     feedConfigB.idleMode(IdleMode.kBrake).inverted(true).follow(56).smartCurrentLimit(5);
+
+    gearEncoderA = feederA.getAbsoluteEncoder();
+    gearEncoderC = feederB.getAbsoluteEncoder();
 
     feederA.configure(feedConfigA, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     feederB.configure(feedConfigB, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -45,6 +49,14 @@ public class Feeder extends SubsystemBase {
 
   public void reverse() {
     feederA.set(-.5);
+  }
+
+  public final AbsoluteEncoder encoderA() {
+    return gearEncoderA;
+  }
+
+  public final AbsoluteEncoder encoderC() {
+    return gearEncoderC;
   }
 
   public void feedyMcFeedFeed() {

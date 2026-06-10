@@ -27,7 +27,7 @@ public class Intake extends SubsystemBase {
   public Intake() {
     m_pickup = new SparkFlex(60, MotorType.kBrushless);
     pickupMotConfig = new SparkFlexConfig();
-    pickupMotConfig.inverted(true)
+    pickupMotConfig.inverted(false)
         .idleMode(IdleMode.kCoast);
 
     m_pickup.configure(pickupMotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);

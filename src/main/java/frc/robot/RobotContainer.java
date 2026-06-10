@@ -53,7 +53,7 @@ public class RobotContainer {
   public RobotContainer() {
     swerve = new SwerveSubsystem();
     feeder = new Feeder();
-    shooter = new Shooter(swerve);
+    shooter = new Shooter(swerve, feeder);
     agitator = new Agitator();
 
     autonomousShoot = new AutoShoot(feeder, shooter, agitator);
