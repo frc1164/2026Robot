@@ -77,8 +77,8 @@ public class Shooter extends SubsystemBase {
   private final double gear2TeethCount = 36;
 
   // Varience in each of the gears
-  private final double sigma1 = 1;
-  private final double sigma2 = 1;
+  private final double sigma1 = 0.00000277;
+  private final double sigma2 = 0.00000277;
 
   // Classic CRT values
   // (6) Modular multiplicative inverses
