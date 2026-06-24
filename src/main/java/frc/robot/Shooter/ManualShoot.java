@@ -40,7 +40,7 @@ public class ManualShoot extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(shooter.shooterSpeed() > bottomLim && shooter.shooterSpeed() < topLim){
+    if(shooter.shooterSpeed() > bottomLim && shooter.shooterSpeed() < topLim && !shooter.aimingAtSelf()){
       feeder.feedyMcFeedFeed();
     } else { 
       feeder.shootOff();

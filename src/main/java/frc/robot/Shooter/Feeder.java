@@ -4,8 +4,6 @@
 
 package frc.robot.Shooter;
 
-import java.util.function.Supplier;
-
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
@@ -19,6 +17,8 @@ public class Feeder extends SubsystemBase {
 
   private final SparkMax feederB, feederA;
   private final SparkMaxConfig feedConfigB, feedConfigA;
+
+  //For CRT
   private final AbsoluteEncoder gearEncoderA, gearEncoderC;
 
   public Feeder() {
@@ -29,8 +29,13 @@ public class Feeder extends SubsystemBase {
     feedConfigB = new SparkMaxConfig();
 
     feedConfigA.idleMode(IdleMode.kBrake).inverted(true).smartCurrentLimit(60);
+    feedConfigA.absoluteEncoder.zeroOffset(0.563);
 
     feedConfigB.idleMode(IdleMode.kBrake).inverted(true).follow(56).smartCurrentLimit(5);
+    feedConfigB.absoluteEncoder.zeroOffset(0.055);
+
+
+    feedConfigA.absoluteEncoder.inverted(true);
 
     gearEncoderA = feederA.getAbsoluteEncoder();
     gearEncoderC = feederB.getAbsoluteEncoder();
