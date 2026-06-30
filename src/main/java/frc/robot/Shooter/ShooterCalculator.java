@@ -144,10 +144,8 @@ public class ShooterCalculator {
     Translation3d predictedTarget = target;
     int i = 0;
 
-    // Originally I tried a while loop and a function for error so I could guarantee
-    // a certain degree of precision.
-    // That behaved badly and I instead went with this 5 iteration for-loop that
-    // gets 6-12 cm of error at a distance of 4 meters
+    // Originally I tried a while loop and a function for error so I could guarantee a certain degree of precision.
+    // That behaved badly and I instead went with this 5 iteration for-loop that gets 6-12 cm of error at a distance of 4 meters
     for (i = 0; i < 5; i++) {
       // Predict where we have to aim based on estimated flight time and ball velocity
       predictedTarget = predictTargetpose(target, time, velocity);
@@ -160,9 +158,9 @@ public class ShooterCalculator {
       SHOT = new ShotInfo(SHOT.exitVel(), SHOT.getVertAngle(), predictedTarget);
       time = ShooterConstants.timeMap.get(dist);
     }
-    // This is a protective measure. Only time this would be true is when it is set
-    // in the target method, which is when on defense or in the trench.
-    // In implementation it will force the turret into a 'safe mode'
+    /* This is a protective measure. Only time this would be true is when it is set
+     * in the target method, which is when on defense or in the trench.
+     * In implementation it will force the turret into a 'safe mode' */
     if (targetPose.getTranslation() == botPose.getTranslation()) {
       SHOT = new ShotInfo(SHOT.exitVel, ShooterConstants.maxVert, predictedTarget);
     }
@@ -171,8 +169,7 @@ public class ShooterCalculator {
     return SHOT;
   }
 
-  // Data class that contains all the necessary values to operate the shooter. See
-  // implementation here and in AimCommand.java.
+  // Data class that contains all the necessary values to operate the shooter. See implementation here and in AimCommand.java.
   public record ShotInfo(double exitVel, double vertAngle, Translation3d target) {
     public ShotInfo(double exitVel, double vertAngle) {
       this(exitVel, vertAngle, ShooterConstants.hubPose);
