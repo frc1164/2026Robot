@@ -128,7 +128,7 @@ public class ShooterCalculator {
     return TARGET;
   }
 
-  // Actual Calculation of optimal shot. Math is in the document. 
+  // Actual Calculation of optimal shot. Math is in the document. https://docs.google.com/document/d/1w8D7nlqq5mkzBPH0RFEn_nS84_c1tdGOFgQI29g4LDU/edit?usp=sharing
   public static ShotInfo getShot(ChassisSpeeds velocity, Translation3d target, Pose2d botPose, int iterations) {
     // Flat ground dist to initial target
     Pose2d targetPose = new Pose2d(target.getX(), target.getY(), null);
