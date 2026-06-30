@@ -34,40 +34,40 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 public class SwerveSubsystem extends SubsystemBase {
     private final SwerveModule frontLeft = new SwerveModule(
-            DriveConstants.kFrontLeftDriveMotorPort,
-            DriveConstants.kFrontLeftTurningMotorPort,
-            DriveConstants.kFrontLeftDriveEncoderReversed,
-            DriveConstants.kFrontLeftTurningEncoderReversed,
-            DriveConstants.kFrontLeftDriveAbsoluteEncoderPort,
-            DriveConstants.kFrontLeftDriveAbsoluteEncoderOffsetRad,
-            DriveConstants.kFrontLeftDriveAbsoluteEncoderReversed);
+            SwerveConstants.DriveConstants.kFrontLeftDriveMotorPort,
+            SwerveConstants.DriveConstants.kFrontLeftTurningMotorPort,
+            SwerveConstants.DriveConstants.kFrontLeftDriveEncoderReversed,
+            SwerveConstants.DriveConstants.kFrontLeftTurningEncoderReversed,
+            SwerveConstants.DriveConstants.kFrontLeftDriveAbsoluteEncoderPort,
+            SwerveConstants.DriveConstants.kFrontLeftDriveAbsoluteEncoderOffsetRad,
+            SwerveConstants.DriveConstants.kFrontLeftDriveAbsoluteEncoderReversed);
 
     private final SwerveModule frontRight = new SwerveModule(
-            DriveConstants.kFrontRightDriveMotorPort,
-            DriveConstants.kFrontRightTurningMotorPort,
-            DriveConstants.kFrontRightDriveEncoderReversed,
-            DriveConstants.kFrontRightTurningEncoderReversed,
-            DriveConstants.kFrontRightDriveAbsoluteEncoderPort,
-            DriveConstants.kFrontRightDriveAbsoluteEncoderOffsetRad,
-            DriveConstants.kFrontRightDriveAbsoluteEncoderReversed);
+            SwerveConstants.DriveConstants.kFrontRightDriveMotorPort,
+            SwerveConstants.DriveConstants.kFrontRightTurningMotorPort,
+            SwerveConstants.DriveConstants.kFrontRightDriveEncoderReversed,
+            SwerveConstants.DriveConstants.kFrontRightTurningEncoderReversed,
+            SwerveConstants.DriveConstants.kFrontRightDriveAbsoluteEncoderPort,
+            SwerveConstants.DriveConstants.kFrontRightDriveAbsoluteEncoderOffsetRad,
+            SwerveConstants.DriveConstants.kFrontRightDriveAbsoluteEncoderReversed);
 
     private final SwerveModule backLeft = new SwerveModule(
-            DriveConstants.kBackLeftDriveMotorPort,
-            DriveConstants.kBackLeftTurningMotorPort,
-            DriveConstants.kBackLeftDriveEncoderReversed,
-            DriveConstants.kBackLeftTurningEncoderReversed,
-            DriveConstants.kBackLeftDriveAbsoluteEncoderPort,
-            DriveConstants.kBackLeftDriveAbsoluteEncoderOffsetRad,
-            DriveConstants.kBackLeftDriveAbsoluteEncoderReversed);
+            SwerveConstants.DriveConstants.kBackLeftDriveMotorPort,
+            SwerveConstants.DriveConstants.kBackLeftTurningMotorPort,
+            SwerveConstants.DriveConstants.kBackLeftDriveEncoderReversed,
+            SwerveConstants.DriveConstants.kBackLeftTurningEncoderReversed,
+            SwerveConstants.DriveConstants.kBackLeftDriveAbsoluteEncoderPort,
+            SwerveConstants.DriveConstants.kBackLeftDriveAbsoluteEncoderOffsetRad,
+            SwerveConstants.DriveConstants.kBackLeftDriveAbsoluteEncoderReversed);
 
     private final SwerveModule backRight = new SwerveModule(
-            DriveConstants.kBackRightDriveMotorPort,
-            DriveConstants.kBackRightTurningMotorPort,
-            DriveConstants.kBackRightDriveEncoderReversed,
-            DriveConstants.kBackRightTurningEncoderReversed,
-            DriveConstants.kBackRightDriveAbsoluteEncoderPort,
-            DriveConstants.kBackRightDriveAbsoluteEncoderOffsetRad,
-            DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
+            SwerveConstants.DriveConstants.kBackRightDriveMotorPort,
+            SwerveConstants.DriveConstants.kBackRightTurningMotorPort,
+            SwerveConstants.DriveConstants.kBackRightDriveEncoderReversed,
+            SwerveConstants.DriveConstants.kBackRightTurningEncoderReversed,
+            SwerveConstants.DriveConstants.kBackRightDriveAbsoluteEncoderPort,
+            SwerveConstants.DriveConstants.kBackRightDriveAbsoluteEncoderOffsetRad,
+            SwerveConstants.DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
 
     public Command currentPath;
     private final AHRS gyro = new AHRS(NavXComType.kUSB1);
@@ -75,28 +75,18 @@ public class SwerveSubsystem extends SubsystemBase {
     private final SwerveModulePosition[] Position = { frontLeft.getPosition(), frontRight.getPosition(),
             backLeft.getPosition(), backRight.getPosition() };
 
-
-
     private final SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(
             DriveConstants.kDriveKinematics,
             new Rotation2d(0), Position, poseThis);
 
-    // Create a new Field2d object for plotting pose and initialize LimeLight Network table instances
+    // Create a new Field2d object for plotting pose and initialize LimeLight
+    // Network table instances
     private final Field2d m_field = new Field2d();
 
-    //Limelight Definitions
+    // Limelight Definitions
     private final NetworkTable aprilTagTable = NetworkTableInstance.getDefault().getTable(LimeLightConstants.kLLTags);
-    private double tv, ta, tl;
+    private double tl;
     private boolean isUpdating = false;
-    // private boolean gate = true;
-    // private boolean updatingSet = false;
-
-    // private boolean isUpdatingSet = false;
-    // private boolean canSeeTagsSet = true;
-    // private boolean elseSet = false;
-
-    //private LimelightHelpers.LimelightResults results;
-    // private LimelightHelpers.PoseEstimate limelightMeasurement;
 
     Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
 
@@ -107,10 +97,8 @@ public class SwerveSubsystem extends SubsystemBase {
     private SimpleMotorFeedforward feedforwardLeft = new SimpleMotorFeedforward(DriveConstants.kSLeft,
             DriveConstants.kVLeft, DriveConstants.kALeft);
 
-
     private double tag;
     private int tagRead;
-
 
     public SwerveSubsystem() {
         new Thread(() -> {
@@ -130,11 +118,15 @@ public class SwerveSubsystem extends SubsystemBase {
                     this::getPose, // Robot pose supplier
                     this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
                     this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                    (speeds, feedforward) -> driveRobotRelative(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+                    (speeds, feedforward) -> driveRobotRelative(speeds), // Method that will drive the robot given ROBOT
+                                                                         // RELATIVE ChassisSpeeds
                     new PPHolonomicDriveController( // HolonomicPathFollowerConfig, this should likely live in your
                                                     // Constants class
-                            new PIDConstants(AutoConstants.kPTranslationController, 0.0, AutoConstants.kDTranslationController), // Translation PID constants
-                            new PIDConstants(AutoConstants.kPThetaController, 0.0, AutoConstants.kDThetaController) // Rotation PID constants
+                            new PIDConstants(AutoConstants.kPTranslationController, 0.0,
+                                    AutoConstants.kDTranslationController), // Translation PID constants
+                            new PIDConstants(AutoConstants.kPThetaController, 0.0, AutoConstants.kDThetaController) // Rotation
+                                                                                                                    // PID
+                                                                                                                    // constants
                     ),
                     config,
                     () -> {
@@ -156,14 +148,11 @@ public class SwerveSubsystem extends SubsystemBase {
                     "Failed to load PathPlanner config and configure AutoBuilder. Ensure /src/main/deploy/pathplanner/settings.json exists",
                     e.getStackTrace());
         }
-        
-        if (alliance.get() == DriverStation.Alliance.Red){
-        setCurrentGyroHeading(180);
-        }
-        // // This maybe cuased a breakpoint
-        // on gewt it did not as it turns out
-    }
 
+        if (alliance.get() == DriverStation.Alliance.Red) {
+            setCurrentGyroHeading(180);
+        }
+    }
 
     public void zeroHeading() {
         gyro.reset();
@@ -195,6 +184,10 @@ public class SwerveSubsystem extends SubsystemBase {
         return DriveConstants.kDriveKinematics.toChassisSpeeds(getModuleStates());
     }
 
+    public ChassisSpeeds fieldRelativeVelocity() {
+        return ChassisSpeeds.fromRobotRelativeSpeeds(getRobotRelativeSpeeds(), getRotation2d());
+    }
+
     public void driveRobotRelative(ChassisSpeeds robotRelativeSpeeds) {
         ChassisSpeeds targetSpeeds = ChassisSpeeds.discretize(robotRelativeSpeeds, 0.02);
 
@@ -214,96 +207,56 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public LimelightHelpers.PoseEstimate getVisionEstimatedPose() {
 
-        LimelightHelpers.SetRobotOrientation("limelight-tags", getHeading(), getYawRate(),0,0,0,0);
+        LimelightHelpers.SetRobotOrientation("limelight-tags", getHeading(), getYawRate(), 0, 0, 0, 0);
         LimelightHelpers.PoseEstimate botPose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-tags");
 
+        if (botPose == null) {
+            botPose = new LimelightHelpers.PoseEstimate();
+        }
 
         return botPose;
     }
 
     public void updatePoseEstimatorWithVisionBotPose(LimelightHelpers.PoseEstimate poseEstimate) {
+        if (poseEstimate == null) {
+            poseEstimate = new LimelightHelpers.PoseEstimate();
+        }
+
         Pose2d visionPose = poseEstimate.pose;
-        
+
         if (visionPose.getX() == 0.0) {
             isUpdating = false;
             return;
         }
-        
-        // distance from current pose to vision estimated pose
-        //double poseDifference = m_poseEstimator.getEstimatedPosition().getTranslation()
-        //    .getDistance(visionBotPose.pose2d.getTranslation());
 
         double poseDifference = m_poseEstimator.getEstimatedPosition().getTranslation()
-            .getDistance(visionPose.getTranslation());
+                .getDistance(visionPose.getTranslation());
 
-
-        if (poseEstimate.tagCount > 0){
+        if (poseEstimate.tagCount > 0) {
             SmartDashboard.putNumber("PoseDifference", poseDifference);
             isUpdating = true;
             m_poseEstimator.addVisionMeasurement(visionPose,
-                poseEstimate.timestampSeconds);
+                    poseEstimate.timestampSeconds);
         }
-        // if (poseEstimate.tagCount > 0) {
-        //     double xyStds;
-        //     double degStds;
-        //     SmartDashboard.putNumber("poseDifference", poseDifference);
-        //     // multiple targets detected
-        //     if (poseEstimate.tagCount >= 2 && poseEstimate.avgTagArea > 0.5) {
-        //         // xyStds = 0.5;
-        //         // degStds = 6;
-        //         xyStds = 100;
-        //         degStds = 100;
-        //     }
-        //     // 1 target with large area and close to estimated pose
-        //     // else if (poseEstimate.avgTagArea > 0.66 && poseDifference < 1.5) { //areea 0.8, diff 0.5
-        //     //     xyStds = 1.0;
-        //     //     degStds = 12;
-        //     // }
-        //     // // 1 target farther away and estimated pose is close
-        //     // else if (poseEstimate.avgTagArea > 0.15 && poseDifference < 0.3) { // area 0.1, diff 0.3
-        //     //     xyStds = 2.0;
-        //     //     degStds = 30;
-        //     // }
-        //     else if (gate) {
-        //         xyStds = 100;
-        //         degStds = 100;
-        //         gate = false;
-        //     }
-        //     // conditions don't match to add a vision measurement
-        //     else {
-        //         isUpdating = false;
-        //         return;
-        //     }
-
-        //     isUpdating = true;
-
-        //     m_poseEstimator.setVisionMeasurementStdDevs(
-        //         VecBuilder.fill(xyStds, xyStds, Units.degreesToRadians(degStds)));
-        //     m_poseEstimator.addVisionMeasurement(visionPose,
-        //         poseEstimate.timestampSeconds);
-        // }
     }
-
-
 
     public double getLatency() {
         return Timer.getFPGATimestamp() - Units.millisecondsToSeconds(tl);
     }
 
-
-    public int getPrincipalTag(){
+    public int getPrincipalTag() {
         tag = aprilTagTable.getValue("tid").getDouble();
-        if(tag == 0){}
-        else{tagRead = (int)tag;}
-        
+        if (tag == 0) {
+        } else {
+            tagRead = (int) tag;
+        }
+
         return tagRead;
     }
 
-    public double getYawRate(){
+    public double getYawRate() {
         return gyro.getRate();
     }
-
-
 
     @Override
     public void periodic() {
@@ -324,18 +277,14 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Pitch", gyro.getPitch());
         SmartDashboard.putNumber("Yaw", gyro.getYaw());
         SmartDashboard.putNumber("Roll", gyro.getRoll());
-                
-        boolean signalIsUpdating = false;
-        
 
-        SmartDashboard.putNumber("ta", aprilTagTable.getValue("ta").getDouble());
-                        
+        boolean signalIsUpdating = false;
         updatePoseEstimatorWithVisionBotPose(getVisionEstimatedPose());
-        if(isUpdating == true) {
+        if (isUpdating == true) {
             signalIsUpdating = true;
         }
-            SmartDashboard.putBoolean("signalIsUpdating", signalIsUpdating);
-            SmartDashboard.putBoolean("seesTags", getVisionEstimatedPose().tagCount > 0);
+        SmartDashboard.putBoolean("signalIsUpdating", signalIsUpdating);
+        SmartDashboard.putBoolean("seesTags", getVisionEstimatedPose().tagCount > 0);
 
     }
 
@@ -358,105 +307,3 @@ public class SwerveSubsystem extends SubsystemBase {
         return gyro.getYaw();
     }
 }
-
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-//I'm going to integrate a SysId routine into the code.
-

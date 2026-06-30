@@ -13,22 +13,29 @@ import edu.wpi.first.math.util.Units;
 
 /** Add your docs here. */
 public class SwerveConstants {
+
+    public static class OperatorConstants {
+        public static final int kDriverControllerPort = 0;
+        public static final int kOperatorControllerPort = 1;
+        public static final double kDeadband = 0.15;
+    }
+
     public static final class ModuleConstants {
         public static final double kWheelDiameterMeters = Units.inchesToMeters(4);
-        public static final double kDriveMotorGearRatio = 1 / 6.75;
-        public static final double kTurningMotorGearRatio = 18.75;// 7 / 150;
+        public static final double kDriveMotorGearRatio = 1 / 6.12;
+        public static final double kTurningMotorGearRatio = 12.8;// 7 / 150;
         public static final double kDriveEncoderRot2Meter = kDriveMotorGearRatio * kWheelDiameterMeters * Math.PI;
         public static final double kTurningEncoderRot2Rad = kTurningMotorGearRatio * 2.0 * Math.PI;
         public static final double kDriveEncoderRPM2MeterPerSec = kDriveEncoderRot2Meter / 60.0;
         public static final double kTurningEncoderRPM2RadPerSec = kTurningEncoderRot2Rad / 60.0;
-        public static final double kPTurning = 0.35;
+        public static final double kPTurning = 0.25;
     }
 
     public static final class DriveConstants {
 
-        public static final double kTrackWidth = Units.inchesToMeters(24);
+        public static final double kTrackWidth = Units.inchesToMeters(21.5);
         // Distance between right and left wheels
-        public static final double kWheelBase = Units.inchesToMeters(24);
+        public static final double kWheelBase = Units.inchesToMeters(19.5);
         // Distance between front and back wheels
         public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
                 new Translation2d(kWheelBase / 2, kTrackWidth / 2), /* Left front */
@@ -46,15 +53,15 @@ public class SwerveConstants {
         public static final int kFrontRightTurningMotorPort = 21;
         public static final int kBackRightTurningMotorPort = 31;
 
-        public static final InvertedValue kFrontLeftTurningEncoderReversed = InvertedValue.Clockwise_Positive;
-        public static final InvertedValue kBackLeftTurningEncoderReversed = InvertedValue.Clockwise_Positive;
-        public static final InvertedValue kFrontRightTurningEncoderReversed = InvertedValue.Clockwise_Positive;
-        public static final InvertedValue kBackRightTurningEncoderReversed = InvertedValue.Clockwise_Positive;
+        public static final InvertedValue kFrontLeftTurningEncoderReversed = InvertedValue.CounterClockwise_Positive;
+        public static final InvertedValue kBackLeftTurningEncoderReversed = InvertedValue.CounterClockwise_Positive;
+        public static final InvertedValue kFrontRightTurningEncoderReversed = InvertedValue.CounterClockwise_Positive;
+        public static final InvertedValue kBackRightTurningEncoderReversed = InvertedValue.CounterClockwise_Positive;
 
         public static final InvertedValue kFrontLeftDriveEncoderReversed = InvertedValue.Clockwise_Positive;
-        public static final InvertedValue kBackLeftDriveEncoderReversed = InvertedValue.Clockwise_Positive;
-        public static final InvertedValue kFrontRightDriveEncoderReversed = InvertedValue.CounterClockwise_Positive;
-        public static final InvertedValue kBackRightDriveEncoderReversed = InvertedValue.CounterClockwise_Positive;
+        public static final InvertedValue kBackLeftDriveEncoderReversed = InvertedValue.CounterClockwise_Positive;
+        public static final InvertedValue kFrontRightDriveEncoderReversed = InvertedValue.Clockwise_Positive;
+        public static final InvertedValue kBackRightDriveEncoderReversed = InvertedValue.Clockwise_Positive;
 
         public static final int kFrontLeftDriveAbsoluteEncoderPort = 12;
         public static final int kBackLeftDriveAbsoluteEncoderPort = 42;
@@ -66,11 +73,10 @@ public class SwerveConstants {
         public static final boolean kFrontRightDriveAbsoluteEncoderReversed = false;
         public static final boolean kBackRightDriveAbsoluteEncoderReversed = false;
 
-
-        public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = 51.76764  * Math.PI / 180.0;
-        public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = (234.9324 - 32.11272) * Math.PI / 180.0;
-        public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = (71.367120 - 16.787) * Math.PI / 180.0;
-        public static final double kBackRightDriveAbsoluteEncoderOffsetRad = (23.3536+12.24) * Math.PI / 180.0;
+        public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = 0.452637 * Math.PI * 2;
+        public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = 0.196045 * Math.PI * 2;
+        public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = (-0.365967 + .5) * Math.PI * 2;
+        public static final double kBackRightDriveAbsoluteEncoderOffsetRad = 0.275635 * Math.PI * 2;
 
         public static final double kPhysicalMaxSpeedMetersPerSecond = 5;
         public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * 2 * Math.PI;
@@ -81,16 +87,21 @@ public class SwerveConstants {
         public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 3;
         public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3;
 
- 
+        // public static final double kSLeft = 0.0027919;
+        // public static final double kVLeft = 2.8676;
+        // public static final double kALeft = 0.78002;
 
-        public static final double kSLeft = 0.32614;
-        public static final double kVLeft = 4.0056;
-        public static final double kALeft = 0.33487;
+        // public static final double kSRight = 0.13921;
+        // public static final double kVRight = 3.4576;
+        // public static final double kARight = 0.498;
 
-        public static final double kSRight = 0.28932;
-        public static final double kVRight = 4.0178;
-        public static final double kARight = 0.10801;
+        public static final double kSLeft = 0.33934;
+        public static final double kVLeft = 3.0013;
+        public static final double kALeft = 0.31248;
 
+        public static final double kSRight = -0.080721;
+        public static final double kVRight = 3.2398;
+        public static final double kARight = 1.6961;
 
         // Drive/Rotation gain
         public static final double kRotGain = 3;
@@ -114,7 +125,7 @@ public class SwerveConstants {
                         kMaxAngularAccelerationRadiansPerSecondSquared);
     }
 
-    public static final class LimeLightConstants{
+    public static final class LimeLightConstants {
         public static final String kLLTags = "limelight-tags";
         public static final String kTagLimelightNetworkTableName = "limelight-tags";
         public static final int kAprilTagPipeline = 0;
