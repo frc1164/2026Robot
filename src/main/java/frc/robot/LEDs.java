@@ -61,15 +61,7 @@ public class LEDs extends SubsystemBase {
     lastPattern = LEDPattern.kOff;
   }
 
-  // applying colors to zia symbol
-  // public void runZia() {
-  // orange.applyTo(ziaCenter);
-  // purple.applyTo(ziaArms);
-
-  // }
-
-
-  //time left in shift
+  //Time left in shift with timing offsets
   private double timeleft(){
     double matchTime = DriverStation.getMatchTime();
     if (matchTime > 135) {
@@ -93,29 +85,31 @@ public class LEDs extends SubsystemBase {
     }
   }
 
-  // pulsify
+  //Warning pulse triggers 5 seconds before shift
   private LEDPattern pulsify(LEDPattern base) {
     return base.breathe(Time.ofBaseUnits(.5, Second));
   }
 
+  //Upward progress bar over span of off shift
   private LEDPattern countUP() {
     LEDPattern mask = LEDPattern.progressMaskLayer(() -> (20 - (timeleft())) / 20);
     return purple.mask(mask);
   }
 
+  //Downward progress bar during on shift
   private LEDPattern countDOWN() {
     LEDPattern mask = LEDPattern.progressMaskLayer(() -> (timeleft()) / 20);
     return orange.mask(mask);
   }
 
-  // applying colors to hub status lights based on hubstate
+  //Applying team colors to hub status lights based on hubstate
   public void runHubStatus(LEDPattern pattern) {
     pattern.applyTo(hubStatus);
   }
 
   @Override
+  // This method will be called once per scheduler run
   public void periodic() {
-    // This method will be called once per scheduler run
     ShooterConstants.HUBSTATE m_hubstate = ShooterCalculator.isHubActive();
 
     switch (m_hubstate) {
@@ -132,16 +126,7 @@ public class LEDs extends SubsystemBase {
         break;
     }
 
-    // runZia();
-
     m_led.setData(m_buffer);
-
     SmartDashboard.putString("hubstate", m_hubstate.name());
-
-    // orange countdown when active till 5 seconds before
-    // pulse orange when soon to deactiate
-    // purple count up when inactive till 5 seconds before
-    // pulse purple when soon to activate
-
   }
 }

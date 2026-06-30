@@ -24,7 +24,6 @@ import frc.robot.Intake.Extend;
 import frc.robot.Intake.Intake;
 import frc.robot.Intake.Pickup;
 import frc.robot.Intake.Retract;
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import frc.robot.Swerve.SwerveSubsystem;
@@ -71,14 +70,12 @@ public class RobotContainer {
       () -> -driveController.getRightX(),
       () -> !driveController.povUp().getAsBoolean()));
     
+    //Commands to run constantly unless overwritten
     shooter.setDefaultCommand(new AimCommand(shooter, swerve));
-
-    // //this SHOULD be overwritten by auton during auton period I hope, if not then this gets problematic
-    // feeder.setDefaultCommand(new AutoShoot(fe   eder, swerve, shooter, agitator));
     m_intake.setDefaultCommand(new Extend(m_intake, shooter));
     
 
-    //Might need to create a way to cancel that command or turn off the shooter
+    //Commands to use in autonomous routine
     NamedCommands.registerCommand("ShootOn", new InstantCommand(() -> CommandScheduler.getInstance().schedule(autonomousShoot)));
     NamedCommands.registerCommand("ShootOff", new InstantCommand(() -> CommandScheduler.getInstance().cancel(autonomousShoot)));
 
@@ -92,18 +89,27 @@ public class RobotContainer {
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
+    //Apply config for real-time controller inputs
     configureBindings();
+
+    //Turn on compressor for pneomatics
     m_compressor.enableDigital();
   }
 
   private void configureBindings() {
+    //Reset Gyro Yaw to Zero
     driveController.povDown().onTrue(new InstantCommand(() -> swerve.zeroHeading()));
 
-
+    //Feed to the turret can jam, the automatic unjam is imperfect so this is backup
     operatorController.leftTrigger(.25).whileTrue(new UnJamTheShooterLikeABoss(shooter, agitator, feeder));
+
+    //Shooting Command during manual driving, allows for more nuance than only shooting to score
     operatorController.rightTrigger(.25).whileTrue(new ManualShoot(feeder, shooter, agitator));
-    // operatorController.povUp().onTrue(new Extend(m_intake, shooter));
+
+    //When this is toggled off, the Default Command triggers and Extends again.
     operatorController.povDown().toggleOnTrue(new Retract(shooter, m_intake));
+
+    //Spins intake roller
     operatorController.rightBumper().whileTrue(new Pickup(m_intake, operatorController));
   }
  
@@ -116,8 +122,6 @@ public class RobotContainer {
 
   public static double getPressure(){
     return m_compressor.getPressure();
-
-
   }
 
 }

@@ -12,14 +12,16 @@ import frc.robot.Shooter.ShooterCalculator.ShotInfo;
 
 
 //ALL DISTANCE MEASUREMENTS IN METERS
-//ALL ANGLE MEASUREMENTS IN RADIANS
 public class ShooterConstants{
+
+  //Offset of shooter from bot center
   public static final class SHOOTEROFFSETS{
     public static final double vertical = 0.47625;
     public static final double translation = 0.1709801;
     public static final double theta = 2.11746;
   }
 
+  //Divvies up field by x-coordinate- uused in target selection
   public static final class XVALS{
     public static final double BATRENCH = 4.0;
     public static final double BMTRENCH = 5.4;
@@ -28,6 +30,8 @@ public class ShooterConstants{
     public static final double REDWALL = 16.5;
   }
 
+
+  //3D Coordinates of every conditional shot target
   public static final class TAGRETS{
     public static final Translation3d BLUEHUB = new Translation3d(4.63,4.0,1.68);
     public static final Translation3d BLUEPASSUP = new Translation3d(2.5, 6, 0);
@@ -43,20 +47,22 @@ public class ShooterConstants{
     SOON, ACTIVE, INACTIVE;
   };
   
-  public static final double exitVelocity = 13.2994089; //5000rpm to m/s wheel is 4 in radius. Divide tangential velo by 2 for slippage. CHANGE
-  public static final double minVert = 57;
-  public static final double maxVert = 85.6;
-  public static final Translation3d hubPose = new Translation3d(4.63,4.0,1.68); 
+  public static final double exitVelocity = 13.2994089; //5000rpm to m/s wheel is 4 in radius. Divide tangential velo by 2 for slippage(tested factor). 
+  public static final double minVert = 57; //degrees from horizontal
+  public static final double maxVert = 85.6; //degrees from horizontal
+  public static final Translation3d hubPose = new Translation3d(4.63,4.0,1.68); //should be unused
   public static final double targetHeightFromShooter = hubPose.getZ() - SHOOTEROFFSETS.vertical;
   public static final double gravity = 9.81; //We do NOT need any more accurate than this
 
+
+  //Use linear regression to create fit data that can be called at any time
   public static final InterpolatingDoubleTreeMap timeMap = new InterpolatingDoubleTreeMap();
   public static final InterpolatingTreeMap<Double, ShotInfo> shotMap = new InterpolatingTreeMap<>(InverseInterpolator.forDouble(), ShotInfo::interpolate);
   static{
     //example data point
       // shotMap.put(0.0, new ShotInfo(exitVelocity, Math.PI/2));
       // timeMap.put(0.0, Math.PI/2);
-    //first is dist, second is radians
+    //first is dist fired, second is degrees from straight down
     shotMap.put(4.38, new ShotInfo(exitVelocity, 110));
     timeMap.put(3.13, 1.45);
 

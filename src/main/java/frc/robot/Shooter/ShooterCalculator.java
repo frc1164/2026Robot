@@ -20,22 +20,28 @@ public class ShooterCalculator {
   public ShooterCalculator() {
   }
 
-  //Flat ground dist from shooter to target
-  public static Translation2d distVector(Pose2d target, Pose2d current) {
+  // Flat ground vector from shooter to target
+  public static Translation2d distVector(Pose2d target, Pose2d currentRobotPose) {
     double xDist, yDist;
-    double botDiffX = target.getX() - current.getX();
-    double botDiffY = target.getY() - current.getY();
-    SmartDashboard.putNumber("currentX", current.getX());
+
+    // Takes distance from current target to center of bot
+    double botDiffX = target.getX() - currentRobotPose.getX();
+    double botDiffY = target.getY() - currentRobotPose.getY();
+
+    // Uses trigonometry to find shooter relative to target
     xDist = botDiffX - ShooterConstants.SHOOTEROFFSETS.translation
-        * (Math.cos(ShooterConstants.SHOOTEROFFSETS.theta + current.getRotation().getRadians()));
+        * (Math.cos(ShooterConstants.SHOOTEROFFSETS.theta + currentRobotPose.getRotation().getRadians()));
     SmartDashboard.putNumber("xDist", xDist);
+
     yDist = botDiffY - ShooterConstants.SHOOTEROFFSETS.translation
-        * (Math.sin(ShooterConstants.SHOOTEROFFSETS.theta + current.getRotation().getRadians()));
+        * (Math.sin(ShooterConstants.SHOOTEROFFSETS.theta + currentRobotPose.getRotation().getRadians()));
     SmartDashboard.putNumber("yDist", yDist);
+
+    // Outputs a 2d vector
     return new Translation2d(xDist, yDist);
   }
 
-  // Just pythagoran applied to whatever given vector
+  // Pythagorean theorem applied to given 2d vector
   private static double getDist(Translation2d distVector) {
     double distance = Math.sqrt(Math.pow(distVector.getX(), 2) + Math.pow(distVector.getY(), 2));
     SmartDashboard.putNumber("dist to target", distance);
@@ -51,19 +57,24 @@ public class ShooterCalculator {
   private static Translation3d predictTargetpose(Translation3d target, double time, ChassisSpeeds velocity) {
     double xEstimate = target.getX() - velocity.vxMetersPerSecond * time * 62.2857;
     double yEstimate = target.getY() - velocity.vyMetersPerSecond * time * 62.2857;
+    /* This 62.2857 seems relatively arbitrary but fixed an issue in a very time sensitive moment.
+     * It is the conversion factor between the Swerve speed outputs and the real speed outputs. */
     SmartDashboard.putNumber("fieldEstimatedSpeed", Math.sqrt(Math.pow(velocity.vyMetersPerSecond, 2) + Math.pow(velocity.vxMetersPerSecond, 2)));
     return new Translation3d(xEstimate, yEstimate, target.getZ());
   }
 
-  @SuppressWarnings("unused")
-  //determine the error in the shot should return meters
-  private static double predictError(Translation2d distVect, ChassisSpeeds velocity, double time){
-    double errorX = distVect.getX() - velocity.vxMetersPerSecond * time;
-    double errorY = distVect.getY() - velocity.vyMetersPerSecond * time;
-    return Math.sqrt(errorX * errorX + errorY + errorY);
-  }
-
   // Automatically sets the shooter's baseline target.
+  /*
+   * This is a large and ugly block of nested if and if else statements. While I
+   * dislike that I had to do it this way,
+   * switch statements do not provide the necessary functionality: nesting.
+   * This block serves the purpose of translating the robot's current pose into a
+   * target for the turret to aim for.
+   * The outermost if statement handles which side/alliance the bot is on. Within
+   * that, the entire field is separated by x coordinate into 4 zones with
+   * different targets.
+   * Two of those zones also must be separated by y coordinate.
+   */
   public static Translation3d target(Pose2d botPose, boolean blue) {
     Translation3d TARGET = new Translation3d();
     double x = botPose.getX();
@@ -105,7 +116,8 @@ public class ShooterCalculator {
           TARGET = ShooterConstants.TAGRETS.CENTERDOWN;
         }
       }
-    } else {
+    } else { // In case for some reason the entire pose estimation system fails this should
+             // have a reasonable output
       if (botPose.getY() >= 4.0) {
         TARGET = ShooterConstants.TAGRETS.CENTERUP;
       } else if (botPose.getY() < 4.0) {
@@ -116,7 +128,8 @@ public class ShooterCalculator {
     return TARGET;
   }
 
-  // Actual Calculation of optimal shot, should write to be constrained on a certain error. Math is in the methodology.
+  // Actual Calculation of optimal shot, should write to be constrained on a
+  // certain error. Math is in the document.
   public static ShotInfo getShot(ChassisSpeeds velocity, Translation3d target, Pose2d botPose, int iterations) {
     // Flat ground dist to initial target
     Pose2d targetPose = new Pose2d(target.getX(), target.getY(), null);
@@ -132,7 +145,11 @@ public class ShooterCalculator {
     Translation3d predictedTarget = target;
     int i = 0;
 
-    for (i = 0; i < 5; i++) {//While error is greater than 8 inches, keep iterating. Hopefully this isnt too bad
+    // Originally I tried a while loop and a function for error so I could guarantee
+    // a certain degree of precision.
+    // That behaved badly and I instead went with this 5 iteration for-loop that
+    // gets 6-12 cm of error at a distance of 4 meters
+    for (i = 0; i < 5; i++) {
       // Predict where we have to aim based on estimated flight time and ball velocity
       predictedTarget = predictTargetpose(target, time, velocity);
 
@@ -144,18 +161,19 @@ public class ShooterCalculator {
       SHOT = new ShotInfo(SHOT.exitVel(), SHOT.getVertAngle(), predictedTarget);
       time = ShooterConstants.timeMap.get(dist);
     }
-    //This is a protective measure. Only time this would be true is when it is set in the target method, which is when on defense or in the trench.
-    if (targetPose.getTranslation() == botPose.getTranslation()){
+    // This is a protective measure. Only time this would be true is when it is set
+    // in the target method, which is when on defense or in the trench.
+    // In implementation it will force the turret into a 'safe mode'
+    if (targetPose.getTranslation() == botPose.getTranslation()) {
       SHOT = new ShotInfo(SHOT.exitVel, ShooterConstants.maxVert, predictedTarget);
     }
 
-    //Spit out iterations this tick
-    SmartDashboard.putNumber("iterations", i);
-
-    //Spit out 'optimal' shot info
+    // Spit out 'optimal' shot info
     return SHOT;
   }
 
+  // Data class that contains all the necessary values to operate the shooter. See
+  // implementation here and in AimCommand.java.
   public record ShotInfo(double exitVel, double vertAngle, Translation3d target) {
     public ShotInfo(double exitVel, double vertAngle) {
       this(exitVel, vertAngle, ShooterConstants.hubPose);
@@ -189,13 +207,14 @@ public class ShooterCalculator {
 
   }
 
+  // Informational method called to determine scoring mode and other game data
   public static ShooterConstants.HUBSTATE isHubActive() {
     Optional<Alliance> alliance = DriverStation.getAlliance();
     // If we have no alliance, we cannot be enabled, therefore no hub.
     if (alliance.isEmpty()) {
       return HUBSTATE.INACTIVE;
     }
-    // Hub is always enabled in autonomous.
+    // Hub is always enabled in autonomous period.
     if (DriverStation.isAutonomousEnabled()) {
       return HUBSTATE.ACTIVE;
     }
@@ -224,10 +243,11 @@ public class ShooterCalculator {
       case Blue -> redInactiveFirst;
     };
 
+    // Sections time remaining in match, in seconds
     if (matchTime > 130) {
       // Transition shift, hub is active.
       return HUBSTATE.ACTIVE;
-    } else if(matchTime > 110){
+    } else if (matchTime > 110) {
       // Shift 1
       return shift1Active ? HUBSTATE.ACTIVE : HUBSTATE.INACTIVE;
     } else if (matchTime > 105) {

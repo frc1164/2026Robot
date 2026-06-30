@@ -1,6 +1,5 @@
 package frc.robot.Swerve;
 
-
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -33,7 +32,8 @@ public class SwerveModule {
     private final boolean absoluteEncoderReversed;
     private final double absoluteEncoderOffsetRad;
 
-    public SwerveModule(int driveMotorId, int turningMotorId, InvertedValue driveMotorReversed, InvertedValue turningMotorReversed,
+    public SwerveModule(int driveMotorId, int turningMotorId, InvertedValue driveMotorReversed,
+            InvertedValue turningMotorReversed,
             int absoluteEncoderId, double absoluteEncoderOffset, boolean absoluteEncoderReversed) {
 
         this.absoluteEncoderOffsetRad = absoluteEncoderOffset;
@@ -41,10 +41,8 @@ public class SwerveModule {
         absoluteEncoder = new CANcoder(absoluteEncoderId);
         config = new CANcoderConfiguration();
 
-
         driveMotor = new TalonFX(driveMotorId);
         driveMotorConfig = new TalonFXConfiguration();
-
 
         turningMotor = new TalonFX(turningMotorId);
         turningMotorConfig = new TalonFXConfiguration();
@@ -55,13 +53,11 @@ public class SwerveModule {
         driveMotorConfig.TorqueCurrent.PeakReverseTorqueCurrent = 50;
         driveMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
 
-
         turningMotorConfig.MotorOutput.withInverted(turningMotorReversed);
         turningMotorConfig.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
         turningMotorConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
         turningMotorConfig.Feedback.FeedbackRemoteSensorID = absoluteEncoderId;
         turningMotorConfig.Feedback.RotorToSensorRatio = ModuleConstants.kTurningMotorGearRatio;
-
 
         config.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
         config.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
@@ -72,7 +68,6 @@ public class SwerveModule {
 
         turningMotor.getConfigurator().apply(turningMotorConfig);
         driveMotor.getConfigurator().apply(driveMotorConfig);
-
 
         resetEncoders();
     }

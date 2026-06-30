@@ -18,8 +18,8 @@ public class SwerveConstants {
         public static final int kDriverControllerPort = 0;
         public static final int kOperatorControllerPort = 1;
         public static final double kDeadband = 0.15;
-  }
-  
+    }
+
     public static final class ModuleConstants {
         public static final double kWheelDiameterMeters = Units.inchesToMeters(4);
         public static final double kDriveMotorGearRatio = 1 / 6.12;
@@ -73,11 +73,10 @@ public class SwerveConstants {
         public static final boolean kFrontRightDriveAbsoluteEncoderReversed = false;
         public static final boolean kBackRightDriveAbsoluteEncoderReversed = false;
 
-
-        public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = 0.452637 * Math.PI *2;     
-        public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = 0.196045 * Math.PI *2;
-        public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = (-0.365967+.5)  * Math.PI *2;
-        public static final double kBackRightDriveAbsoluteEncoderOffsetRad = 0.275635  * Math.PI *2;
+        public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = 0.452637 * Math.PI * 2;
+        public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = 0.196045 * Math.PI * 2;
+        public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = (-0.365967 + .5) * Math.PI * 2;
+        public static final double kBackRightDriveAbsoluteEncoderOffsetRad = 0.275635 * Math.PI * 2;
 
         public static final double kPhysicalMaxSpeedMetersPerSecond = 5;
         public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * 2 * Math.PI;
@@ -88,7 +87,6 @@ public class SwerveConstants {
         public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 3;
         public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3;
 
- 
         // public static final double kSLeft = 0.0027919;
         // public static final double kVLeft = 2.8676;
         // public static final double kALeft = 0.78002;
@@ -127,7 +125,7 @@ public class SwerveConstants {
                         kMaxAngularAccelerationRadiansPerSecondSquared);
     }
 
-    public static final class LimeLightConstants{
+    public static final class LimeLightConstants {
         public static final String kLLTags = "limelight-tags";
         public static final String kTagLimelightNetworkTableName = "limelight-tags";
         public static final int kAprilTagPipeline = 0;
