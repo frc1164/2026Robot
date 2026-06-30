@@ -65,13 +65,13 @@ public class ShooterCalculator {
 
   // Automatically sets the shooter's baseline target.
   /*
-   * This is a large and ugly block of nested if and if else statements. While I
-   * dislike that I had to do it this way,
+   * This is a large and ugly block of nested if and if else statements. 
+   * While I dislike that I had to do it this way,
    * switch statements do not provide the necessary functionality: nesting.
    * This block serves the purpose of translating the robot's current pose into a
    * target for the turret to aim for.
    * The outermost if statement handles which side/alliance the bot is on. Within
-   * that, the entire field is separated by x coordinate into 4 zones with
+   * that, the entire field is separated by x coordinate into 3 zones with
    * different targets.
    * Two of those zones also must be separated by y coordinate.
    */
@@ -128,8 +128,7 @@ public class ShooterCalculator {
     return TARGET;
   }
 
-  // Actual Calculation of optimal shot, should write to be constrained on a
-  // certain error. Math is in the document.
+  // Actual Calculation of optimal shot. Math is in the document. 
   public static ShotInfo getShot(ChassisSpeeds velocity, Translation3d target, Pose2d botPose, int iterations) {
     // Flat ground dist to initial target
     Pose2d targetPose = new Pose2d(target.getX(), target.getY(), null);

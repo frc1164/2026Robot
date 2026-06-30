@@ -112,7 +112,7 @@ public class Shooter extends SubsystemBase {
 
     // Initialize Important Variables
     lastSpeed = 0;
-    // currentTheta = .25 + 4.0/360.0; <- this is a manual startup position while we fix the initialization routine
+    currentTheta = .25 + 4.0/360.0; //<- this is a manual startup position while we fix the initialization routine
     relEncoder.setPosition(currentTheta);
     alliance = DriverStation.getAlliance();
     runShooter = false;
@@ -159,8 +159,7 @@ public class Shooter extends SubsystemBase {
      * force equation of an elastic/spring
      */
     double power = vertPID.calculate(getPhiPosition(), angle) + (angle - 90) * 0.00456368213471;
-    // 96.4 is a safe value to use instead of angle in feedforward when on bumpy
-    // terrain, which the controller dislikes
+    // 96.4 is a safe value to use instead of angle in feedforward when on bumpy terrain, which the controller dislikes
 
     // Output clamping that prevents mechaniism from moving too fast
     if (power > 0.25) {
@@ -176,8 +175,7 @@ public class Shooter extends SubsystemBase {
       vertPID = new PIDController(0.039, 0.00006, 0.0001);
     }
 
-    // Prevents the turret from moving when the intake is retracted, due to
-    // mechanical overlap
+    // Prevents the turret from moving when the intake is retracted, due to mechanical overlap
     if (active) {
       vert.set(power);
     } else {
@@ -209,12 +207,11 @@ public class Shooter extends SubsystemBase {
       power = 0;
     }
 
-    // Outputs are in duty cycle, clamps to 1 to make cleaner and not confuse the
-    // PID controller
+    // Outputs are in duty cycle, clamps to 1 to make cleaner and not confuse the PID controller
     lastSpeed = Math.min(power, 1);
 
     // Status output for drivers
-    SmartDashboard.putBoolean("ShooterOn", stop);
+    SmartDashboard.putBoolean("ShooterOn", !stop);
 
     if (stop) {
       shootMot.set(0);
@@ -238,8 +235,7 @@ public class Shooter extends SubsystemBase {
     if (!gate) {
       turn.set(.1); // Forces safe movement until initialized
     } else {
-      double pidMotorSpeed = thetaPID.calculate(getThetaPosition(), degrees); // Uses the PID Controller to output best
-                                                                              // velocity to reach desired position
+      double pidMotorSpeed = thetaPID.calculate(getThetaPosition(), degrees); // Uses the PID Controller to output best velocity to reach desired position
       pidMotorSpeed = Math.max(Math.min(pidMotorSpeed, .75), -.75); // Clamps maximum speed to a 75% duty cycle
       if (active) {
         turn.set(pidMotorSpeed);
