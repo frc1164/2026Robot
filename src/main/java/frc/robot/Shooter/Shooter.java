@@ -87,7 +87,7 @@ public class Shooter extends SubsystemBase {
 
     vertEncoder = vert.getAbsoluteEncoder();
     vertEncoderConfig = new AbsoluteEncoderConfig();
-    vertEncoderConfig.zeroOffset(0.8504375) // tested offset of a magnet sensor
+    vertEncoderConfig.zeroOffset(0.998612) // tested offset of a magnet sensor
         .inverted(false);
 
     vertConfig.apply(vertEncoderConfig);
@@ -104,8 +104,8 @@ public class Shooter extends SubsystemBase {
 
     // Instantiate PID's
     thetaPID = new PIDController(0.02, 0, 0);
-    vertPID = new PIDController(0.039, 0.00006, 0.0001);
-    shotPID = new PIDController(.0002, 0, 0.00003);
+    vertPID = new PIDController(0.175, 0.00006, 0.0001);
+    shotPID = new PIDController(.0001, 0, 0.00003);
 
     // Instantiate Swerve
     swerve = Swerve;
@@ -133,7 +133,7 @@ public class Shooter extends SubsystemBase {
     // m_Feeder = feeder;
 
     // Startup Routine for Turret, gate = true means it running
-    gate = true;
+    gate = false;
     initSensor = new DigitalInput(0);
   }
 
@@ -158,15 +158,16 @@ public class Shooter extends SubsystemBase {
      * PID controllers dislike nonlinear systems so we add a feedforward from the
      * force equation of an elastic/spring
      */
-    double power = vertPID.calculate(getPhiPosition(), angle) + (angle - 90) * 0.00456368213471;
+    double power = vertPID.calculate(getPhiPosition(), angle);
+    SmartDashboard.putNumber("power", power);
     // 96.4 is a safe value to use instead of angle in feedforward when on bumpy terrain, which the controller dislikes
 
     // Output clamping that prevents mechaniism from moving too fast
-    if (power > 0.25) {
-      power = 0.21;
-    } else if (power < -0.15) {
-      power = -0.17;
-    }
+    // if (power > 0.25) {
+    //   power = 0.21;
+    // } else if (power < -0.15) {
+    //   power = -0.17;
+    // }
 
     // Power can sometimes spit NaN on startup, which angers the PID
     // Solve by turning NaN to 0 and then reinstantiating the PID
@@ -232,24 +233,25 @@ public class Shooter extends SubsystemBase {
      */
     degrees = ((degrees % 360) + 360) % 360;
 
+    if (active) {
     if (!gate) {
-      turn.set(.1); // Forces safe movement until initialized
+      turn.set(-.1); // Forces safe movement until initialized
     } else {
       double pidMotorSpeed = thetaPID.calculate(getThetaPosition(), degrees); // Uses the PID Controller to output best velocity to reach desired position
       pidMotorSpeed = Math.max(Math.min(pidMotorSpeed, .75), -.75); // Clamps maximum speed to a 75% duty cycle
-      if (active) {
         turn.set(pidMotorSpeed);
+      }
       } else {
         turn.set(0); // shutoff when intake mechanism is retracted
       }
     }
-  }
+  
 
   // Used to pull a single reading off turret initialization sensor, which is placed in an arbitrary point
   private void initialize() {
     if (!gate) {
-      if (initSensor.get()) {
-        relEncoder.setPosition(0); // arbitrary number we find sensor to be at along the turret's range
+      if (!initSensor.get()) {
+        relEncoder.setPosition(.25 + 4/360); // arbitrary number we find sensor to be at along the turret's range
         gate = true;
       }
     }
@@ -315,6 +317,9 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
+    SmartDashboard.putBoolean("pphiangle", gate);
+    SmartDashboard.putNumber("thetaangle", getThetaPosition());
+
     if (runShooter) {
       setShotSpeed(false);
     } else {
@@ -333,8 +338,8 @@ public class Shooter extends SubsystemBase {
     // Debugging Readouts
     // SmartDashboard.putNumber("theta", getThetaPosition());
     // SmartDashboard.putBoolean("Initialization", gate);
-    // SmartDashboard.putNumber("ShooterSpeed",
-    // shootMot.getVelocity().getValueAsDouble() * 60);
+    SmartDashboard.putNumber("ShooterSpeed",
+    shootMot.getVelocity().getValueAsDouble() * 60);
     // SmartDashboard.putNumber("lastSpeed", lastSpeed);
 
     // CRT Readouts

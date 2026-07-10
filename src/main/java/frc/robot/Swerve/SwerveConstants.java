@@ -95,13 +95,13 @@ public class SwerveConstants {
         // public static final double kVRight = 3.4576;
         // public static final double kARight = 0.498;
 
-        public static final double kSLeft = 0.33934;
-        public static final double kVLeft = 3.0013;
-        public static final double kALeft = 0.31248;
+        public static final double kSLeft = 0.44257;
+        public static final double kVLeft = 2.6307;
+        public static final double kALeft = 0.15495;
 
-        public static final double kSRight = -0.080721;
-        public static final double kVRight = 3.2398;
-        public static final double kARight = 1.6961;
+        public static final double kSRight = 0.32516;
+        public static final double kVRight = 2.8995;
+        public static final double kARight = 0.18155;
 
         // Drive/Rotation gain
         public static final double kRotGain = 3;

@@ -63,21 +63,21 @@ public class ShooterConstants{
       // shotMap.put(0.0, new ShotInfo(exitVelocity, Math.PI/2));
       // timeMap.put(0.0, Math.PI/2);
     //first is dist fired, second is degrees from straight down
-    shotMap.put(4.38, new ShotInfo(exitVelocity, 110));
+    shotMap.put(4.38, new ShotInfo(exitVelocity, 112));
     timeMap.put(3.13, 1.45);
 
-    shotMap.put(3.6871, new ShotInfo(exitVelocity,105));
+    shotMap.put(3.6871, new ShotInfo(exitVelocity,107));
     timeMap.put(4.15, 1.376);
 
-    shotMap.put(1.9153, new ShotInfo(exitVelocity,100));
+    shotMap.put(1.9153, new ShotInfo(exitVelocity,102));
     timeMap.put(2.00, 1.436);
 
-    shotMap.put(1.6, new ShotInfo(exitVelocity, 95));
+    shotMap.put(1.6, new ShotInfo(exitVelocity, 99));
     timeMap.put(1.1, 1.284);
     timeMap.put(4.5, 1.451);
 
-    shotMap.put(2.75, new ShotInfo(exitVelocity, 102.5));
-    shotMap.put(3.822, new ShotInfo(exitVelocity,107.5));
-    shotMap.put(4.9, new ShotInfo(exitVelocity, 112.5));
+    shotMap.put(2.75, new ShotInfo(exitVelocity, 104.5));
+    shotMap.put(3.822, new ShotInfo(exitVelocity,109.5));
+    shotMap.put(4.9, new ShotInfo(exitVelocity, 114.5));
   }
 }
