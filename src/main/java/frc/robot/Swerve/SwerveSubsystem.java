@@ -33,6 +33,8 @@ import frc.robot.Swerve.Limelight.LimelightHelpers;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class SwerveSubsystem extends SubsystemBase {
+
+    // Create the swerve modules
     private final SwerveModule frontLeft = new SwerveModule(
             DriveConstants.kFrontLeftDriveMotorPort,
             DriveConstants.kFrontLeftTurningMotorPort,
@@ -70,13 +72,15 @@ public class SwerveSubsystem extends SubsystemBase {
             DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
 
     public Command currentPath;
+
+    // Gyro port + other initializations
     private final AHRS gyro = new AHRS(NavXComType.kUSB1);
     private final Pose2d poseThis = new Pose2d();
     private final SwerveModulePosition[] Position = { frontLeft.getPosition(), frontRight.getPosition(),
             backLeft.getPosition(), backRight.getPosition() };
 
 
-
+    // Object that actually guesses robot location
     private final SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(
             DriveConstants.kDriveKinematics,
             new Rotation2d(0), Position, poseThis);
@@ -84,11 +88,14 @@ public class SwerveSubsystem extends SubsystemBase {
     // Create a new Field2d object for plotting pose and initialize LimeLight Network table instances
     private final Field2d m_field = new Field2d();
 
-    //Limelight Definitions
+    // Limelight Definitions
     private final NetworkTable aprilTagTable = NetworkTableInstance.getDefault().getTable(LimeLightConstants.kLLTags);
     private double tl;
     private boolean isUpdating = false;
+    private double tag;
+    private int tagRead;
 
+    // Pull alliance from field data
     Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
 
     // Create two new SimpleMotorFeedforwards (one right and one left) with gains
@@ -99,21 +106,16 @@ public class SwerveSubsystem extends SubsystemBase {
             DriveConstants.kVLeft, DriveConstants.kALeft);
 
 
-    private double tag;
-    private int tagRead;
-
-
     public SwerveSubsystem() {
         new Thread(() -> {
             try {
-                Thread.sleep(1000);
+                Thread.sleep(1000); //Gyro startup
                 zeroHeading();
             } catch (Exception e) {
             }
         }).start();
         try {
-            // This WILL FAIL if the file (/src/main/deploy/pathplanner/settings.json) is
-            // not present.
+            // This WILL FAIL if the file (/src/main/deploy/pathplanner/settings.json) is not present.
             // Make sure to open PathPlanner and change a setting to create the file.
             RobotConfig config = RobotConfig.fromGUISettings();
             // Configure AutoBuilder last
@@ -129,8 +131,7 @@ public class SwerveSubsystem extends SubsystemBase {
                     ),
                     config,
                     () -> {
-                        // Boolean supplier that controls when the path will be mirrored for the red
-                        // alliance
+                        // Boolean supplier that controls when the path will be mirrored for the red alliance
                         // This will flip the path being followed to the red side of the field.
                         // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
@@ -147,7 +148,7 @@ public class SwerveSubsystem extends SubsystemBase {
                     "Failed to load PathPlanner config and configure AutoBuilder. Ensure /src/main/deploy/pathplanner/settings.json exists",
                     e.getStackTrace());
         }
-        
+        // Invert heading if red alliance
         if (alliance.get() == DriverStation.Alliance.Red){
         setCurrentGyroHeading(180);
         }
@@ -205,6 +206,7 @@ public class SwerveSubsystem extends SubsystemBase {
         return states;
     }
 
+    // Limelight pose estimation using MT2
     public LimelightHelpers.PoseEstimate getVisionEstimatedPose() {
 
         LimelightHelpers.SetRobotOrientation("limelight-tags", getHeading(), getYawRate(),0,0,0,0);
@@ -214,6 +216,7 @@ public class SwerveSubsystem extends SubsystemBase {
         return botPose;
     }
 
+    // Apply limelight pose estimate to PoseEstimator to update assumed position
     public void updatePoseEstimatorWithVisionBotPose(LimelightHelpers.PoseEstimate poseEstimate) {
         Pose2d visionPose = poseEstimate.pose;
         
@@ -225,7 +228,7 @@ public class SwerveSubsystem extends SubsystemBase {
         double poseDifference = m_poseEstimator.getEstimatedPosition().getTranslation()
             .getDistance(visionPose.getTranslation());
 
-
+        // Only update pose if seeing an april tag to avoid throwing nulls. Final product code has the if statement to prevent nulls.
         if (poseEstimate.tagCount > 0){
             SmartDashboard.putNumber("PoseDifference", poseDifference);
             isUpdating = true;
@@ -235,12 +238,13 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
 
-
+    // Used to determine timestamp of LL reading
     public double getLatency() {
         return Timer.getFPGATimestamp() - Units.millisecondsToSeconds(tl);
     }
 
 
+    // Used to display the primary tag LL sees
     public int getPrincipalTag(){
         tag = aprilTagTable.getValue("tid").getDouble();
         if(tag == 0){}
@@ -249,6 +253,7 @@ public class SwerveSubsystem extends SubsystemBase {
         return tagRead;
     }
 
+    // Rate of change of yaw
     public double getYawRate(){
         return gyro.getRate();
     }
@@ -256,26 +261,26 @@ public class SwerveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        // Update swerve states
         SwerveModulePosition[] positions = { frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(),
                 backRight.getPosition() };
         m_poseEstimator.update(getRotation2d(), positions);
 
         // Set the robot pose on the Field2D object
-
         m_field.setRobotPose(this.getPose());
         SmartDashboard.putData(m_field);
 
+        //Swerve SmartDash outputs
         SmartDashboard.putNumber("Robot Heading", getHeading());
-
         SmartDashboard.putString("Robot Rotation", getPose().getRotation().toString());
         SmartDashboard.putString("Robot Location", getPose().getTranslation().toString());
-
         SmartDashboard.putNumber("Pitch", gyro.getPitch());
         SmartDashboard.putNumber("Yaw", gyro.getYaw());
         SmartDashboard.putNumber("Roll", gyro.getRoll());
                 
         boolean signalIsUpdating = false;
-                                
+                      
+        // Update pose w/ LL april tags and tell SmartDash if that is occurring
         updatePoseEstimatorWithVisionBotPose(getVisionEstimatedPose());
         if(isUpdating == true) {
             signalIsUpdating = true;
@@ -285,6 +290,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     }
 
+    // Make swerve stop
     public void stopModules() {
         frontLeft.stop();
         frontRight.stop();
@@ -292,6 +298,7 @@ public class SwerveSubsystem extends SubsystemBase {
         backRight.stop();
     }
 
+    // Sets speed and angle to each module
     public void setModuleStates(SwerveModuleState[] desiredStates) {
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
         frontLeft.setDesiredState(desiredStates[0], feedforwardLeft);
@@ -305,6 +312,7 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 }
 
+//No im not!
 //I'm going to integrate a SysId routine into the code.
 //I'm going to integrate a SysId routine into the code.
 //I'm going to integrate a SysId routine into the code.

@@ -11,8 +11,14 @@ import frc.robot.Swerve.SwerveConstants.OperatorConstants;
 public class SwerveJoystickCmd extends Command {
 
     private final SwerveSubsystem swerveSubsystem;
+
+    // Joystick inputs for x, y, turn these GENUINELY do NOT need to be double suppliers (they did in like 2023) but im too lazy to make them normal doubles
     private final Supplier<Double> xSpdFunction, ySpdFunction, turningSpdFunction;
+
+    // Ends up being the button that toggles between field and robot oriented
     private final Supplier<Boolean> fieldOrientedFunction;
+
+    // Rate of change limiter defined in SwerveConstants
     private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
 
     public SwerveJoystickCmd(SwerveSubsystem swerveSubsystem,
@@ -40,7 +46,7 @@ public class SwerveJoystickCmd extends Command {
         double ySpeed = -ySpdFunction.get();
         double turningSpeed = turningSpdFunction.get();
 
-        // 2. Apply deadband
+        // 2. Apply deadband and exponential power curve
         xSpeed = Math.abs(xSpeed) > OperatorConstants.kDeadband ? (xSpeed * Math.pow(Math.E, (DriveConstants.kDriveGain * Math.abs(xSpeed))))/Math.pow(Math.E, DriveConstants.kDriveGain) : 0.0;
         ySpeed = Math.abs(ySpeed) > OperatorConstants.kDeadband ? (ySpeed * Math.pow(Math.E, (DriveConstants.kDriveGain * Math.abs(ySpeed))))/Math.pow(Math.E, DriveConstants.kDriveGain) : 0.0;
         turningSpeed = Math.abs(turningSpeed) > OperatorConstants.kDeadband ? ((turningSpeed * Math.pow(Math.E, (DriveConstants.kRotGain * Math.abs(turningSpeed))))/Math.pow(Math.E, DriveConstants.kRotGain))/4 : 0.0;
