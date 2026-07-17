@@ -11,6 +11,8 @@ public class AutoShoot extends Command {
   private final Feeder feeder;
   private final Shooter shooter;
   private final Agitator agitator;
+  private final double topLim = 3200;
+  private final double bottomLim = 3100;
 
   public AutoShoot(Feeder Feeder, Shooter Shooter, Agitator Agitate) {
     feeder = Feeder;
@@ -29,14 +31,12 @@ public class AutoShoot extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    // if (shooter.aimingAtHub()) {
-      
-    // }
-    // else {
-    //   feeder.shootOff();
-    //   shooter.shooterGoShoot(false);
-    //   agitator.stop();
-    // }
+    if(shooter.shooterSpeed() > bottomLim && shooter.shooterSpeed() < topLim && !shooter.aimingAtSelf()){
+      feeder.feedyMcFeedFeed();
+    } else { 
+      feeder.shootOff();
+    }
+    agitator.agitationNation();
 
     feeder.feedyMcFeedFeed();
       // shooter.shooterGoShoot(true);

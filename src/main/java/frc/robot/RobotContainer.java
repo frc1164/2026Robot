@@ -22,6 +22,7 @@ import frc.robot.Shooter.UnJamTheShooterLikeABoss;
 import frc.robot.Agitator.Agitator;
 import frc.robot.Intake.Extend;
 import frc.robot.Intake.Intake;
+import frc.robot.Intake.IntakeRevert;
 import frc.robot.Intake.Pickup;
 import frc.robot.Intake.Retract;
 import edu.wpi.first.wpilibj.Compressor;
@@ -111,6 +112,7 @@ public class RobotContainer {
 
     //Spins intake roller
     operatorController.rightBumper().whileTrue(new Pickup(m_intake, operatorController));
+    operatorController.leftBumper().whileTrue(new IntakeRevert(m_intake, operatorController));
   }
  
   

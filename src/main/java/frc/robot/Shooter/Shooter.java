@@ -189,10 +189,10 @@ public class Shooter extends SubsystemBase {
   // This is the derivative of a PID controller which uses acceleration to achieve velocity
   // This is necessary because every time a shot flies, the shooter wheel is slowed, so a correction must be applied
   public void setShotSpeed(boolean stop) {
-    double speed = 3250; // Standard wheel speed when scoring or passing
+    double speed = 3150; // Standard wheel speed when scoring or passing
 
     if (!opposingAlliance()) {
-      speed = 3250;
+      speed = 3150;
     } else {
       speed = 5000; // "Stealing", incerases shooter wheel speed to increase range
     }
@@ -233,25 +233,24 @@ public class Shooter extends SubsystemBase {
      */
     degrees = ((degrees % 360) + 360) % 360;
 
-    if (active) {
     if (!gate) {
       turn.set(-.1); // Forces safe movement until initialized
     } else {
       double pidMotorSpeed = thetaPID.calculate(getThetaPosition(), degrees); // Uses the PID Controller to output best velocity to reach desired position
       pidMotorSpeed = Math.max(Math.min(pidMotorSpeed, .75), -.75); // Clamps maximum speed to a 75% duty cycle
+      if (active) {
         turn.set(pidMotorSpeed);
-      }
       } else {
         turn.set(0); // shutoff when intake mechanism is retracted
       }
     }
-  
+  }
 
   // Used to pull a single reading off turret initialization sensor, which is placed in an arbitrary point
   private void initialize() {
     if (!gate) {
       if (!initSensor.get()) {
-        relEncoder.setPosition(.25 + 4/360); // arbitrary number we find sensor to be at along the turret's range
+        relEncoder.setPosition(.25 + 6/360); // arbitrary number we find sensor to be at along the turret's range
         gate = true;
       }
     }

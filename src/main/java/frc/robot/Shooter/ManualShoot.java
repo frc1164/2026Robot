@@ -29,8 +29,8 @@ public class ManualShoot extends Command {
   public void initialize() {
     shooter.shooterGoShoot(true);
     if (shooter.aimingAtHub()){
-      topLim = 3300;
-      bottomLim = 3200;
+      topLim = 3200;
+      bottomLim = 3100;
     } else {
       topLim = 6000;
       bottomLim = 3000;
